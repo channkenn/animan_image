@@ -17,6 +17,11 @@
 </head>
 <body>
     <h1>スレッドから画像を取得</h1>
+
+    {% if warning_message %}
+        <p style="color: red; font-weight: bold;">{{ warning_message }}</p>
+    {% endif %}
+
     <form method="POST" style="margin-bottom: 20px;">
         <label for="url">スレッドのURLを入力してください:</label>
         <input type="text" id="url" name="url" style="width: 400px;" required>
