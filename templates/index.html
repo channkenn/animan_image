@@ -47,6 +47,8 @@
                     <div class="cell">
                         <span>{{ src }}</span>
                         <button class="copy-btn" onclick="copyToClipboard('{{ src }}')">コピー</button>
+                        <button class="favorite-btn" onclick="addToFavorites('{{ src }}', '{{ thread_url }}')">お気に入りに追加</button>
+
                     </div>
                 </div>
             {% endfor %}
