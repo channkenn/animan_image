@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>画像一覧</title>
+    <title>あにまん掲示板storageなしコピー</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <script>
         function copyToClipboard(text) {
@@ -27,6 +27,8 @@
         <input type="text" id="url" name="url" style="width: 400px;" required>
         <button type="submit">画像を取得</button>
     </form>
+    <!-- お気に入りページへのリンク -->
+    <a href="/favorites" style="display: inline-block; margin-bottom: 20px; color: blue; text-decoration: underline;">お気に入りページへ移動</a>
 
     {% if thread_url %}
         <div>
@@ -47,8 +49,8 @@
                     <div class="cell">
                         <span>{{ src }}</span>
                         <button class="copy-btn" onclick="copyToClipboard('{{ src }}')">コピー</button>
-                        <button class="favorite-btn" onclick="addToFavorites('{{ src }}', '{{ thread_url }}')">お気に入りに追加</button>
-
+                        <!button class="favorite-btn" onclick="addToFavorites('{{ src }}', '{{ thread_url }}')">お気に入りに追加</button>
+                        <button onclick="addToFavorites('{{ src }}', '{{ src }}')">お気に入り</button>
                     </div>
                 </div>
             {% endfor %}
