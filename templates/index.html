@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>画像一覧</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert("URLをコピーしました: " + text);
+            }).catch(err => {
+                alert("コピーに失敗しました: " + err);
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>スレッドから画像を取得</h1>
+    <form method="POST" style="margin-bottom: 20px;">
+        <label for="url">スレッドのURLを入力してください:</label>
+        <input type="text" id="url" name="url" style="width: 400px;" required>
+        <button type="submit">画像を取得</button>
+    </form>
+
+    {% if thread_url %}
+        <div>
+            <h2>スレッド情報</h2>
+            <p><strong>URL:</strong> <a href="{{ thread_url }}" target="_blank">{{ thread_url }}</a></p>
+            <p><strong>タイトル:</strong> {{ thread_title }}</p>
+        </div>
+    {% endif %}
+
+    {% if images %}
+        <h2>取得した画像とソース</h2>
+        <div class="table-container">
+            {% for image, src in images %}
+                <div class="row">
+                    <div class="cell">
+                        <img src="{{ src }}" alt="Image">
+                    </div>
+                    <div class="cell">
+                        <span>{{ src }}</span>
+                        <button class="copy-btn" onclick="copyToClipboard('{{ src }}')">コピー</button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</body>
+</html>

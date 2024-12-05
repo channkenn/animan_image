@@ -1,0 +1,39 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+.table-container {
+    width: 100%;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.cell {
+    flex: 1; /* セルを均等に分割 */
+    padding: 10px;
+}
+
+img {
+    max-width: 200px;
+    height: auto;
+    border: 1px solid #ccc; /* 見やすいように枠を追加 */
+    border-radius: 4px;     /* 角を丸める */
+}
+
+button.copy-btn {
+    margin-left: 10px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    .row {
+        flex-direction: column; /* 画面が狭いときは縦並びにする */
+    }
+}
