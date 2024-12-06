@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+    <title>{{ thread_title }}</title>
+</head>
+<body>
+    <h1>{{ thread_title }}</h1>
+    <a href="/" style="margin-top: 20px; display: inline-block;">メインページへ戻る</a>
+
+    <p><a href="{{ thread_url }}" target="_blank">{{ thread_url }}</a></p>
+    <div class="table-container">
+        {% for thumb_url, img_url in images %}
+            <div class="row">
+                <div class="cell">
+                    <img src="{{ thumb_url }}" alt="Image">
+                </div>
+                <div class="cell">
+                    <span>{{ img_url }}</span>
+                    <button class="copy-btn" onclick="copyToClipboard('{{ img_url }}')">コピー</button>
+                    <button onclick="addToFavorites('{{ thumb_url }}', '{{ img_url }}')">お気に入り</button>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <a href="/favorite-threads">お気に入りスレッド一覧に戻る</a>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

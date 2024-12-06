@@ -59,6 +59,8 @@ def favorites():
     </head>
     <body>
         <h1>お気に入り一覧</h1>
+        <a href="/" style="margin-top: 20px; display: inline-block;">メインページへ戻る</a>
+
         <div id="favorites-container" class="table-container"></div>
         <script>
             // お気に入りを読み込む関数
@@ -99,7 +101,38 @@ def favorites():
     </body>
     </html>
     """)
+@app.route("/view-thread", methods=["GET"])
+def view_thread():
+    thread_url = request.args.get("url")
+    if not thread_url:
+        return "URLが提供されていません", 400
 
+    # スレッドの情報を取得
+    thread_title, images = fetch_images_and_title(thread_url)
+
+    return render_template(
+        "view_thread.html",
+        thread_url=thread_url,
+        thread_title=thread_title,
+        images=images,
+    )
+@app.route("/favorite-threads", methods=["GET"])
+def favorite_threads():
+    # フロントエンドでローカルストレージからURLを取得し、表示用に送信
+    return render_template("favorite_threads.html")
+@app.route("/fetch-thread-info", methods=["GET"])
+def fetch_thread_info():
+    thread_url = request.args.get("url")
+    if not thread_url:
+        return {"error": "URLが提供されていません"}, 400
+
+    # スレッド情報を取得
+    thread_title, _ = fetch_images_and_title(thread_url)
+
+    if not thread_title:
+        return {"error": "スレッドタイトルを取得できませんでした"}, 404
+
+    return {"title": thread_title}
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

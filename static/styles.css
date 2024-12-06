@@ -1,8 +1,22 @@
+/* 基本的なスタイル */
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
 }
 
+a {
+    font-size: 16px;
+    color: blue;
+    text-decoration: underline;
+    margin-bottom: 20px;
+    display: inline-block;
+}
+
+a:hover {
+    color: darkblue;
+}
+
+/* スレッド一覧のテーブル */
 .table-container {
     width: 100%;
 }
@@ -19,6 +33,7 @@ body {
     padding: 10px;
 }
 
+/* 画像のスタイル */
 img {
     max-width: 200px;
     height: auto;
@@ -26,36 +41,34 @@ img {
     border-radius: 4px;     /* 角を丸める */
 }
 
-button.copy-btn {
-    margin-left: 10px;
+/* ボタンのスタイル */
+button {
     padding: 5px 10px;
     cursor: pointer;
+    margin-right: 5px;
+    border: none;
 }
 
-@media (max-width: 600px) {
-    .row {
-        flex-direction: column; /* 画面が狭いときは縦並びにする */
-    }
+button:hover {
+    opacity: 0.8;
 }
-a {
-    font-size: 16px;
-    color: blue;
-    text-decoration: underline;
-    margin-bottom: 20px;
-    display: inline-block;
+
+button.copy-btn {
+    margin-left: 10px;
 }
-a:hover {
-    color: darkblue;
-}
+
 .remove-btn {
     background-color: red;
     color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    margin-top: 10px;
 }
 
 .remove-btn:hover {
     background-color: darkred;
+}
+
+/* モバイル対応 */
+@media (max-width: 600px) {
+    .row {
+        flex-direction: column; /* 画面が狭いときは縦並びにする */
+    }
 }
