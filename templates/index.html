@@ -41,16 +41,16 @@
     {% if images %}
         <h2>取得した画像とソース</h2>
         <div class="table-container">
-            {% for image, src in images %}
+            {% for thumb_url, img_url in images %}
                 <div class="row">
                     <div class="cell">
-                        <img src="{{ src }}" alt="Image">
+                        <img src="{{ thumb_url }}" alt="Image">
                     </div>
                     <div class="cell">
-                        <span>{{ src }}</span>
-                        <button class="copy-btn" onclick="copyToClipboard('{{ src }}')">コピー</button>
+                        <span>{{ thumb_url }}</span>
+                        <button class="copy-btn" onclick="copyToClipboard('{{ img_url }}')">コピー</button>
                         <!button class="favorite-btn" onclick="addToFavorites('{{ src }}', '{{ thread_url }}')">お気に入りに追加</button>
-                        <button onclick="addToFavorites('{{ src }}', '{{ src }}')">お気に入り</button>
+                        <button onclick="addToFavorites('{{ thumb_url }}', '{{ srimg_url }}')">お気に入り</button>
                     </div>
                 </div>
             {% endfor %}

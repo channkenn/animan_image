@@ -16,17 +16,19 @@ def fetch_images_and_title(thread_url):
             src = img.get("src")
             if src:
                 # 完全なURLを構築
-                img_url = urljoin(thread_url, src)
+                thumb_url = urljoin(thread_url, src)  # 元のURL (/thumb_m/)
 
                 # thumb_mをimgに変換
-                if "thumb_m" in img_url:
-                    img_url = img_url.replace("/thumb_m/", "/img/")
+                img_url = thumb_url
+                if "thumb_m" in thumb_url:
+                    img_url = thumb_url.replace("/thumb_m/", "/img/")
 
                 # /storage/ を削除
                 if "/storage/" in img_url:
                     img_url = img_url.replace("/storage", "")
 
-                images.append((img, img_url))
+                # 元のURL (thumb_url) と変換後のURL (img_url) をリストに格納
+                images.append((thumb_url, img_url))
         return title, images
     except Exception as e:
         return f"エラーが発生しました: {e}", []
