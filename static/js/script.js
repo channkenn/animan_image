@@ -17,9 +17,9 @@ function addToFavorites(imgSrc, threadUrl) {
 }
 
 // スレッドをお気に入りに追加
-function addThreadToFavorites(threadTitle, threadUrl) {
+function addThreadToFavorites(threadTitle, threadUrl, threadThumb) {
     const favoriteThreads = JSON.parse(localStorage.getItem("favoriteThreads")) || [];
-    favoriteThreads.push({ title: threadTitle, url: threadUrl });
+    favoriteThreads.push({ title: threadTitle, url: threadUrl, thumb: threadThumb });
     localStorage.setItem("favoriteThreads", JSON.stringify(favoriteThreads));
     alert("スレッドがお気に入りに追加されました！");
 }
@@ -64,8 +64,13 @@ function displayFavoriteThreads() {
             const threadElement = document.createElement("div");
             threadElement.classList.add("thread-item");
             threadElement.innerHTML = `
-                <h3>${thread.title}</h3> <!-- スレッドタイトルを追加 -->
-                <a href="${thread.url}" target="_blank">${thread.url}</a>
+                <div class="d-flex">
+                    <img src="${thread.thumb}" alt="${thread.title}" class="thread-thumb">
+                    <div class="card-body">
+                        <h3>${thread.title}</h3>
+                        <a href="${thread.url}" target="_blank">${thread.url}</a>
+                    </div>
+                </div>
                 <button onclick="viewThread('${thread.url}')">表示</button>
                 <button onclick="removeThread('${thread.url}')">削除</button>`;
             container.appendChild(threadElement);
@@ -103,9 +108,10 @@ document.addEventListener("DOMContentLoaded", function() {
             // ボタンのデータ属性から情報を取得
             const threadUrl = addThreadButton.getAttribute("data-thread-url");
             const threadTitle = addThreadButton.getAttribute("data-thread-title");
+            const threadThumb = addThreadButton.getAttribute("data-thread-thumb");
 
             // 取得した情報を使用
-            addThreadToFavorites(threadTitle, threadUrl);
+            addThreadToFavorites(threadTitle, threadUrl, threadThumb);
         });
     }
     // お気に入りスレッド一覧を表示
