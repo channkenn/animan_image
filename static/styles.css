@@ -16,8 +16,30 @@ a:hover {
     color: darkblue;
 }
 
-/* スレッド一覧のテーブル */
+/* パネルリンクスタイル */
+.panel-link {
+    display: block;
+    padding: 15px;
+    margin: 10px 0;
+    background-color: #f0f0f0;
+    color: #333;
+    text-decoration: none;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    text-align: center;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.panel-link:hover {
+    background-color: #e0e0e0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+/* スレッド一覧のテーブルスタイル */
 .table-container {
+    display: table;
     width: 100%;
 }
 
@@ -29,24 +51,25 @@ a:hover {
 }
 
 .cell {
-    flex: 1; /* セルを均等に分割 */
+    flex: 1;
     padding: 10px;
 }
 
-/* 画像のスタイル */
+/* 画像スタイル */
 img {
     max-width: 200px;
     height: auto;
-    border: 1px solid #ccc; /* 見やすいように枠を追加 */
-    border-radius: 4px;     /* 角を丸める */
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
-/* ボタンのスタイル */
+/* ボタンスタイル */
 button {
     padding: 5px 10px;
     cursor: pointer;
     margin-right: 5px;
     border: none;
+    transition: opacity 0.3s;
 }
 
 button:hover {

@@ -3,30 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
     <title>お気に入り</title>
-    <style>
-        .table-container { display: table; width: 100%; }
-        .row { display: table-row; }
-        .cell { display: table-cell; padding: 10px; vertical-align: top; border-bottom: 1px solid #ddd; }
-        img { max-width: 200px; height: auto; }
-        .remove-btn {
-            background-color: red;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        .remove-btn:hover {
-            background-color: darkred;
-        }
-    </style>
 </head>
 <body>
     <h1>お気に入り一覧</h1>
-    <a href="/" style="margin-top: 20px; display: inline-block;">メインページへ戻る</a>
+    <a href="/" class="panel-link">メインページ</a>
 
     <div id="favorites-container" class="table-container"></div>
+
     <script>
         // お気に入りを読み込む関数
         loadFavorites();
@@ -39,7 +25,7 @@
             favorites.forEach(fav => {
                 const row = document.createElement("div");
                 row.classList.add("row");
-                row.innerHTML = `
+                row.innerHTML = ` 
                     <div class="cell">
                         <img src="${fav.img}" alt="お気に入り画像">
                     </div>
@@ -60,6 +46,6 @@
             loadFavorites();  // 削除後にリストを更新
         }
     </script>
-    <script src="/static/js/script.js"></script> <!-- ここで script.js を読み込み -->
+    <script src="/static/js/script.js"></script>
 </body>
 </html>
