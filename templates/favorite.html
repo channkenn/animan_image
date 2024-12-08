@@ -13,39 +13,6 @@
 
     <div id="favorites-container" class="table-container"></div>
 
-    <script>
-        // お気に入りを読み込む関数
-        loadFavorites();
-
-        // ローカルストレージからお気に入りを読み込む
-        function loadFavorites() {
-            const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-            const container = document.getElementById("favorites-container");
-            container.innerHTML = "";  // 既存のリストをクリア
-            favorites.forEach(fav => {
-                const row = document.createElement("div");
-                row.classList.add("row");
-                row.innerHTML = ` 
-                    <div class="cell">
-                        <img src="${fav.img}" alt="お気に入り画像">
-                    </div>
-                    <div class="cell">
-                        <span>${fav.url}</span>
-                        <button class="copy-btn" onclick="copyToClipboard('${fav.url}')">コピー</button>
-                        <button class="remove-btn" onclick="removeFavorite('${fav.img}')">削除</button>
-                    </div>`;
-                container.appendChild(row);
-            });
-        }
-
-        // お気に入りを削除する
-        function removeFavorite(imgSrc) {
-            let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-            favorites = favorites.filter(fav => fav.img !== imgSrc);
-            localStorage.setItem("favorites", JSON.stringify(favorites));
-            loadFavorites();  // 削除後にリストを更新
-        }
-    </script>
     <script src="/static/js/script.js"></script>
 </body>
 </html>

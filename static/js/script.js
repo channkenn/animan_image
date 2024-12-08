@@ -1,21 +1,44 @@
-//FormからURL取得
-function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-        alert("URLをコピーしました: " + text);
-    }).catch(err => {
-        alert("コピーに失敗しました: " + err);
-    });
-}
-// 画像をお気に入りに追加
+// お気に入り画像を追加する
 function addToFavorites(thumbUrl, imgUrl, resNumber, resLink) {
     const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+    console.log(thumbUrl, imgUrl, resNumber, resLink);
     favorites.push({ thumbUrl, imgUrl, resNumber, resLink });
     localStorage.setItem("favorites", JSON.stringify(favorites));
     alert("お気に入りに追加されました！");
 }
 
+// お気に入り画像の一覧を表示する
+function loadFavorites() {
+    const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+    const container = document.getElementById("favorites-container");
+    container.innerHTML = ""; // 既存のリストをクリア
 
-// スレッドをお気に入りに追加
+    favorites.forEach(fav => {
+        console.log(fav);
+        const row = document.createElement("div");
+        row.classList.add("row");
+        row.innerHTML = ` 
+            <div class="cell">
+                <img src="${encodeURI(fav.thumbUrl)}" alt="お気に入り画像">
+            </div>
+            <div class="cell">
+                <a href="${encodeURI(fav.resLink)}" target="_blank">${fav.resLink}</a>
+                <button class="copy-btn" onclick="copyToClipboard('${encodeURI(fav.imgUrl)}')">コピー</button>
+                <button class="remove-btn" onclick="removeFavorite('${encodeURI(fav.imgUrl)}')">削除</button>
+            </div>`;
+        container.appendChild(row);
+    });
+}
+
+// お気に入り画像を削除する
+function removeFavorite(imgSrc) {
+    let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+    favorites = favorites.filter(fav => fav.imgUrl !== imgSrc);
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+    loadFavorites(); // 削除後にリストを更新
+}
+
+// スレッドをお気に入りに追加する
 function addThreadToFavorites(threadTitle, threadUrl, threadThumb) {
     const favoriteThreads = JSON.parse(localStorage.getItem("favoriteThreads")) || [];
     favoriteThreads.push({ title: threadTitle, url: threadUrl, thumb: threadThumb });
@@ -23,34 +46,7 @@ function addThreadToFavorites(threadTitle, threadUrl, threadThumb) {
     alert("スレッドがお気に入りに追加されました！");
 }
 
-// お気に入り画像の一覧を表示
-function loadFavorites() {
-    const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-    const container = document.getElementById("favorites-container");
-    favorites.forEach(fav => {
-        const row = document.createElement("div");
-        row.classList.add("row");
-        row.innerHTML = `
-            <div class="cell">
-                <img src="${fav.img}" alt="お気に入り画像">
-            </div>
-            <div class="cell">
-                <span>${fav.url}</span>
-                <button class="remove-btn" onclick="removeFavorite('${fav.img}')">削除</button>
-            </div>`;
-        container.appendChild(row);
-    });
-}
-
-// 画像をお気に入りから削除
-function removeFavorite(imgSrc) {
-    let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-    favorites = favorites.filter(fav => fav.img !== imgSrc);
-    localStorage.setItem("favorites", JSON.stringify(favorites));
-    location.reload(); // ページをリロードして更新
-}
-
-// お気に入りスレッド一覧を表示
+// お気に入りスレッドの一覧を表示する
 function displayFavoriteThreads() {
     const favoriteThreads = JSON.parse(localStorage.getItem("favoriteThreads")) || [];
     const container = document.getElementById("threads-container");
@@ -77,7 +73,7 @@ function displayFavoriteThreads() {
     }
 }
 
-// お気に入りスレッドを削除
+// お気に入りスレッドを削除する
 function removeThread(url) {
     const favoriteThreads = JSON.parse(localStorage.getItem("favoriteThreads")) || [];
     const updatedThreads = favoriteThreads.filter(thread => thread.url !== url);
@@ -85,12 +81,12 @@ function removeThread(url) {
     displayFavoriteThreads(); // リストを再描画
 }
 
-// お気に入りスレッドを表示
+// お気に入りスレッドを表示する
 function viewThread(url) {
     window.location.href = `/view-thread?url=${encodeURIComponent(url)}`;
 }
 
-// コピー機能
+// URLをクリップボードにコピーする
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(() => {
         alert("URLをコピーしました: " + text);
@@ -99,11 +95,11 @@ function copyToClipboard(text) {
     });
 }
 
-// DOM読み込み後に表示関数を実行
-document.addEventListener("DOMContentLoaded", function() {
+// DOM読み込み後に各関数を実行
+document.addEventListener("DOMContentLoaded", function () {
     const addThreadButton = document.getElementById("add-thread-btn");
     if (addThreadButton) {
-        addThreadButton.addEventListener("click", function() {
+        addThreadButton.addEventListener("click", function () {
             // ボタンのデータ属性から情報を取得
             const threadUrl = addThreadButton.getAttribute("data-thread-url");
             const threadTitle = addThreadButton.getAttribute("data-thread-title");
@@ -113,6 +109,8 @@ document.addEventListener("DOMContentLoaded", function() {
             addThreadToFavorites(threadTitle, threadUrl, threadThumb);
         });
     }
-    // お気に入りスレッド一覧を表示
+
+    // お気に入り画像とスレッドの一覧を表示
+    loadFavorites();
     displayFavoriteThreads();
 });
