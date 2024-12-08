@@ -97,9 +97,8 @@ button.copy-btn {
     justify-content: flex-start;
 }
 
-/* カードスタイル */
 .card {
-    width: 220px;
+    width: 140px;  /* 横幅を小さく設定 */
     border: 1px solid #ccc;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -115,7 +114,6 @@ button.copy-btn {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* カード内の画像 */
 .card img {
     width: 100%;
     height: auto;
@@ -123,7 +121,6 @@ button.copy-btn {
     margin-bottom: 10px;
 }
 
-/* リンクボタンスタイル */
 .card .link {
     display: block;
     margin: 10px 0;
@@ -136,7 +133,6 @@ button.copy-btn {
     color: #0056b3;
 }
 
-/* ボタンコンテナ */
 .card .button-container {
     display: flex;
     justify-content: center;
@@ -147,6 +143,10 @@ button.copy-btn {
 /* モバイル対応 */
 @media (max-width: 600px) {
     .row {
-        flex-direction: column; /* 画面が狭いときは縦並びにする */
+        flex-direction: column;
+    }
+
+    .card {
+        width: 100%; /* モバイルではカードを1列に */
     }
 }
