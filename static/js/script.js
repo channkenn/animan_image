@@ -11,6 +11,8 @@ function addToFavorites(thumbUrl, imgUrl, resNumber, resLink) {
 function loadFavorites() {
     const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
     const container = document.getElementById("favorites-container");
+    console.log(favorites);
+    console.log(container);
     container.innerHTML = ""; // 既存のリストをクリア
 
     favorites.forEach(fav => {
@@ -50,30 +52,40 @@ function addThreadToFavorites(threadTitle, threadUrl, threadThumb) {
 
 // お気に入りスレッドの一覧を表示する
 function displayFavoriteThreads() {
-    const favoriteThreads = JSON.parse(localStorage.getItem("favoriteThreads")) || [];
-    const container = document.getElementById("threads-container");
+    try {
+        const favoriteThreads = JSON.parse(localStorage.getItem("favoriteThreads")) || [];
+        const container = document.getElementById("threads-container");
+        console.log(favoriteThreads);
+        console.log(container);
+        if (!container) {
+            throw new Error("threads-container 要素が見つかりません");
+        }
 
-    if (favoriteThreads.length === 0) {
-        container.innerHTML = "<p>お気に入りスレッドがありません。</p>";
-    } else {
-        container.innerHTML = ""; // 既存の内容をクリア
-        favoriteThreads.forEach(thread => {
-            const threadElement = document.createElement("div");
-            threadElement.classList.add("thread-item");
-            threadElement.innerHTML = `
-                <div class="d-flex">
-                    <img src="${thread.thumb}" alt="${thread.title}" class="thread-thumb">
-                    <div class="card-body">
-                        <h3>${thread.title}</h3>
-                        <a href="${thread.url}" target="_blank">${thread.url}</a>
+        if (favoriteThreads.length === 0) {
+            container.innerHTML = "<p>お気に入りスレッドがありません。</p>";
+        } else {
+            container.innerHTML = ""; // 既存の内容をクリア
+            favoriteThreads.forEach(thread => {
+                const threadElement = document.createElement("div");
+                threadElement.classList.add("thread-item");
+                threadElement.innerHTML = `
+                    <div class="d-flex">
+                        <img src="${thread.thumb}" alt="${thread.title}" class="thread-thumb">
+                        <div class="card-body">
+                            <h3>${thread.title}</h3>
+                            <a href="${thread.url}" target="_blank">${thread.url}</a>
+                        </div>
                     </div>
-                </div>
-                <button onclick="viewThread('${thread.url}')">表示</button>
-                <button onclick="removeThread('${thread.url}')">削除</button>`;
-            container.appendChild(threadElement);
-        });
+                    <button onclick="viewThread('${thread.url}')">表示</button>
+                    <button onclick="removeThread('${thread.url}')">削除</button>`;
+                container.appendChild(threadElement);
+            });
+        }
+    } catch (error) {
+        console.error("エラーが発生しました:", error);
     }
 }
+
 
 // お気に入りスレッドを削除する
 function removeThread(url) {
