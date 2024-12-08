@@ -17,38 +17,37 @@
         <label for="url">スレッドのURLを入力してください:</label>
         <input type="text" id="url" name="url" style="width: 400px;" required>
         <button type="submit">画像を取得</button>
-        
     </form>
 
     <a href="/favorites" class="panel-link">お気に入り画像</a>
     <a href="/favorite-threads" class="panel-link">お気に入りスレッド</a>
 
     {% if thread_url %}
-    <div>
+    <div class="card">
         <h2>スレッド情報</h2>
         <p><strong>URL:</strong> <a href="{{ thread_url }}" target="_blank">{{ thread_url }}</a></p>
         <button type="button" id="add-thread-btn" 
                 data-thread-url="{{ thread_url }}" 
                 data-thread-title="{{ thread_title }}"
-                data-thread-thumb="{{images[1]['thumb_url']}}">
+                data-thread-thumb="{{ images[1]['thumb_url'] }}">
             お気に入りスレッドに追加
         </button>
         <p><strong>タイトル:</strong> <span id="thread-title">{{ thread_title }}</span></p>
     </div>
     {% endif %}
-    {% for image in images %}
-    <div class="row">
-        <div class="cell">
-            <img src="{{ image.thumb_url }}" alt="Image">
-        </div>
-        <div class="cell">
-            <span>{{ image.img_url }}</span>
-            <button class="copy-btn" onclick="copyToClipboard('{{ image.img_url }}')">コピー</button>
-            <button onclick="addToFavorites('{{ image.thumb_url }}', '{{ image.img_url }}', '{{ image.res_number }}', '{{ image.res_link }}')">お気に入り</button>
-        </div>
-    </div>
-    {% endfor %}
 
+    <div class="card-container">
+        {% for image in images %}
+        <div class="card">
+            <img src="{{ image.thumb_url }}" alt="Image">
+            <div class="button-container">
+                <button class="copy-btn" onclick="copyToClipboard('{{ image.img_url }}')">コピー</button>
+                <button onclick="addToFavorites('{{ image.thumb_url }}', '{{ image.img_url }}', '{{ image.res_number }}', '{{ image.res_link }}')">お気に入り</button>
+            </div>
+            <p>{{ image.img_url }}</p>
+        </div>
+        {% endfor %}
+    </div>
 
     <!-- JavaScriptファイルを外部ファイルとして読み込む -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
