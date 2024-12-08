@@ -62,35 +62,32 @@ function addThreadToFavorites(threadTitle, threadUrl, threadThumb) {
 function displayFavoriteThreads() {
     try {
         const favoriteThreads = JSON.parse(localStorage.getItem("favoriteThreads")) || [];
-        const threadsContainer = document.getElementById("threads-container");
-        
-        // コンテナが存在しない場合は処理を中断
-        if (!threadsContainer) {
+        const container = document.getElementById("threads-container");
+
+        if (!container) {
             console.warn("threads-container 要素が見つかりません");
             return;
         }
 
-        console.log(favoriteThreads);
-        console.log(threadsContainer);
-
         if (favoriteThreads.length === 0) {
-            threadsContainer.innerHTML = "<p>お気に入りスレッドがありません。</p>";
+            container.innerHTML = "<p>お気に入りスレッドがありません。</p>";
         } else {
-            threadsContainer.innerHTML = ""; // 既存の内容をクリア
+            container.innerHTML = ""; // 既存の内容をクリア
             favoriteThreads.forEach(thread => {
                 const threadElement = document.createElement("div");
                 threadElement.classList.add("thread-item");
                 threadElement.innerHTML = `
-                    <div class="d-flex">
-                        <img src="${thread.thumb}" alt="${thread.title}" class="thread-thumb">
-                        <div class="card-body">
-                            <h3>${thread.title}</h3>
-                            <a href="${thread.url}" target="_blank">${thread.url}</a>
-                        </div>
+                    <img src="${thread.thumb}" alt="${thread.title}" class="thread-thumb">
+                    <div class="card-body">
+                        <h3>${thread.title}</h3>
+                        <a href="${thread.url}" target="_blank">${thread.url}</a>
                     </div>
-                    <button onclick="viewThread('${thread.url}')">表示</button>
-                    <button onclick="removeThread('${thread.url}')">削除</button>`;
-                threadsContainer.appendChild(threadElement);
+                    <div class="button-container">
+                        <button onclick="viewThread('${thread.url}')">表示</button>
+                        <button class="remove-btn" onclick="removeThread('${thread.url}')">削除</button>
+                    </div>
+                `;
+                container.appendChild(threadElement);
             });
         }
     } catch (error) {
