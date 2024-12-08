@@ -74,9 +74,9 @@ function displayFavoriteThreads() {
         } else {
             container.innerHTML = ""; // 既存の内容をクリア
             favoriteThreads.forEach(thread => {
-                const threadElement = document.createElement("div");
-                threadElement.classList.add("thread-item");
-                threadElement.innerHTML = `
+                const card = document.createElement("div");
+                card.classList.add("card");
+                card.innerHTML = `
                     <img src="${thread.thumb}" alt="${thread.title}" class="thread-thumb">
                     <div class="card-body">
                         <h3>${thread.title}</h3>
@@ -87,7 +87,7 @@ function displayFavoriteThreads() {
                         <button class="remove-btn" onclick="removeThread('${thread.url}')">削除</button>
                     </div>
                 `;
-                container.appendChild(threadElement);
+                container.appendChild(card);
             });
         }
     } catch (error) {
