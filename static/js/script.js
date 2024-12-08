@@ -15,20 +15,22 @@ function loadFavorites() {
 
     favorites.forEach(fav => {
         console.log(fav);
-        const row = document.createElement("div");
-        row.classList.add("row");
-        row.innerHTML = ` 
-            <div class="cell">
-                <img src="${encodeURI(fav.thumbUrl)}" alt="お気に入り画像">
-            </div>
-            <div class="cell">
-                <a href="${encodeURI(fav.resLink)}" target="_blank">${fav.resLink}</a>
+        const card = document.createElement("div");
+        card.classList.add("card");
+
+        card.innerHTML = `
+            <img src="${encodeURI(fav.thumbUrl)}" alt="お気に入り画像">
+            <a href="${encodeURI(fav.resLink)}" target="_blank" class="link">${fav.resLink}</a>
+            <div class="button-container">
                 <button class="copy-btn" onclick="copyToClipboard('${encodeURI(fav.imgUrl)}')">コピー</button>
                 <button class="remove-btn" onclick="removeFavorite('${encodeURI(fav.imgUrl)}')">削除</button>
-            </div>`;
-        container.appendChild(row);
+            </div>
+        `;
+
+        container.appendChild(card);
     });
 }
+
 
 // お気に入り画像を削除する
 function removeFavorite(imgSrc) {

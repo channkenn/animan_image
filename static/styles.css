@@ -89,6 +89,61 @@ button.copy-btn {
     background-color: darkred;
 }
 
+/* カード表示用スタイル */
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: flex-start;
+}
+
+/* カードスタイル */
+.card {
+    width: 220px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    background-color: #fff;
+    text-align: center;
+    padding: 10px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* カード内の画像 */
+.card img {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+/* リンクボタンスタイル */
+.card .link {
+    display: block;
+    margin: 10px 0;
+    font-size: 14px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.card .link:hover {
+    color: #0056b3;
+}
+
+/* ボタンコンテナ */
+.card .button-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
 /* モバイル対応 */
 @media (max-width: 600px) {
     .row {
