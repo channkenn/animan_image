@@ -7,14 +7,13 @@ function copyToClipboard(text) {
     });
 }
 // 画像をお気に入りに追加
-function addToFavorites(imgSrc, threadUrl) {
+function addToFavorites(thumbUrl, imgUrl, resNumber, resLink) {
     const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-    favorites.push({ img: imgSrc, url: threadUrl });
+    favorites.push({ thumbUrl, imgUrl, resNumber, resLink });
     localStorage.setItem("favorites", JSON.stringify(favorites));
-    // 追加後にお気に入りスレッド一覧を再表示
-    displayFavoriteThreads();
-    alert("画像がお気に入りに追加されました！");
+    alert("お気に入りに追加されました！");
 }
+
 
 // スレッドをお気に入りに追加
 function addThreadToFavorites(threadTitle, threadUrl, threadThumb) {

@@ -36,23 +36,19 @@
         <p><strong>タイトル:</strong> <span id="thread-title">{{ thread_title }}</span></p>
     </div>
     {% endif %}
-    {% if images %}
-        <h2>取得した画像とソース</h2>
-        <div class="table-container">
-            {% for thumb_url, img_url in images %}
-                <div class="row">
-                    <div class="cell">
-                        <img src="{{ thumb_url }}" alt="Image">
-                    </div>
-                    <div class="cell">
-                        <span>{{ img_url }}</span>
-                        <button class="copy-btn" onclick="copyToClipboard('{{ img_url }}')">コピー</button>
-                        <button onclick="addToFavorites('{{ thumb_url }}', '{{ thread_url }}', '{{ thread_title }}')">お気に入り</button>
-                    </div>
-                </div>
-            {% endfor %}
+    {% for image in images %}
+    <div class="row">
+        <div class="cell">
+            <img src="{{ image.thumb_url }}" alt="Image">
         </div>
-    {% endif %}
+        <div class="cell">
+            <span>{{ image.img_url }}</span>
+            <button class="copy-btn" onclick="copyToClipboard('{{ image.img_url }}')">コピー</button>
+            <button onclick="addToFavorites('{{ image.thumb_url }}', '{{ image.img_url }}', '{{ image.res_number }}', '{{ image.res_link }}')">お気に入り</button>
+        </div>
+    </div>
+    {% endfor %}
+
 
     <!-- JavaScriptファイルを外部ファイルとして読み込む -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>

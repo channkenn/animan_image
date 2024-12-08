@@ -3,32 +3,40 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 
 def fetch_images_and_title(thread_url):
-    """URLから画像、ソースURL、スレッドタイトルを取得"""
+    """URLから画像、ソースURL、レス番号、レスリンク、スレッドタイトルを取得"""
     try:
         response = requests.get(thread_url)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, "lxml")
 
+        # スレッドタイトルを取得
         title = soup.title.string if soup.title else "タイトルなし"
 
-        images = []
-        for img in soup.find_all("img"):
-            src = img.get("src")
-            if src:
-                # 完全なURLを構築
-                thumb_url = urljoin(thread_url, src)  # 元のURL (/thumb_m/)
+        images_and_reslinks = []
+        for li in soup.find_all("li", class_="list-group-item"):
+            # 画像のサムネイルURLを取得
+            img_tag = li.find("img")
+            if not img_tag:
+                continue
 
-                # thumb_mをimgに変換
-                img_url = thumb_url
-                if "thumb_m" in thumb_url:
-                    img_url = thumb_url.replace("/thumb_m/", "/img/")
+            thumb_url = urljoin(thread_url, img_tag.get("src"))
+            img_url = thumb_url.replace("/thumb_m/", "/img/") if "thumb_m" in thumb_url else thumb_url
 
-                # /storage/ を削除
-                if "/storage/" in img_url:
-                    img_url = img_url.replace("/storage", "")
+            # レス番号を取得
+            res_number_tag = li.find("span", class_="resnumber")
+            res_number = res_number_tag.text.strip() if res_number_tag else None
 
-                # 元のURL (thumb_url) と変換後のURL (img_url) をリストに格納
-                images.append((thumb_url, img_url))
-        return title, images
+            # レスリンクを生成
+            res_link = f"{thread_url}#{li.get('id')}" if li.get('id') else None
+
+            images_and_reslinks.append({
+                "thumb_url": thumb_url,
+                "img_url": img_url,
+                "res_number": res_number,
+                "res_link": res_link
+            })
+
+        return title, images_and_reslinks
+
     except Exception as e:
         return f"エラーが発生しました: {e}", []
