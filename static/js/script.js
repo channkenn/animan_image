@@ -10,10 +10,17 @@ function addToFavorites(thumbUrl, imgUrl, resNumber, resLink) {
 // お気に入り画像の一覧を表示する
 function loadFavorites() {
     const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-    const container = document.getElementById("favorites-container");
+    const favoritesContainer = document.getElementById("favorites-container");
+    
+    // コンテナが存在しない場合は処理を中断
+    if (!favoritesContainer) {
+        console.warn("favorites-container 要素が見つかりません");
+        return;
+    }
+
     console.log(favorites);
-    console.log(container);
-    container.innerHTML = ""; // 既存のリストをクリア
+    console.log(favoritesContainer);
+    favoritesContainer.innerHTML = ""; // 既存のリストをクリア
 
     favorites.forEach(fav => {
         console.log(fav);
@@ -29,9 +36,10 @@ function loadFavorites() {
             </div>
         `;
 
-        container.appendChild(card);
+        favoritesContainer.appendChild(card);
     });
 }
+
 
 
 // お気に入り画像を削除する
@@ -54,17 +62,21 @@ function addThreadToFavorites(threadTitle, threadUrl, threadThumb) {
 function displayFavoriteThreads() {
     try {
         const favoriteThreads = JSON.parse(localStorage.getItem("favoriteThreads")) || [];
-        const container = document.getElementById("threads-container");
-        console.log(favoriteThreads);
-        console.log(container);
-        if (!container) {
-            throw new Error("threads-container 要素が見つかりません");
+        const threadsContainer = document.getElementById("threads-container");
+        
+        // コンテナが存在しない場合は処理を中断
+        if (!threadsContainer) {
+            console.warn("threads-container 要素が見つかりません");
+            return;
         }
 
+        console.log(favoriteThreads);
+        console.log(threadsContainer);
+
         if (favoriteThreads.length === 0) {
-            container.innerHTML = "<p>お気に入りスレッドがありません。</p>";
+            threadsContainer.innerHTML = "<p>お気に入りスレッドがありません。</p>";
         } else {
-            container.innerHTML = ""; // 既存の内容をクリア
+            threadsContainer.innerHTML = ""; // 既存の内容をクリア
             favoriteThreads.forEach(thread => {
                 const threadElement = document.createElement("div");
                 threadElement.classList.add("thread-item");
@@ -78,13 +90,14 @@ function displayFavoriteThreads() {
                     </div>
                     <button onclick="viewThread('${thread.url}')">表示</button>
                     <button onclick="removeThread('${thread.url}')">削除</button>`;
-                container.appendChild(threadElement);
+                threadsContainer.appendChild(threadElement);
             });
         }
     } catch (error) {
         console.error("エラーが発生しました:", error);
     }
 }
+
 
 
 // お気に入りスレッドを削除する
