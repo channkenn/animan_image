@@ -23,13 +23,13 @@
     <a href="/favorite-threads" class="panel-link">お気に入りスレッド</a>
 
     {% if thread_url %}
-    <div class="card">
+    <div class="panel-link">
         <h2>スレッド情報</h2>
         <p><strong>URL:</strong> <a href="{{ thread_url }}" target="_blank">{{ thread_url }}</a></p>
         <button type="button" id="add-thread-btn" 
                 data-thread-url="{{ thread_url }}" 
                 data-thread-title="{{ thread_title }}"
-                data-thread-thumb="{{ images[1]['thumb_url'] }}">
+                data-thread-thumb="{{ images[0]['thumb_url'] }}">
             お気に入りスレッドに追加
         </button>
         <p><strong>タイトル:</strong> <span id="thread-title">{{ thread_title }}</span></p>
