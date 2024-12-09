@@ -1,4 +1,13 @@
 /* 基本的なスタイル */
+/* ヘッダースタイル */
+header {
+    background-color: #104cd0; /* ヘッダーの背景色 */
+    color: white;             /* テキスト色を白に設定 */
+    padding: 10px;            /* 余白を追加 */
+    text-align: center;       /* テキストを中央揃え */
+    font-size: 1.5em;         /* フォントサイズを調整 */
+}
+
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
@@ -89,6 +98,24 @@ button.copy-btn {
     background-color: darkred;
 }
 
+/* 「お気に入りスレッドに追加」ボタンスタイル */
+button#add-thread-btn {
+    background-color: #007BFF;    /* ボタンの背景色を青色に */
+    color: white;                 /* テキスト色を白に */
+    border: 1px solid #0056b3;    /* 濃い青色の枠線 */
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 14px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 影を追加 */
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+button#add-thread-btn:hover {
+    background-color: #0056b3;    /* ホバー時に背景色を濃い青に */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* ホバー時の影を強調 */
+    cursor: pointer;
+}
+
 /* カード表示用スタイル */
 .card-container {
     display: flex;
@@ -98,7 +125,7 @@ button.copy-btn {
 }
 
 .card {
-    width: 140px;  /* 横幅を小さく設定 */
+    width: 140px;
     border: 1px solid #ccc;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);

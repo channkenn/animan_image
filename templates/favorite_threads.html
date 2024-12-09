@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-
-    <title>お気に入りスレッド一覧</title>
+    <link rel="icon" href="{{ url_for('static', filename='animanimg_favicon.png') }}" type="image/x-icon">
+    <title>スレッド一覧</title>
 </head>
 <body>
-    <h1>お気に入りスレッド一覧</h1>
+    <header><h1>お気に入りスレッド一覧</h1></header>
     <a href="/" class="panel-link">メインページ</a>
-    <a href="/favorites" class="panel-link">お気に入り画像</a>
+    <a href="/favorites" class="panel-link">画像一覧</a>
    
     <!-- スレッド一覧のコンテナ -->
     <div id="threads-container" class="card-container"></div>

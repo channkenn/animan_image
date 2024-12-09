@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>あにまん掲示板お気に入りスレッドとか画像とか</title>
+    <link rel="icon" href="{{ url_for('static', filename='animanimg_favicon.png') }}" type="image/x-icon">
+    <title>あにまんお気に入りと画像スレッド</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>あにまん掲示板お気に入りスレッドとか画像とか</h1>
+    <header><h1>あにまん&nbsp;お気に入り画像とスレッド</h1></header>
 
     {% if warning_message %}
         <p style="color: red; font-weight: bold;">{{ warning_message }}</p>
@@ -19,20 +20,19 @@
         <button type="submit">画像を取得</button>
     </form>
 
-    <a href="/favorites" class="panel-link">お気に入り画像</a>
-    <a href="/favorite-threads" class="panel-link">お気に入りスレッド</a>
+    <a href="/favorites" class="panel-link">画像一覧</a>
+    <a href="/favorite-threads" class="panel-link">スレッド一覧</a>
 
     {% if thread_url %}
     <div class="panel-link">
-        <h2>スレッド情報</h2>
-        <p><strong>URL:</strong> <a href="{{ thread_url }}" target="_blank">{{ thread_url }}</a></p>
+        <p><strong>URL:</strong> <a href="{{ thread_url }}" target="_blank">{{ thread_title }}</a></p>
         <button type="button" id="add-thread-btn" 
                 data-thread-url="{{ thread_url }}" 
                 data-thread-title="{{ thread_title }}"
-                data-thread-thumb="{{ images[0]['thumb_url'] }}">
-            お気に入りスレッドに追加
+                data-thread-thumb="{{ images[0]['thumb_url'] }}"
+                >
+            スレッド一覧に追加
         </button>
-        <p><strong>タイトル:</strong> <span id="thread-title">{{ thread_title }}</span></p>
     </div>
     {% endif %}
 

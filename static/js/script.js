@@ -29,7 +29,7 @@ function loadFavorites() {
 
         card.innerHTML = `
             <img src="${encodeURI(fav.thumbUrl)}" alt="お気に入り画像">
-            <a href="${encodeURI(fav.resLink)}" target="_blank" class="link">${fav.resLink}</a>
+            <a href="${encodeURI(fav.resLink)}" target="_blank" class="link">元レスを見る</a>
             <div class="button-container">
                 <button class="copy-btn" onclick="copyToClipboard('${encodeURI(fav.imgUrl)}')">コピー</button>
                 <button class="remove-btn" onclick="removeFavorite('${encodeURI(fav.imgUrl)}')">削除</button>
@@ -53,7 +53,7 @@ function removeFavorite(imgSrc) {
 // スレッドをお気に入りに追加する
 function addThreadToFavorites(threadTitle, threadUrl, threadThumb) {
     const favoriteThreads = JSON.parse(localStorage.getItem("favoriteThreads")) || [];
-    favoriteThreads.push({ title: threadTitle, url: threadUrl, thumb: threadThumb });
+    favoriteThreads.push({ title: threadTitle, url: threadUrl, thumb: threadThumb});
     localStorage.setItem("favoriteThreads", JSON.stringify(favoriteThreads));
     alert("スレッドがお気に入りに追加されました！");
 }
@@ -128,7 +128,6 @@ document.addEventListener("DOMContentLoaded", function () {
             const threadUrl = addThreadButton.getAttribute("data-thread-url");
             const threadTitle = addThreadButton.getAttribute("data-thread-title");
             const threadThumb = addThreadButton.getAttribute("data-thread-thumb");
-
             // 取得した情報を使用
             addThreadToFavorites(threadTitle, threadUrl, threadThumb);
         });

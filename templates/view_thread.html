@@ -4,28 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-
+    <link rel="icon" href="{{ url_for('static', filename='animanimg_favicon.png') }}" type="image/x-icon">
     <title>{{ thread_title }}</title>
 </head>
 <body>
-    <h1>{{ thread_title }}</h1>
+    <header><h1>{{ thread_title }}</h1></header>
     <a href="/" class="panel-link">メインページ</a>
-    <a href="/favorites" class="panel-link">お気に入り画像</a>
-    <a href="/favorite-threads" class="panel-link">お気に入りスレッド</a>
+    <a href="/favorites" class="panel-link">画像一覧</a>
+    <a href="/favorite-threads" class="panel-link">スレッド一覧</a>
 
     <p><a href="{{ thread_url }}" target="_blank">{{ thread_url }}</a></p>
     <div class="card-container">
         {% for image in images %}
-            <div class="card">
-                <img src="{{ image.thumb_url }}" alt="Image">
-                <div class="card-body">
-                    <a href="{{ image.img_url }}" class="link" target="_blank">画像を見る</a>
-                    <div class="button-container">
-                        <button class="copy-btn" onclick="copyToClipboard('{{ image.img_url }}')">コピー</button>
-                        <button class="remove-btn" onclick="addToFavorites('{{ image.thumb_url }}', '{{ image.img_url }}')">お気に入り</button>
-                    </div>
-                </div>
+        <div class="card">
+            <img src="{{ image.thumb_url }}" alt="Image">
+            <div class="button-container">
+                <button class="copy-btn" onclick="copyToClipboard('{{ image.img_url }}')">コピー</button>
+                <button onclick="addToFavorites('{{ image.thumb_url }}', '{{ image.img_url }}', '{{ image.res_number }}', '{{ image.res_link }}')">お気に入り</button>
             </div>
+            <p>{{ image.img_url }}</p>
+        </div>
         {% endfor %}
     </div>
     
