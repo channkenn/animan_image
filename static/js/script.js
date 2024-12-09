@@ -4,7 +4,7 @@ function addToFavorites(thumbUrl, imgUrl, resNumber, resLink) {
     console.log(thumbUrl, imgUrl, resNumber, resLink);
     favorites.push({ thumbUrl, imgUrl, resNumber, resLink });
     localStorage.setItem("favorites", JSON.stringify(favorites));
-    alert("お気に入りに追加されました！");
+    alert("画像一覧に追加されました");
 }
 
 // お気に入り画像の一覧を表示する
@@ -55,7 +55,7 @@ function addThreadToFavorites(threadTitle, threadUrl, threadThumb) {
     const favoriteThreads = JSON.parse(localStorage.getItem("favoriteThreads")) || [];
     favoriteThreads.push({ title: threadTitle, url: threadUrl, thumb: threadThumb});
     localStorage.setItem("favoriteThreads", JSON.stringify(favoriteThreads));
-    alert("スレッドがお気に入りに追加されました！");
+    alert("スレッド一覧に追加されました");
 }
 
 // お気に入りスレッドの一覧を表示する
@@ -70,7 +70,7 @@ function displayFavoriteThreads() {
         }
 
         if (favoriteThreads.length === 0) {
-            container.innerHTML = "<p>お気に入りスレッドがありません。</p>";
+            container.innerHTML = "<p>お気に入りスレッドがありません</p>";
         } else {
             container.innerHTML = ""; // 既存の内容をクリア
             favoriteThreads.forEach(thread => {
@@ -83,7 +83,7 @@ function displayFavoriteThreads() {
                         <a href="${thread.url}" target="_blank">${thread.url}</a>
                     </div>
                     <div class="button-container">
-                        <button onclick="viewThread('${thread.url}')">表示</button>
+                        <button onclick="viewThread('${thread.url}')">スレッド画像一覧</button>
                         <button class="remove-btn" onclick="removeThread('${thread.url}')">削除</button>
                     </div>
                 `;
