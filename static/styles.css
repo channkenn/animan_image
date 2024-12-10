@@ -233,24 +233,61 @@ button#add-thread-btn:hover {
         flex-direction: column;
     }
 
-    .card, .thread-item {
-        width: 33.33%; /* 幅を3分の1に設定して3列表示 */
-        margin-bottom: 20px;
-    }
+/* カード表示用スタイル */
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: flex-start;
+}
 
-    .card-container {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between; /* カード間のスペースを均等に */
-    }
+.card {
+    width: 100px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    background-color: #fff;
+    text-align: center;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
-/* 幅が400px以下の場合にも3列表示を維持 */
-@media (max-width: 400px) {
-    .card, .thread-item {
-        width: 33.33%; /* 400px以下でも3列表示 */
-        margin-bottom: 20px;
-    }
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
+
+.card img {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.card .link {
+    display: block;
+    margin: 10px 0;
+    font-size: 14px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.card .link:hover {
+    color: #0056b3;
+}
+
+.card .button-container {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: auto; /* ボタンをカードの一番下に配置 */
+}
+}
+
 /* 画像のスタイル */
 img {
     max-width: 200px;
