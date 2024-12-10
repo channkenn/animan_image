@@ -228,14 +228,14 @@ button#add-thread-btn:hover {
 }
 
 /* モバイル対応 */
-@media (max-width: 600px) {
+@media (max-width: 500px) {
     .row {
         flex-direction: column;
     }
 
     .card, .thread-item {
-        width: 33.33%; /* 幅を3分の1に設定して3列表示に */
-        margin-bottom: 20px; /* カード間のスペースを追加 */
+        width: 33.33%; /* 幅を3分の1に設定して3列表示 */
+        margin-bottom: 20px;
     }
 
     .card-container {
