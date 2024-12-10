@@ -244,3 +244,22 @@ button#add-thread-btn:hover {
         justify-content: space-between; /* カード間のスペースを均等に */
     }
 }
+/* 幅が400px以下の場合にも3列表示を維持 */
+@media (max-width: 400px) {
+    .card, .thread-item {
+        width: 33.33%; /* 400px以下でも3列表示 */
+        margin-bottom: 20px;
+    }
+}
+/* 画像のスタイル */
+img {
+    max-width: 200px;
+    height: auto;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* すべての要素にbox-sizingを適用して幅が100%を超えないように */
+* {
+    box-sizing: border-box;
+}
