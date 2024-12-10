@@ -28,7 +28,7 @@ function loadFavorites() {
         card.classList.add("card");
 
         card.innerHTML = `
-            <img src="${encodeURI(fav.thumbUrl)}" alt="お気に入り画像">
+            <img src="${encodeURI(fav.thumbUrl)}?nocache=${new Date().getTime()}" alt="お気に入り画像">
             <a href="${encodeURI(fav.resLink)}" target="_blank" class="link">>>${encodeURI(fav.resNumber)}</a>
             <div class="button-container">
                 <button class="copy-btn" onclick="copyToClipboard('${encodeURI(fav.imgUrl)}')">コピー</button>
@@ -77,7 +77,7 @@ function displayFavoriteThreads() {
                 const card = document.createElement("div");
                 card.classList.add("card");
                 card.innerHTML = `
-                    <img src="${thread.thumb}" alt="${thread.title}" class="thread-thumb">
+                    <img src="${encodeURI(thread.thumb)}?nocache=${new Date().getTime()}" alt="${thread.title}" class="thread-thumb">
                     <div class="card-body">
                         <a href="${thread.url}" target="_blank">${thread.title}</a>
                     </div>

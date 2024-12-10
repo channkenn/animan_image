@@ -18,7 +18,7 @@
     <div class="card-container">
         {% for image in images %}
         <div class="card">
-            <img src="{{ image.thumb_url }}" alt="Image">
+            <img src="{{ image.thumb_url }}?nocache={{ current_timestamp }}" alt="Image">
             <a href="{{ image.res_link }}" target="_blank" class="link">>>{{ image.res_number }}</a>
             <div class="button-container">
                 <button class="copy-btn" onclick="copyToClipboard('{{ image.img_url }}')">コピー</button>
