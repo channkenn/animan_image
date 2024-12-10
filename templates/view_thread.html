@@ -19,6 +19,7 @@
         {% for image in images %}
         <div class="card">
             <img src="{{ image.thumb_url }}" alt="Image">
+            <a href="{{ image.res_link }}" target="_blank" class="link">>>{{ image.res_number }}</a>
             <div class="button-container">
                 <button class="copy-btn" onclick="copyToClipboard('{{ image.img_url }}')">コピー</button>
                 <button onclick="addToFavorites('{{ image.thumb_url }}', '{{ image.img_url }}', '{{ image.res_number }}', '{{ image.res_link }}')">お気に入り</button>
