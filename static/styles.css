@@ -133,6 +133,9 @@ button#add-thread-btn:hover {
     background-color: #fff;
     text-align: center;
     padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
@@ -164,7 +167,7 @@ button#add-thread-btn:hover {
     display: flex;
     justify-content: center;
     gap: 10px;
-    margin-top: 10px;
+    margin-top: auto; /* ボタンをカードの一番下に配置 */
 }
 
 /* スレッド用カードのスタイル */

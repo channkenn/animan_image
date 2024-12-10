@@ -16,16 +16,19 @@
 
     <form method="POST" style="margin-bottom: 20px;">
         <label for="url">スレッドのURLを入力してください:</label>
-        <input type="text" id="url" name="url" style="width: 400px;" required>
+        <input type="text" id="url" name="url" style="width: 400px;" 
+               required pattern="https:\/\/bbs\.animanch\.com\/.*"
+               title="https://bbs.animanch.com/ から始まるURLを入力してください">
         <button type="submit">画像を取得</button>
     </form>
+    
 
     <a href="/favorites" class="panel-link">画像一覧</a>
     <a href="/favorite-threads" class="panel-link">スレッド一覧</a>
 
     {% if thread_url %}
     <div class="panel-link">
-        <p><strong>URL:</strong> <a href="{{ thread_url }}" target="_blank">{{ thread_title }}</a></p>
+        <p></strong><a href="{{ thread_url }}" target="_blank">{{ thread_title }}</a></p>
         <button type="button" id="add-thread-btn" 
                 data-thread-url="{{ thread_url }}" 
                 data-thread-title="{{ thread_title }}"
@@ -40,11 +43,11 @@
         {% for image in images %}
         <div class="card">
             <img src="{{ image.thumb_url }}" alt="Image">
+            <p><a href="{{ image.res_link }}" target="_blank" class="link">>>{{image.res_number}}</a></p>
             <div class="button-container">
                 <button class="copy-btn" onclick="copyToClipboard('{{ image.img_url }}')">コピー</button>
                 <button onclick="addToFavorites('{{ image.thumb_url }}', '{{ image.img_url }}', '{{ image.res_number }}', '{{ image.res_link }}')">お気に入り</button>
             </div>
-            <p>{{ image.img_url }}</p>
         </div>
         {% endfor %}
     </div>

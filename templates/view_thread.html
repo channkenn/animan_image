@@ -8,12 +8,13 @@
     <title>{{ thread_title }}</title>
 </head>
 <body>
-    <header><h1>{{ thread_title }}</h1></header>
+    <header onclick="window.location.href='{{ thread_url }}'" style="cursor: pointer;">
+        <h1>{{ thread_title }}</h1>
+    </header>
     <a href="/" class="panel-link">メインページ</a>
     <a href="/favorites" class="panel-link">画像一覧</a>
     <a href="/favorite-threads" class="panel-link">スレッド一覧</a>
 
-    <p><a href="{{ thread_url }}" target="_blank">{{ thread_url }}</a></p>
     <div class="card-container">
         {% for image in images %}
         <div class="card">
@@ -22,7 +23,6 @@
                 <button class="copy-btn" onclick="copyToClipboard('{{ image.img_url }}')">コピー</button>
                 <button onclick="addToFavorites('{{ image.thumb_url }}', '{{ image.img_url }}', '{{ image.res_number }}', '{{ image.res_link }}')">お気に入り</button>
             </div>
-            <p>{{ image.img_url }}</p>
         </div>
         {% endfor %}
     </div>

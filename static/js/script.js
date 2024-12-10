@@ -29,7 +29,7 @@ function loadFavorites() {
 
         card.innerHTML = `
             <img src="${encodeURI(fav.thumbUrl)}" alt="お気に入り画像">
-            <a href="${encodeURI(fav.resLink)}" target="_blank" class="link">元レスを見る</a>
+            <a href="${encodeURI(fav.resLink)}" target="_blank" class="link">>>${encodeURI(fav.resNumber)}</a>
             <div class="button-container">
                 <button class="copy-btn" onclick="copyToClipboard('${encodeURI(fav.imgUrl)}')">コピー</button>
                 <button class="remove-btn" onclick="removeFavorite('${encodeURI(fav.imgUrl)}')">削除</button>
@@ -79,8 +79,7 @@ function displayFavoriteThreads() {
                 card.innerHTML = `
                     <img src="${thread.thumb}" alt="${thread.title}" class="thread-thumb">
                     <div class="card-body">
-                        <h3>${thread.title}</h3>
-                        <a href="${thread.url}" target="_blank">${thread.url}</a>
+                        <a href="${thread.url}" target="_blank">${thread.title}</a>
                     </div>
                     <div class="button-container">
                         <button onclick="viewThread('${thread.url}')">スレッド画像一覧</button>
