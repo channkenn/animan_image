@@ -43,15 +43,32 @@
     <div class="card-container">
         {% for image in images %}
         <div class="card">
+            <!-- 2024年12月11日 thumbのcacheは保存することにした-->
+            <!-- <img src="{{ image.thumb_url }}?nocache={{ current_timestamp }}" alt="Image"> -->
             <img src="{{ image.thumb_url }}?nocache={{ current_timestamp }}" alt="Image">
-            <p><a href="{{ image.res_link }}" target="_blank" class="link">>>{{image.res_number}}</a></p>
-            <div class="button-container">
-                <button class="copy-btn" onclick="copyToClipboard('{{ image.img_url }}')">コピー</button>
-                <button onclick="addToFavorites('{{ image.thumb_url }}', '{{ image.img_url }}', '{{ image.res_number }}', '{{ image.res_link }}')">お気に入り</button>
+            <!-- 上部の画像をそのまま配置 -->
+            
+            <!-- 下部に配置されるように設定 -->
+            <div class="card-body">
+                <div class="res-number-container">
+                    <a href="{{ image.res_link }}" target="_blank" class="link-res-number" title="スレッドリンク">
+                        >>{{ image.res_number }}
+                    </a>
+                </div>
+                <div class="button-container">
+                    <button class="copy-btn" onclick="copyToClipboard('{{ image.img_url }}')" title="コピー">
+                        <img src="{{ url_for('static', filename='icons/copy-icon.png') }}" alt="コピーアイコン" style="width: 24px; height: 24px;">
+                    </button>
+                    <button onclick="addToFavorites('{{ image.thumb_url }}', '{{ image.img_url }}', '{{ image.res_number }}', '{{ image.res_link }}')" title="お気に入り登録">
+                        <img src="{{ url_for('static', filename='icons/favorite-icon.png') }}" alt="お気に入りアイコン" style="width: 24px; height: 24px;">
+                    </button>
+                </div>
             </div>
         </div>
         {% endfor %}
     </div>
+    
+    
 
     <!-- JavaScriptファイルを外部ファイルとして読み込む -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>

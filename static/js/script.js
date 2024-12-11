@@ -26,18 +26,35 @@ function loadFavorites() {
         console.log(fav);
         const card = document.createElement("div");
         card.classList.add("card");
-
+    
         card.innerHTML = `
-            <img src="${encodeURI(fav.thumbUrl)}?nocache=${new Date().getTime()}" alt="お気に入り画像">
-            <a href="${encodeURI(fav.resLink)}" target="_blank" class="link">>>${encodeURI(fav.resNumber)}</a>
-            <div class="button-container">
-                <button class="copy-btn" onclick="copyToClipboard('${encodeURI(fav.imgUrl)}')">コピー</button>
-                <button class="remove-btn" onclick="removeFavorite('${encodeURI(fav.imgUrl)}')">削除</button>
+        <!-- 2024年12月11日 thumbはcacheに残すようにした -->
+        <!-- <img src="${encodeURI(fav.thumbUrl)}?nocache=${new Date().getTime()}" alt="お気に入り画像"> -->
+            <img src="${encodeURI(fav.thumbUrl)}" alt="お気に入り画像">
+            <div class="card-body">
+                <div class="res-number-container">
+                    <a href="${encodeURI(fav.resLink)}" target="_blank" class="link-res-number" title="スレッドリンク">
+                        >>${encodeURI(fav.resNumber)}
+                    </a>
+                </div>
+                <div class="button-container">
+                    <!-- コピーボタン（アイコン形式） -->
+                    <button class="copy-btn" onclick="copyToClipboard('${encodeURI(fav.imgUrl)}')" title="コピー">
+                        <img src="static/icons/copy-icon.png" alt="コピーアイコン" style="width: 24px; height: 24px;">
+                    </button>
+                    
+                    <!-- 削除ボタン（アイコン形式） -->
+                    <button class="remove-btn" onclick="removeFavorite('${encodeURI(fav.imgUrl)}')" title="削除">
+                        <img src="static/icons/delete-icon.png" alt="削除アイコン" style="width: 24px; height: 24px;">
+                    </button>
+                </div>
             </div>
-        `;
 
+        `;
+    
         favoritesContainer.appendChild(card);
     });
+    
 }
 
 
@@ -77,15 +94,23 @@ function displayFavoriteThreads() {
                 const card = document.createElement("div");
                 card.classList.add("card");
                 card.innerHTML = `
+                    <!-- 2024年12月11日 thumbはcacheに残すようにした -->
+                    <!-- <img src="${encodeURI(thread.thumb)}?nocache=${new Date().getTime()}" alt="${thread.title}" class="thread-thumb"> -->
                     <img src="${encodeURI(thread.thumb)}?nocache=${new Date().getTime()}" alt="${thread.title}" class="thread-thumb">
                     <div class="card-body">
                         <a href="${thread.url}" target="_blank">${thread.title}</a>
+                        <div class="button-container">
+                            <!-- スレッド画像一覧ボタン（アイコン形式） -->
+                            <button onclick="viewThread('${thread.url}')" title="スレッド画像一覧">
+                                <img src="static/icons/image-icon.png" alt="スレッド画像一覧アイコン" style="width: 24px; height: 24px;">
+                            </button>
+                            
+                            <!-- 削除ボタン（アイコン形式） -->
+                            <button class="remove-btn" onclick="removeThread('${thread.url}')" title="削除">
+                                <img src="static/icons/delete-icon.png" alt="削除アイコン" style="width: 24px; height: 24px;">
+                            </button>                        </div>
                     </div>
-                    <div class="button-container">
-                        <button onclick="viewThread('${thread.url}')">スレッド画像一覧</button>
-                        <button class="remove-btn" onclick="removeThread('${thread.url}')">削除</button>
-                    </div>
-                `;
+                        `;
                 container.appendChild(card);
             });
         }
