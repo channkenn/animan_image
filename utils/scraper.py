@@ -14,30 +14,32 @@ def fetch_images_and_title(thread_url):
 
         images_and_reslinks = []
         for li in soup.find_all("li", class_="list-group-item"):
-            # 画像のサムネイルURLを取得
-            img_tag = li.find("img")
-            if not img_tag:
+            # すべての画像のサムネイルURLを取得
+            img_tags = li.find_all("img")
+            if not img_tags:
                 continue
 
-            thumb_url = urljoin(thread_url, img_tag.get("src"))
-            img_url = thumb_url.replace("/thumb_m/", "/img/") if "thumb_m" in thumb_url else thumb_url
-            img_url = img_url.replace("/storage", "")
+            for img_tag in img_tags:
+                thumb_url = urljoin(thread_url, img_tag.get("src"))
+                img_url = thumb_url.replace("/thumb_m/", "/img/") if "thumb_m" in thumb_url else thumb_url
+                img_url = img_url.replace("/storage", "")
 
-            # レス番号を取得
-            res_number_tag = li.find("span", class_="resnumber")
-            res_number = res_number_tag.text.strip() if res_number_tag else None
+                # レス番号を取得
+                res_number_tag = li.find("span", class_="resnumber")
+                res_number = res_number_tag.text.strip() if res_number_tag else None
 
-            # レスリンクを生成
-            res_link = f"{thread_url}#{li.get('id')}" if li.get('id') else None
+                # レスリンクを生成
+                res_link = f"{thread_url}#{li.get('id')}" if li.get('id') else None
 
-            images_and_reslinks.append({
-                "thumb_url": thumb_url,
-                "img_url": img_url,
-                "res_number": res_number,
-                "res_link": res_link
-            })
+                images_and_reslinks.append({
+                    "thumb_url": thumb_url,
+                    "img_url": img_url,
+                    "res_number": res_number,
+                    "res_link": res_link
+                })
 
         return title, images_and_reslinks
 
     except Exception as e:
         return f"エラーが発生しました: {e}", []
+
