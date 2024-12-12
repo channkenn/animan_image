@@ -6,22 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
     <link rel="icon" href="{{ url_for('static', filename='animanimg_favicon.png') }}" type="image/x-icon">
-    <title>あにまんお気に入りと画像スレッド</title>
+    <title>あにまん掲示板お気に入りと画像スレッド</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <header><h1>あにまん&nbsp;お気に入り画像とスレッド</h1></header>
+    <header><h1>あにまん掲示板&nbsp;お気に入り画像とスレッド</h1></header>
 
     {% if warning_message %}
         <p style="color: red; font-weight: bold;">{{ warning_message }}</p>
     {% endif %}
 
     <form method="POST" style="margin-top: 20px; margin-bottom: 20px; width: 100%; margin: 0 auto;">
-        <label for="url" style="display: none;">スレッドのURLを入力してください:</label>
+        <label for="url" style="display: none;">あにまん掲示板スレッドのURLを入力してください:</label>
         <input type="text" id="url" name="url" style="width: 100%; height: 60px; text-align: center;"
                required pattern="https:\/\/bbs\.animanch\.com\/.*"
                title="https://bbs.animanch.com/ から始まるURLを入力してください"
-               placeholder="スレッドのURLを入力してください" />
+               placeholder="あにまん掲示板スレッドのURLを入力してください" />
         <button type="submit" style="width: 100%; height: 60px;">画像を取得</button>
     </form>
     
@@ -52,7 +52,12 @@
         <div class="card">
             <!-- 2024年12月11日 thumbのcacheは保存することにした-->
             <!-- <img src="{{ image.thumb_url }}?nocache={{ current_timestamp }}" alt="Image"> -->
-            <img src="{{ image.thumb_url }}?nocache={{ current_timestamp }}" alt="Image">
+            <!-- 2024年12月12日 img srcクリックでダウンロードできるjavascriptにて実行-->
+            <img src="{{ image.thumb_url }}" 
+                alt="Image" 
+                onclick="viewImage('{{ image.img_url }}')">
+
+
             <!-- 上部の画像をそのまま配置 -->
             
             <!-- 下部に配置されるように設定 -->

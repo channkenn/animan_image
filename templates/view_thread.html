@@ -21,7 +21,7 @@
         <div class="card">
             <!-- 2024年12月11日 thumbのcacheは保存することにした-->
             <!-- <img src="{{ image.thumb_url }}?nocache={{ current_timestamp }}" alt="Image"> -->
-            <img src="{{ image.thumb_url }}" alt="Image">
+            <img src="{{ image.thumb_url }}" alt="Image" onclick="viewImage('{{ image.img_url }}')">
             <!-- 上部の画像をそのまま配置 -->
             
             <!-- 下部に配置されるように設定 -->

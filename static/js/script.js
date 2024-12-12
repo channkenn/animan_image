@@ -30,7 +30,7 @@ function loadFavorites() {
         card.innerHTML = `
         <!-- 2024年12月11日 thumbはcacheに残すようにした -->
         <!-- <img src="${encodeURI(fav.thumbUrl)}?nocache=${new Date().getTime()}" alt="お気に入り画像"> -->
-            <img src="${encodeURI(fav.thumbUrl)}" alt="お気に入り画像">
+            <img src="${encodeURI(fav.thumbUrl)}" alt="お気に入り画像"  onclick="viewImage('${encodeURI(fav.imgUrl)}')">
             <div class="card-body">
                 <div class="res-number-container">
                     <a href="${encodeURI(fav.resLink)}" target="_blank" class="link-res-number" title="スレッドリンク">
@@ -96,7 +96,7 @@ function displayFavoriteThreads() {
                 card.innerHTML = `
                     <!-- 2024年12月11日 thumbはcacheに残すようにした -->
                     <!-- <img src="${encodeURI(thread.thumb)}?nocache=${new Date().getTime()}" alt="${thread.title}" class="thread-thumb"> -->
-                    <img src="${encodeURI(thread.thumb)}?nocache=${new Date().getTime()}" alt="${thread.title}" class="thread-thumb">
+                    <img src="${encodeURI(thread.thumb)}" alt="${thread.title}" class="thread-thumb">
                     <div class="card-body">
                         <a href="${thread.url}" target="_blank">${thread.title}</a>
                         <div class="button-container">
@@ -142,6 +142,22 @@ function copyToClipboard(text) {
         alert("コピーに失敗しました: " + err);
     });
 }
+// 20241212 <img> タグをクリックしたときに image.img_url をブラウザで表示する
+function viewImage(imageUrl) {
+    console.log("Image URL: " + imageUrl); // ここでURLを確認
+    // `a`要素を動的に作成
+    const link = document.createElement('a');
+    link.href = imageUrl;
+    link.target = '_blank'; // 新しいタブで開く
+
+    // `a`要素をDOMに追加し、クリックイベントをトリガーする
+    document.body.appendChild(link);
+    link.click();
+
+    // 使用後に`a`要素を削除
+    document.body.removeChild(link);
+}
+
 
 // DOM読み込み後に各関数を実行
 document.addEventListener("DOMContentLoaded", function () {

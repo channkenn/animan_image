@@ -11,7 +11,6 @@ def index():
     thread_title = None
     images = []
     warning_message = None  # 警告メッセージを格納する変数
-    current_timestamp = int(time.time())  # 現在の Unix タイムスタンプを取得
 
     if request.method == "POST":
         # ユーザー入力URL
@@ -30,8 +29,7 @@ def index():
         thread_url=thread_url,
         thread_title=thread_title,
         images=images,
-        warning_message=warning_message,
-        current_timestamp=current_timestamp  # タイムスタンプを渡す
+        warning_message=warning_message
     )
 @app.route("/favorites", methods=["GET"])
 def favorites():
@@ -45,13 +43,11 @@ def view_thread():
     # スレッドの情報を取得
     thread_title, images = fetch_images_and_title(thread_url)
     # 現在のタイムスタンプを取得
-    current_timestamp = int(time.time())
     return render_template(
         "view_thread.html",
         thread_url=thread_url,
         thread_title=thread_title,
-        images=images,
-        current_timestamp=current_timestamp  # タイムスタンプを渡す
+        images=images
     )
 @app.route("/favorite-threads", methods=["GET"])
 def favorite_threads():
