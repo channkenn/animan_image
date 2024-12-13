@@ -1,11 +1,21 @@
 // お気に入り画像を追加する
 function addToFavorites(thumbUrl, imgUrl, resNumber, resLink) {
     const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-    console.log(thumbUrl, imgUrl, resNumber, resLink);
+    
+    // 同じ imgUrl がすでに favorites にあるかチェック 20241213 重複不可対応
+    const isDuplicate = favorites.some(fav => fav.imgUrl === imgUrl);
+    
+    if (isDuplicate) {
+        alert("この画像はすでにお気に入りに追加されています");
+        return;  // 重複しているので何もせずに終了
+    }
+
+    // 重複していない場合は画像を追加
     favorites.push({ thumbUrl, imgUrl, resNumber, resLink });
     localStorage.setItem("favorites", JSON.stringify(favorites));
     alert("画像一覧に追加されました");
 }
+
 
 // お気に入り画像の一覧を表示する
 function loadFavorites() {
@@ -76,10 +86,21 @@ function removeFavorite(imgSrc) {
 // スレッドをお気に入りに追加する
 function addThreadToFavorites(threadTitle, threadUrl, threadThumb) {
     const favoriteThreads = JSON.parse(localStorage.getItem("favoriteThreads")) || [];
-    favoriteThreads.push({ title: threadTitle, url: threadUrl, thumb: threadThumb});
+
+    // 同じ threadUrl がすでに favoriteThreads にあるかチェック 20241213 重複不可対応
+    const isDuplicate = favoriteThreads.some(thread => thread.url === threadUrl);
+    
+    if (isDuplicate) {
+        alert("このスレッドはすでにお気に入りに追加されています");
+        return;  // 重複しているので何もせずに終了
+    }
+
+    // 重複していない場合はスレッドを追加
+    favoriteThreads.push({ title: threadTitle, url: threadUrl, thumb: threadThumb });
     localStorage.setItem("favoriteThreads", JSON.stringify(favoriteThreads));
     alert("スレッド一覧に追加されました");
 }
+
 
 // お気に入りスレッドの一覧を表示する
 function displayFavoriteThreads() {

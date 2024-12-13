@@ -38,8 +38,13 @@
         <button type="button" id="add-thread-btn" 
         data-thread-url="{{ thread_url }}" 
         data-thread-title="{{ thread_title }}"
+        {% if images and images|length > 0 %}
         data-thread-thumb="{{ images[0]['thumb_url'] }}"
-        >
+        {% else %}
+            <!-- 画像がない場合の処理 -->
+            <p>No images available</p>
+        {% endif %}
+            >
         スレッド一覧に追加
         </button>
     </div>

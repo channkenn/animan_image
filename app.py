@@ -17,9 +17,9 @@ def index():
         thread_url = request.form.get("url")
         if thread_url:
             # URLがあにまん掲示板か確認
-            if "https://bbs.animanch.com/" not in thread_url:
-                warning_message = "あにまん掲示板でおねがいします"
-                thread_url = "https://bbs.animanch.com/"
+            if "https://bbs.animanch.com/board/" not in thread_url:
+                warning_message = "あにまん掲示板のスレッドURLでおねがいします"
+                thread_url = "https://bbs.animanch.com/board/4242079/"
             else:
                 # スレッドタイトルと画像を取得
                 thread_title, images = fetch_images_and_title(thread_url)

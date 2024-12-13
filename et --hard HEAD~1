@@ -1,0 +1,301 @@
+[33mcommit 83d796b5373963ba0604288d19fd44ee036438cc[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Fri Dec 13 02:53:29 2024 +0000
+
+    画像の種類で表示を絞り込む imgと外部リンク
+
+[33mcommit ec72df58ab7b863639f08dcaaebd97cbfe3ee1c5[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Thu Dec 12 08:47:22 2024 +0000
+
+    画像クリックで元画像を開く
+
+[33mcommit 03d5195eb9209ecbfb024f4884609ff267471508[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Thu Dec 12 07:43:56 2024 +0000
+
+    レス内に複数画像があった場合に対応
+
+[33mcommit 4ea956705ffcbab3eb042bd021593123d118fb00[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Thu Dec 12 09:54:54 2024 +0900
+
+    Update index.html
+    
+    Koyebへ移植する
+
+[33mcommit 040a53d784247cc04d811e21afab8732d794960f[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Wed Dec 11 08:31:38 2024 +0000
+
+    フォームのスタイル変更
+
+[33mcommit 3777b03dfd7fe254fd7e0da73a117a7fa7cb2e96[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Wed Dec 11 08:12:35 2024 +0000
+
+    フォームのスタイル変更
+
+[33mcommit 5036e9da9794b3363dfe02409c33a9660851568d[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Wed Dec 11 07:59:03 2024 +0000
+
+    ボタンをアイコン化 レス番やボタンをdivの下方に配置
+
+[33mcommit a7ed4ef63b6c062a8284b2cf3f82198c7fc1a2a5[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Tue Dec 10 14:48:02 2024 +0000
+
+    リファラーを回避する htmlのmetaに設定
+
+[33mcommit 01f8c84b7b2edc8553d045d8add2a2e01345be7d[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Tue Dec 10 06:05:37 2024 +0000
+
+    thumbを使うときにcacheに残さないようにする
+
+[33mcommit c3469efc338c44b19aae87f9a5fda5c33eb7d5c1[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Tue Dec 10 05:06:06 2024 +0000
+
+    スレ画一覧にもレスジャンプをつけた
+
+[33mcommit beea1aa61913f791698539f836c8ffcda8aaff89[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Tue Dec 10 04:37:31 2024 +0000
+
+    660px未満はカード3列 その後はカードの幅が減っていく
+
+[33mcommit b837ef9002e1992b3e1ea240547be8b247aef3f3[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Tue Dec 10 04:29:51 2024 +0000
+
+    スマホでも3列表示 320pxでも3列
+
+[33mcommit 47ed51f6b0b3bb9bba95cbb4fbbc349a04f0ce0c[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Tue Dec 10 04:25:51 2024 +0000
+
+    スマホでも3列表示 500px以下はスマホあつかい
+
+[33mcommit fee1d302e2f251dcd494e864e7df71e9e471ad88[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Tue Dec 10 04:02:53 2024 +0000
+
+    スマホでも3列表示 501pxまで
+
+[33mcommit 9b3492f43392f0143528124f912c6502bdda3900[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Tue Dec 10 03:19:41 2024 +0000
+
+    スマホでも3列表示 564pxまで
+
+[33mcommit 7ae558b90475c1d405dadbdf4e0339cc55cebe7b[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Tue Dec 10 03:13:58 2024 +0000
+
+    スマホでも3列表示
+
+[33mcommit dc60fc3227758dddcfca536868045e2ec5941cd4[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Tue Dec 10 03:03:18 2024 +0000
+
+    imgURLから/storageを削除する機能が消えていたので復活
+
+[33mcommit 606b283a426c46d775e7d2664312138dd00e8ef9[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Tue Dec 10 01:43:30 2024 +0000
+
+    ボタンの位置調整
+
+[33mcommit 4a0830609ad211c57237cc15919318e3b996fe28[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Mon Dec 9 06:21:01 2024 +0000
+
+    文言を統一
+
+[33mcommit 95ebcaa437bead60736d67a601bab4bb2c6109d0[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Mon Dec 9 06:13:50 2024 +0000
+
+    favicon設置、headerの背景色をあにまんに合わせる
+
+[33mcommit 0c92ee1db227bed3b990e2a414fb50bd65d0a7c2[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Sun Dec 8 20:07:34 2024 +0000
+
+    メインページのスレッド情報だけ幅広にした
+
+[33mcommit 3c67bf9952435a38b1f0936199f6fdda3e2bcb2f[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Sun Dec 8 19:55:34 2024 +0000
+
+    お気に入りスレッド一覧も7列最大になった
+
+[33mcommit b55472dcbbd411a49ed3ec7c2e468fd8cd3d57d9[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Sun Dec 8 19:43:04 2024 +0000
+
+    スレッドの表示ができるようになった カード形式になった
+
+[33mcommit a6d07b263fd060879894e59ff5d9c780983805d0[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Sun Dec 8 10:52:42 2024 +0000
+
+    お気に入りスレッド一覧もカード形式
+
+[33mcommit 3fcc3628ae647fd86d5b4af57bdbed81ea16ba30[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Sun Dec 8 10:43:21 2024 +0000
+
+    お気に入り画像、すれっどいちらんどちらも表示された
+
+[33mcommit 630a2b3d5aff2b5ea8b6cc987d911c6702b01a7a[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Sun Dec 8 09:34:48 2024 +0000
+
+    お気に入りスレッド一覧のlocal storageにthumburlを渡せた
+
+[33mcommit cae3959d337f5c4da79a2b6082aef364bdf1e5ba[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Sun Dec 8 07:02:33 2024 +0000
+
+    favorite.htmlをカード形式で最大7列で表示する
+
+[33mcommit 3cfb70db70bb5dc65a7ce26a2b5c1ada89ab1cf7[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Sun Dec 8 06:33:55 2024 +0000
+
+    favorite.htmlをカード形式で表示するようにした
+
+[33mcommit 7849eccca81d3d4667fd684737669b9f676b5060[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Sun Dec 8 06:27:38 2024 +0000
+
+    localstoraのfavoritesの項目が正しく読み込まれるようになった
+
+[33mcommit 128df65d1a18a17b59251d1ebf17cffc65a8de9e[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Sun Dec 8 04:38:37 2024 +0000
+
+    img保存の際、title, url, resnumber, linkurlを保存できるようにした
+
+[33mcommit 24740501b0e3da90d85131e1fac4c2a3eab1b309[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Sat Dec 7 15:06:27 2024 +0000
+
+    お気に入りスレッドにサムネイル画像追加
+
+[33mcommit 5ce31d57beaa558f024ff82d6df473d6840b4298[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Sat Dec 7 14:34:39 2024 +0000
+
+    a hrefをパネル形式に変更
+
+[33mcommit f744725e178b1e452506a4ecd9895738a8e7381b[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Sat Dec 7 14:26:19 2024 +0000
+
+    favorite.htmlを外に出す
+
+[33mcommit e844d3000a2e1ba131aa5083ad49710b0baedca9[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Fri Dec 6 11:20:13 2024 +0000
+
+    タイトル変更あにまん掲示板お気に入りスレッドとか画像とか
+
+[33mcommit 966e5b543d0743eb842e373d3ae9ed84a02fcb3f[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Fri Dec 6 11:08:29 2024 +0000
+
+    お気に入りスレッドを取得、一覧表示、個別の画像＋URL表示機能ついか
+
+[33mcommit 7f8a272d255a25726e879d21b48b3f77f6e02668[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Fri Dec 6 00:25:18 2024 +0000
+
+    Codespacesでの変更内容
+
+[33mcommit e862e23b55e3d8496d1e910233c882108e8d6d1f[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Fri Dec 6 00:18:46 2024 +0000
+
+    Codespacesでの変更内容
+
+[33mcommit d23c0baa59b6657d786bad205672a1516b1799ef[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Fri Dec 6 00:12:22 2024 +0000
+
+    Codespacesでの変更内容
+
+[33mcommit 69a6f66217f1cf62ef19dab46b58365a2e1cdc10[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Thu Dec 5 20:34:56 2024 +0000
+
+    Codespacesでの変更内容
+
+[33mcommit a3b1e5fd2bbc07c3e7251991fd02c73e9fcb2dda[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Fri Dec 6 04:04:02 2024 +0900
+
+    Update app.py
+
+[33mcommit 24e873fc638f8aab26cc2e0e97c4bc0bd5e6c18b[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Fri Dec 6 04:01:19 2024 +0900
+
+    Update script.js
+
+[33mcommit 7ae331dda669bbe4d13a6eb377551d93b567dd73[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Fri Dec 6 03:59:58 2024 +0900
+
+    Update index.html
+
+[33mcommit a27c3f94cf578eddaac0e512e9bf6329f022882e[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Fri Dec 6 03:58:32 2024 +0900
+
+    Create script.js
+
+[33mcommit 951cc4c148c91427aa7792401256861af792998e[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Fri Dec 6 03:55:40 2024 +0900
+
+    Create js
+
+[33mcommit b1e412df9249df844970fa7b86f21b7f4ddb57f4[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Fri Dec 6 03:53:00 2024 +0900
+
+    Update index.html
+
+[33mcommit 58067c03d50e4d8de23d5b9b38477b63aec3aa9f[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Thu Dec 5 12:05:19 2024 +0900
+
+    Update index.html
+
+[33mcommit 2b2be64fee155d358195a7bf02265d8c55dafa5a[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Thu Dec 5 12:05:01 2024 +0900
+
+    Update app.py
+
+[33mcommit 1505777d7351e42917e6d3c1328f398bf5ce038d[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Thu Dec 5 11:34:57 2024 +0900
+
+    Create Procfile
+
+[33mcommit a1316ffe77a9e1d4555ae010f4485035f395d986[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Thu Dec 5 02:28:12 2024 +0000
+
+    Codespacesでの変更内容
+
+[33mcommit 72e340759a67b4b6d422995fcc2698cc6743e13e[m
+Author: channkenn <91776275+channkenn@users.noreply.github.com>
+Date:   Thu Dec 5 09:31:52 2024 +0900
+
+    Create app.py
