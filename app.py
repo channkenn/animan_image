@@ -26,8 +26,9 @@ def index():
             else:
                 # URLが有効か確認（HTTPリクエスト）
                 try:
-                    response = requests.get(thread_url)
-                    if response.status_code == 404:
+                    response = requests.get(thread_url, allow_redirects=True)
+                    # ステータスコードが404、またはリダイレクト後のURLが指定URLの場合
+                    if response.status_code == 404 or response.url == "https://bbs.animanch.com/":
                         # スレッドが存在しない場合
                         warning_message = "指定されたスレッドは存在しません"
                         return render_template("index.html", warning_message=warning_message)
