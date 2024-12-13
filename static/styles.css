@@ -1,4 +1,9 @@
 /* 基本的なスタイル */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
 /* ヘッダースタイル */
 header {
     background-color: #104cd0; /* ヘッダーの背景色 */
@@ -8,11 +13,7 @@ header {
     font-size: 1.5em;         /* フォントサイズを調整 */
 }
 
-body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-}
-
+/* リンクスタイル */
 a {
     font-size: 16px;
     color: blue;
@@ -27,17 +28,17 @@ a:hover {
 
 /* リンクの背景色をヘッダーの背景色に変更 */
 a.link-res-number {
-    background-color: #104cd0;  /* ヘッダーと同じ背景色 */
-    color: white;               /* テキスト色を白に設定 */
-    padding: 5px 10px;          /* 内側の余白を調整 */
-    border-radius: 4px;         /* 角を丸くする */
-    text-decoration: none;      /* 下線を削除 */
-    display: inline-block;      /* ブロック要素として表示 */
+    background-color: #104cd0;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-block;
 }
 
 a.link-res-number:hover {
-    background-color: #0d3c9b;  /* ホバー時に背景色を少し暗く */
-    color: white;               /* テキスト色を維持 */
+    background-color: #0d3c9b;
+    color: white;
 }
 
 /* パネルリンクスタイル */
@@ -61,7 +62,7 @@ a.link-res-number:hover {
     cursor: pointer;
 }
 
-/* スレッド一覧のテーブルスタイル */
+/* テーブルコンテナ */
 .table-container {
     display: table;
     width: 100%;
@@ -113,22 +114,56 @@ button.copy-btn {
     background-color: darkred;
 }
 
-/* 「お気に入りスレッドに追加」ボタンスタイル */
+/* 「お気に入りスレッドに追加」ボタン */
 button#add-thread-btn {
-    background-color: #007BFF;    /* ボタンの背景色を青色に */
-    color: white;                 /* テキスト色を白に */
-    border: 1px solid #0056b3;    /* 濃い青色の枠線 */
+    background-color: #007BFF;
+    color: white;
+    border: 1px solid #0056b3;
     border-radius: 4px;
     padding: 8px 12px;
     font-size: 14px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 影を追加 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 button#add-thread-btn:hover {
-    background-color: #0056b3;    /* ホバー時に背景色を濃い青に */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* ホバー時の影を強調 */
+    background-color: #0056b3;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     cursor: pointer;
+}
+
+/* フィルターボタンスタイル */
+.button-container {
+    display: flex;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.filter-button {
+    flex: 1;
+    padding: 10px 20px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: center;
+    transition: background-color 0.3s;
+}
+
+.filter-button:not(:last-child) {
+    margin-right: 10px;
+}
+
+.filter-button.active {
+    background-color: #007BFF;
+    color: white;
+    border-color: #007BFF;
+}
+
+.filter-button:hover {
+    background-color: #0056b3;
+    color: white;
+    border-color: #004080;
 }
 
 /* カード表示用スタイル */
@@ -144,7 +179,6 @@ button#add-thread-btn:hover {
     border: 1px solid #ccc;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
     background-color: #fff;
     text-align: center;
     padding: 10px;
@@ -182,83 +216,24 @@ button#add-thread-btn:hover {
     display: flex;
     justify-content: center;
     gap: 10px;
-    margin-top: auto; /* ボタンをカードの一番下に配置 */
+    margin-top: auto;
 }
 
-/* スレッド用カードのスタイル */
-.thread-item {
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    width: 300px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.thread-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.thread-item img.thread-thumb {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-}
-
-.thread-item .card-body {
-    padding: 12px;
-}
-
-.thread-item h3 {
-    font-size: 1.2em;
-    margin: 0 0 8px;
-}
-
-.thread-item a {
-    color: #007BFF;
-    text-decoration: none;
-    word-break: break-all;
-}
-
-.thread-item button {
-    margin: 8px;
-    padding: 8px;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.thread-item button.remove-btn {
-    background-color: #dc3545;
-}
-
-.thread-item button:hover {
-    opacity: 0.9;
-}
-
-/* 660px未満でカードを常に3列表示 */
+/* 660px未満でカードを3列表示 */
 @media (max-width: 660px) {
     .card-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px; /* カード間の隙間を10pxに設定 */
+        gap: 10px;
         justify-content: space-between;
     }
 
     .card, .thread-item {
-        flex: 1 1 calc(33.33% - 10px); /* 3列用に幅を柔軟に設定、gapを考慮 */
-        max-width: calc(33.33% - 10px); /* 最大幅も3列に合うよう設定 */
-        margin-bottom: 10px; /* 下のマージン */
+        flex: 1 1 calc(33.33% - 10px);
+        max-width: calc(33.33% - 10px);
+        margin-bottom: 10px;
     }
 }
 
-/* すべての要素にbox-sizingを適用して幅が100%を超えないように */
+/* すべての要素にbox-sizingを適用 */
 * {
     box-sizing: border-box;
 }
@@ -276,7 +251,6 @@ button#add-thread-btn:hover {
     height: 24px;
 }
 
-/* アイコンボタンのホバー効果 */
 .button-container button:hover img {
     opacity: 0.8;
 }

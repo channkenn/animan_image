@@ -29,34 +29,45 @@
     
     
     
-    
-
     <a href="/favorites" class="panel-link">画像一覧</a>
     <a href="/favorite-threads" class="panel-link">スレッド一覧</a>
-
+    
     {% if thread_url %}
     <div class="panel-link">
         <p></strong><a href="{{ thread_url }}" target="_blank">{{ thread_title }}</a></p>
         <button type="button" id="add-thread-btn" 
-                data-thread-url="{{ thread_url }}" 
-                data-thread-title="{{ thread_title }}"
-                data-thread-thumb="{{ images[0]['thumb_url'] }}"
-                >
-            スレッド一覧に追加
+        data-thread-url="{{ thread_url }}" 
+        data-thread-title="{{ thread_title }}"
+        data-thread-thumb="{{ images[0]['thumb_url'] }}"
+        >
+        スレッド一覧に追加
         </button>
     </div>
     {% endif %}
 
+    <!-- 20241213 画像一覧の絞り込み機能 altがImageかOutlinkかで決まる 外部リンクのサムネイルの場合はOutlinkです -->
+    <div class="button-container">
+        <button type="button" class="filter-button active" onclick="filterCards('all', this)">すべて</button>
+        <button type="button" class="filter-button" onclick="filterCards('Image', this)">コピー可能のみ</button>
+        <button type="button" class="filter-button" onclick="filterCards('Outlink', this)">外部リンクのみ</button>
+    </div>
+    
+    
     <div class="card-container">
         {% for image in images %}
         <div class="card">
             <!-- 2024年12月11日 thumbのcacheは保存することにした-->
             <!-- <img src="{{ image.thumb_url }}?nocache={{ current_timestamp }}" alt="Image"> -->
             <!-- 2024年12月12日 img srcクリックでダウンロードできるjavascriptにて実行-->
-            <img src="{{ image.thumb_url }}" 
+            <!-- 20241213 img_urlが外部リンクかが増加を判定してaltをOutlinkかImageにする -->
+            <!--<img src="{{ image.thumb_url }}" 
                 alt="Image" 
                 onclick="viewImage('{{ image.img_url }}')">
-
+                -->
+            <img src="{{ image.thumb_url }}" 
+                alt="{% if '/img' not in image.img_url %}Outlink{% else %}Image{% endif %}"
+                onclick="viewImage('{{ image.img_url }}')">
+           
 
             <!-- 上部の画像をそのまま配置 -->
             

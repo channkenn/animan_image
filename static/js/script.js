@@ -30,7 +30,13 @@ function loadFavorites() {
         card.innerHTML = `
         <!-- 2024年12月11日 thumbはcacheに残すようにした -->
         <!-- <img src="${encodeURI(fav.thumbUrl)}?nocache=${new Date().getTime()}" alt="お気に入り画像"> -->
-            <img src="${encodeURI(fav.thumbUrl)}" alt="お気に入り画像"  onclick="viewImage('${encodeURI(fav.imgUrl)}')">
+            <!-- 20241213 img_urlが外部リンクかが増加を判定してaltをOutlinkかImageにする -->
+            <!-- <img src="${encodeURI(fav.thumbUrl)}" alt="お気に入り画像"  onclick="viewImage('${encodeURI(fav.imgUrl)}')"> -->
+            <img src="${encodeURI(fav.thumbUrl)}"
+                alt="${fav.imgUrl.includes('/img') ? 'Image' : 'Outlink'}"
+                onclick="viewImage('${encodeURI(fav.imgUrl)}')">
+
+
             <div class="card-body">
                 <div class="res-number-container">
                     <a href="${encodeURI(fav.resLink)}" target="_blank" class="link-res-number" title="スレッドリンク">
@@ -157,6 +163,28 @@ function viewImage(imageUrl) {
     // 使用後に`a`要素を削除
     document.body.removeChild(link);
 }
+// 絞り込み機能
+function filterCards(filterType, clickedButton) {
+    const cards = document.querySelectorAll('.card');
+    const buttons = document.querySelectorAll('.filter-button');
+
+    // カードの表示/非表示
+    cards.forEach(card => {
+        const imgElement = card.querySelector('img');
+        const altText = imgElement.getAttribute('alt');
+
+        if (filterType === 'all' || altText === filterType) {
+            card.style.display = '';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+
+    // ボタンの状態を更新
+    buttons.forEach(button => button.classList.remove('active'));
+    clickedButton.classList.add('active');
+}
+
 
 
 // DOM読み込み後に各関数を実行

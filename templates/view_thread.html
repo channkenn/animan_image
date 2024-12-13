@@ -15,13 +15,25 @@
     <a href="/" class="panel-link">メインページ</a>
     <a href="/favorites" class="panel-link">画像一覧</a>
     <a href="/favorite-threads" class="panel-link">スレッド一覧</a>
-
+    <!-- 20241213 画像一覧の絞り込み機能 altがImageかOutlinkかで決まる 外部リンクのサムネイルの場合はOutlinkです -->
+    <div class="button-container">
+        <button type="button" class="filter-button active" onclick="filterCards('all', this)">すべて</button>
+        <button type="button" class="filter-button" onclick="filterCards('Image', this)">コピー可能のみ</button>
+        <button type="button" class="filter-button" onclick="filterCards('Outlink', this)">外部リンクのみ</button>
+    </div>
     <div class="card-container">
         {% for image in images %}
         <div class="card">
             <!-- 2024年12月11日 thumbのcacheは保存することにした-->
             <!-- <img src="{{ image.thumb_url }}?nocache={{ current_timestamp }}" alt="Image"> -->
-            <img src="{{ image.thumb_url }}" alt="Image" onclick="viewImage('{{ image.img_url }}')">
+            <!-- 20241213 img_urlが外部リンクかが増加を判定してaltをOutlinkかImageにする -->
+            <!--<img src="{{ image.thumb_url }}" 
+                alt="Image" 
+                onclick="viewImage('{{ image.img_url }}')">
+                -->
+                <img src="{{ image.thumb_url }}" 
+                alt="{% if '/img' not in image.img_url %}Outlink{% else %}Image{% endif %}"
+                onclick="viewImage('{{ image.img_url }}')">
             <!-- 上部の画像をそのまま配置 -->
             
             <!-- 下部に配置されるように設定 -->
