@@ -206,6 +206,32 @@ function filterCards(filterType, clickedButton) {
     clickedButton.classList.add('active');
 }
 
+// 20241214 ブックマークレット対応
+// URLパラメータを取得
+const urlParams = new URLSearchParams(window.location.search);
+
+// 'autofill' パラメータが 'true' の場合に処理を実行
+if (urlParams.get('autofill') === 'true') {
+  // 'source' パラメータの値を取得
+  const source = urlParams.get('source');
+  
+  // 'source' パラメータが存在するかつ、信頼できるドメインかを確認
+  if (source) {
+    const allowedDomains = ['linguistic-sherilyn-animanimage-50068fef.koyeb.app', 'bbs.animanch.com'];
+    try {
+      const urlObj = new URL(source);
+      if (allowedDomains.includes(urlObj.hostname)) {
+        // サニタイズしてから、inputフィールドに値を設定
+        document.querySelector('input[name="url"][id="url"]').value = decodeURIComponent(source);
+      } else {
+        console.error('不正なリダイレクト先');
+      }
+    } catch (e) {
+      console.error('無効なURL');
+    }
+  }
+}
+
 
 
 // DOM読み込み後に各関数を実行
