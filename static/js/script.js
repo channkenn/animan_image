@@ -231,7 +231,11 @@ if (urlParams.get('autofill') === 'true') {
     }
   }
 }
-
+// ボタンをクリックしたときにブックマークレットリンクを表示
+document.getElementById('bookmarkButton').addEventListener('click', function() {
+    // ボタンをクリックしたときにブックマークレットリンクを表示
+    document.getElementById('bookmarkLink').style.display = 'block';
+});
 
 
 // DOM読み込み後に各関数を実行

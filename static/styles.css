@@ -9,8 +9,14 @@ header {
     background-color: #104cd0; /* ヘッダーの背景色 */
     color: white;             /* テキスト色を白に設定 */
     padding: 10px;            /* 余白を追加 */
-    text-align: center;       /* テキストを中央揃え */
     font-size: 1.5em;         /* フォントサイズを調整 */
+}
+
+/* ヘッダー内の内容を右寄せ */
+header .header-content {
+    display: flex;
+    justify-content: space-between; /* 左右に分けて配置 */
+    align-items: center;            /* 垂直方向の中央揃え */
 }
 
 /* リンクスタイル */

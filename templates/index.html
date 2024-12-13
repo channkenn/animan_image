@@ -11,8 +11,15 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <header><h1>あにまん掲示板&nbsp;お気に入り画像とスレッド</h1></header>
-
+    <header>
+        <h1>あにまん掲示板&nbsp;お気に入り画像とスレッド</h1>
+        <button id="bookmarkButton">ブックマークレットを追加(識者向け)</button>
+    </header>
+    <!-- 表示されるブックマークレットリンク -->
+    <div id="bookmarkLink" style="display:none; text-align: center;">
+        <a href="javascript:(function(){window.location.href=`https://linguistic-sherilyn-animanimage-50068fef.koyeb.app/?autofill=true&source=${encodeURIComponent(window.location.href)}`;})();" 
+        title="a">ブックマークレットリンクをドラッグ＆ドロップ<br>あにまん掲示板のスレッドで実行するとURLが入力された状態でメインページが開きます</a>
+    </div>
     {% if warning_message %}
         <p style="color: red; font-weight: bold;">{{ warning_message }}</p>
     {% endif %}
