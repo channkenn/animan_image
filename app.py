@@ -1,5 +1,7 @@
 import os
 import time
+import re  # 正規表現モジュールをインポート
+import requests  # requestsモジュールをインポート
 from flask import Flask, request, render_template, render_template_string
 from utils.scraper import fetch_images_and_title
 
@@ -17,10 +19,23 @@ def index():
         thread_url = request.form.get("url")
         if thread_url:
             # URLがあにまん掲示板か確認
-            if "https://bbs.animanch.com/board/" not in thread_url:
+            if not re.match(r"https://bbs.animanch.com/board/\d+/", thread_url):
+                # URLチェック失敗時、警告メッセージとともに元のページにリダイレクト
                 warning_message = "あにまん掲示板のスレッドURLでおねがいします"
-                thread_url = "https://bbs.animanch.com/board/4242079/"
+                return render_template("index.html", warning_message=warning_message)
             else:
+                # URLが有効か確認（HTTPリクエスト）
+                try:
+                    response = requests.get(thread_url)
+                    if response.status_code == 404:
+                        # スレッドが存在しない場合
+                        warning_message = "指定されたスレッドは存在しません"
+                        return render_template("index.html", warning_message=warning_message)
+                except requests.exceptions.RequestException as e:
+                    # ネットワークエラーや接続エラーの場合
+                    warning_message = f"URLの確認中にエラーが発生しました: {str(e)}"
+                    return render_template("index.html", warning_message=warning_message)
+                
                 # スレッドタイトルと画像を取得
                 thread_title, images = fetch_images_and_title(thread_url)
 
