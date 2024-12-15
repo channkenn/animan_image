@@ -23,87 +23,89 @@
     {% if warning_message %}
         <p style="color: red; font-weight: bold;">{{ warning_message }}</p>
     {% endif %}
-
-    <form method="POST" style="margin-top: 20px; margin-bottom: 20px; width: 100%; margin: 0 auto;">
-        <label for="url" style="display: none;">あにまん掲示板スレッドのURLを入力してください:</label>
-        <input type="text" id="url" name="url" style="width: 100%; height: 60px; text-align: center;"
-               required pattern="https:\/\/bbs\.animanch\.com\/.*"
-               title="https://bbs.animanch.com/ から始まるURLを入力してください"
-               placeholder="あにまん掲示板スレッドのURLを入力してください" />
-        <button type="submit" style="width: 100%; height: 60px;">画像を取得</button>
-    </form>
-    
-    
-    
-    
-    
-    <a href="/favorites" class="panel-link">画像一覧</a>
-    <a href="/favorite-threads" class="panel-link">スレッド一覧</a>
-    
-    {% if thread_url %}
-    <div class="panel-link">
-        <p></strong><a href="{{ thread_url }}" target="_blank">{{ thread_title }}</a></p>
-        <button type="button" id="add-thread-btn" 
-        data-thread-url="{{ thread_url }}" 
-        data-thread-title="{{ thread_title }}"
-        {% if images and images|length > 0 %}
-        data-thread-thumb="{{ images[0]['thumb_url'] }}"
-        {% else %}
-            <!-- 画像がない場合の処理 -->
-            <p>No images available</p>
-        {% endif %}
-            >
-        スレッド一覧に追加
-        </button>
-    </div>
-    {% endif %}
-
-    <!-- 20241213 画像一覧の絞り込み機能 altがImageかOutlinkかで決まる 外部リンクのサムネイルの場合はOutlinkです -->
-    <div class="button-container">
-        <button type="button" class="filter-button active" onclick="filterCards('all', this)">すべて</button>
-        <button type="button" class="filter-button" onclick="filterCards('Image', this)">コピー可能のみ</button>
-        <button type="button" class="filter-button" onclick="filterCards('Outlink', this)">外部リンクのみ</button>
-    </div>
-    
-    
-    <div class="card-container">
-        {% for image in images %}
-        <div class="card">
-            <!-- 2024年12月11日 thumbのcacheは保存することにした-->
-            <!-- <img src="{{ image.thumb_url }}?nocache={{ current_timestamp }}" alt="Image"> -->
-            <!-- 2024年12月12日 img srcクリックでダウンロードできるjavascriptにて実行-->
-            <!-- 20241213 img_urlが外部リンクかが増加を判定してaltをOutlinkかImageにする -->
-            <!--<img src="{{ image.thumb_url }}" 
-                alt="Image" 
-                onclick="viewImage('{{ image.img_url }}')">
-                -->
-            <img src="{{ image.thumb_url }}" 
-                alt="{% if '/img' not in image.img_url %}Outlink{% else %}Image{% endif %}"
-                onclick="viewImage('{{ image.img_url }}')">
-           
-
-            <!-- 上部の画像をそのまま配置 -->
+    <!-- 20241215 ２カラムレイアウト対応-->
+    <div class="container">
+        <!-- メインコンテンツ -->
+        <div class="main-column">
+            <form method="POST" style="margin-top: 20px; margin-bottom: 20px; width: 100%; margin: 0 auto;">
+                <label for="url" style="display: none;">あにまん掲示板スレッドのURLを入力してください:</label>
+                <input type="text" id="url" name="url" style="width: 100%; height: 60px; text-align: center;"
+                    required pattern="https:\/\/bbs\.animanch\.com\/.*"
+                    title="https://bbs.animanch.com/ から始まるURLを入力してください"
+                    placeholder="あにまん掲示板スレッドのURLを入力してください" />
+                <button type="submit" style="width: 100%; height: 60px;">画像を取得</button>
+            </form>
             
-            <!-- 下部に配置されるように設定 -->
-            <div class="card-body">
-                <div class="res-number-container">
-                    <a href="{{ image.res_link }}" target="_blank" class="link-res-number" title="スレッドリンク">
-                        >>{{ image.res_number }}
-                    </a>
+            
+            {% if thread_url %}
+            <div class="panel-link">
+                <p></strong><a href="{{ thread_url }}" target="_blank">{{ thread_title }}</a></p>
+                <button type="button" id="add-thread-btn" 
+                data-thread-url="{{ thread_url }}" 
+                data-thread-title="{{ thread_title }}"
+                {% if images and images|length > 0 %}
+                data-thread-thumb="{{ images[0]['thumb_url'] }}"
+                {% else %}
+                    <!-- 画像がない場合の処理 -->
+                    <p>No images available</p>
+                {% endif %}
+                    >
+                スレッド一覧に追加
+                </button>
+            </div>
+            {% endif %}
+
+            <!-- 20241213 画像一覧の絞り込み機能 altがImageかOutlinkかで決まる 外部リンクのサムネイルの場合はOutlinkです -->
+            <div class="button-container">
+                <button type="button" class="filter-button active" onclick="filterCards('all', this)">すべて</button>
+                <button type="button" class="filter-button" onclick="filterCards('Image', this)">コピー可能のみ</button>
+                <button type="button" class="filter-button" onclick="filterCards('Outlink', this)">外部リンクのみ</button>
+            </div>
+            
+            <div class="card-container">
+                {% for image in images %}
+                <div class="card">
+                    <!-- 2024年12月11日 thumbのcacheは保存することにした-->
+                    <!-- <img src="{{ image.thumb_url }}?nocache={{ current_timestamp }}" alt="Image"> -->
+                    <!-- 2024年12月12日 img srcクリックでダウンロードできるjavascriptにて実行-->
+                    <!-- 20241213 img_urlが外部リンクかが増加を判定してaltをOutlinkかImageにする -->
+                    <!--<img src="{{ image.thumb_url }}" 
+                        alt="Image" 
+                        onclick="viewImage('{{ image.img_url }}')">
+                        -->
+                    <img src="{{ image.thumb_url }}" 
+                        alt="{% if '/img' not in image.img_url %}Outlink{% else %}Image{% endif %}"
+                        onclick="viewImage('{{ image.img_url }}')">
+                
+
+                    <!-- 上部の画像をそのまま配置 -->
+                    
+                    <!-- 下部に配置されるように設定 -->
+                    <div class="card-body">
+                        <div class="res-number-container">
+                            <a href="{{ image.res_link }}" target="_blank" class="link-res-number" title="スレッドリンク">
+                                >>{{ image.res_number }}
+                            </a>
+                        </div>
+                        <div class="button-container">
+                            <button class="copy-btn" onclick="copyToClipboard('{{ image.img_url }}')" title="コピー">
+                                <img src="{{ url_for('static', filename='icons/copy-icon.png') }}" alt="コピーアイコン" style="width: 24px; height: 24px;">
+                            </button>
+                            <button onclick="addToFavorites('{{ image.thumb_url }}', '{{ image.img_url }}', '{{ image.res_number }}', '{{ image.res_link }}')" title="お気に入り登録">
+                                <img src="{{ url_for('static', filename='icons/favorite-icon.png') }}" alt="お気に入りアイコン" style="width: 24px; height: 24px;">
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div class="button-container">
-                    <button class="copy-btn" onclick="copyToClipboard('{{ image.img_url }}')" title="コピー">
-                        <img src="{{ url_for('static', filename='icons/copy-icon.png') }}" alt="コピーアイコン" style="width: 24px; height: 24px;">
-                    </button>
-                    <button onclick="addToFavorites('{{ image.thumb_url }}', '{{ image.img_url }}', '{{ image.res_number }}', '{{ image.res_link }}')" title="お気に入り登録">
-                        <img src="{{ url_for('static', filename='icons/favorite-icon.png') }}" alt="お気に入りアイコン" style="width: 24px; height: 24px;">
-                    </button>
-                </div>
+                {% endfor %}
             </div>
         </div>
-        {% endfor %}
+        <!-- 左側カラム -->
+        <div class="left-column">
+            <a href="/favorites" class="panel-link">画像一覧</a>
+            <a href="/favorite-threads" class="panel-link">スレッド一覧</a>
+        </div>
     </div>
-    
     
 
     <!-- JavaScriptファイルを外部ファイルとして読み込む -->

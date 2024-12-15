@@ -12,9 +12,9 @@
     <header onclick="window.location.href='{{ thread_url }}'" style="cursor: pointer;">
         <h1>{{ thread_title }}</h1>
     </header>
-    <a href="/" class="panel-link">メインページ</a>
-    <a href="/favorites" class="panel-link">画像一覧</a>
-    <a href="/favorite-threads" class="panel-link">スレッド一覧</a>
+    <!-- 20241215 ２カラムレイアウト対応-->
+    <div class="container">
+        <div class="main-column">
     <!-- 20241213 画像一覧の絞り込み機能 altがImageかOutlinkかで決まる 外部リンクのサムネイルの場合はOutlinkです -->
     <div class="button-container">
         <button type="button" class="filter-button active" onclick="filterCards('all', this)">すべて</button>
@@ -55,6 +55,14 @@
         </div>
         {% endfor %}
     </div>
+
+        </div>
+        <!-- 左側カラム -->
+        <div class="left-column">
+            <a href="/" class="panel-link">メインページ</a>
+            <a href="/favorites" class="panel-link">画像一覧</a>
+            <a href="/favorite-threads" class="panel-link">スレッド一覧</a>
+        </div>
     
     
 <script src="{{ url_for('static', filename='js/script.js') }}"></script>

@@ -254,3 +254,31 @@ button#add-thread-btn:hover {
 .button-container button:hover img {
     opacity: 0.8;
 }
+
+/* 2カラムレイアウト用のスタイル */
+
+.container {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* 左カラム */
+.left-column {
+    width: 10%;
+    background-color: #f4f4f4;
+    padding: 20px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+/* 右カラム */
+.main-column {
+    width: 90%;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
