@@ -121,23 +121,24 @@ function displayFavoriteThreads() {
                 const card = document.createElement("div");
                 card.classList.add("card");
                 card.innerHTML = `
-                    <!-- 2024年12月11日 thumbはcacheに残すようにした -->
-                    <!-- <img src="${encodeURI(thread.thumb)}?nocache=${new Date().getTime()}" alt="${thread.title}" class="thread-thumb"> -->
-                    <img src="${encodeURI(thread.thumb)}" alt="${thread.title}" class="thread-thumb">
+                    <!-- 画像クリックでスレッド画像一覧にジャンプ -->
+                    <img src="${encodeURI(thread.thumb)}" alt="${thread.title}" class="thread-thumb" onclick="viewThread('${thread.url}')">
                     <div class="card-body">
-                        <a href="${thread.url}" target="_blank">${thread.title}</a>
+                        <a href="${encodeURI(thread.url)}" target="_blank">${thread.title}</a>
                         <div class="button-container">
-                            <!-- スレッド画像一覧ボタン（アイコン形式） -->
-                            <button onclick="viewThread('${thread.url}')" title="スレッド画像一覧">
-                                <img src="static/icons/image-icon.png" alt="スレッド画像一覧アイコン" style="width: 24px; height: 24px;">
+                            <!-- クリップボードにURLをコピーするボタン -->
+                            <!-- ボタンのonclickで正確にURLを渡す -->
+                            <button class="copy-btn" onclick="copyToClipboard('${encodeURI(thread.url)}')" title="コピー">
+                                <img src="static/icons/copy-icon.png" alt="コピーアイコン" style="width: 24px; height: 24px;">
                             </button>
-                            
+
                             <!-- 削除ボタン（アイコン形式） -->
                             <button class="remove-btn" onclick="removeThread('${thread.url}')" title="削除">
                                 <img src="static/icons/delete-icon.png" alt="削除アイコン" style="width: 24px; height: 24px;">
-                            </button>                        </div>
+                            </button>
+                        </div>
                     </div>
-                        `;
+                `;
                 container.appendChild(card);
             });
         }
@@ -145,6 +146,7 @@ function displayFavoriteThreads() {
         console.error("エラーが発生しました:", error);
     }
 }
+
 
 
 
@@ -163,12 +165,33 @@ function viewThread(url) {
 
 // URLをクリップボードにコピーする
 function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-        alert("URLをコピーしました: " + text);
-    }).catch(err => {
-        alert("コピーに失敗しました: " + err);
-    });
+    if (navigator.clipboard && window.isSecureContext) {
+        // クリップボードAPIが使える場合
+        navigator.clipboard.writeText(text).then(() => {
+            alert("URLをコピーしました: " + text);
+        }).catch(err => {
+            alert("コピーに失敗しました: " + err);
+        });
+    } else {
+        // クリップボードAPIが使えない場合
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select(); // textareaの内容を選択
+
+        try {
+            // クリップボードへのコピーを試みる
+            document.execCommand("copy");
+            alert("URLをコピーしました: " + text);
+        } catch (err) {
+            alert("コピーに失敗しました: " + err);
+            console.error("execCommandによるコピーエラー:", err);
+        }
+
+        document.body.removeChild(textArea);
+    }
 }
+
 // 20241212 <img> タグをクリックしたときに image.img_url をブラウザで表示する
 function viewImage(imageUrl) {
     console.log("Image URL: " + imageUrl); // ここでURLを確認
