@@ -12,6 +12,11 @@
     <header><h1>画像一覧</h1></header>
     <!-- 20241215 ２カラムレイアウト対応-->
     <div class="container">
+        <!-- 左側カラム -->
+        <div class="left-column">
+            <a href="/" class="panel-link">メインページ</a>
+            <a href="/favorite-threads" class="panel-link">スレッド一覧</a>
+        </div>
         <div class="main-column">
             <!-- 20241213 画像一覧の絞り込み機能 altがImageかOutlinkかで決まる 外部リンクのサムネイルの場合はOutlinkです -->
             <div class="button-container">
@@ -21,11 +26,6 @@
             </div>
 
             <div id="favorites-container" class="card-container"></div>
-        </div>
-        <!-- 左側カラム -->
-        <div class="left-column">
-            <a href="/" class="panel-link">メインページ</a>
-            <a href="/favorite-threads" class="panel-link">スレッド一覧</a>
         </div>
     </div>
     <script src="/static/js/script.js"></script>

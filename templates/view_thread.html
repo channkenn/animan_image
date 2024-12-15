@@ -1,70 +1,68 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="referrer" content="no-referrer">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <link rel="icon" href="{{ url_for('static', filename='animanimg_favicon.png') }}" type="image/x-icon">
-    <title>{{ thread_title }}</title>
-</head>
-<body>
-    <header onclick="window.location.href='{{ thread_url }}'" style="cursor: pointer;">
-        <h1>{{ thread_title }}</h1>
-    </header>
-    <!-- 20241215 ２カラムレイアウト対応-->
-    <div class="container">
-        <div class="main-column">
-    <!-- 20241213 画像一覧の絞り込み機能 altがImageかOutlinkかで決まる 外部リンクのサムネイルの場合はOutlinkです -->
-    <div class="button-container">
-        <button type="button" class="filter-button active" onclick="filterCards('all', this)">すべて</button>
-        <button type="button" class="filter-button" onclick="filterCards('Image', this)">コピー可能のみ</button>
-        <button type="button" class="filter-button" onclick="filterCards('Outlink', this)">外部リンクのみ</button>
-    </div>
-    <div class="card-container">
-        {% for image in images %}
-        <div class="card">
-            <!-- 2024年12月11日 thumbのcacheは保存することにした-->
-            <!-- <img src="{{ image.thumb_url }}?nocache={{ current_timestamp }}" alt="Image"> -->
-            <!-- 20241213 img_urlが外部リンクかが増加を判定してaltをOutlinkかImageにする -->
-            <!--<img src="{{ image.thumb_url }}" 
-                alt="Image" 
-                onclick="viewImage('{{ image.img_url }}')">
-                -->
-                <img src="{{ image.thumb_url }}" 
-                alt="{% if '/img' not in image.img_url %}Outlink{% else %}Image{% endif %}"
-                onclick="viewImage('{{ image.img_url }}')">
-            <!-- 上部の画像をそのまま配置 -->
-            
-            <!-- 下部に配置されるように設定 -->
-            <div class="card-body">
-                <div class="res-number-container">
-                    <a href="{{ image.res_link }}" target="_blank" class="link-res-number" title="スレッドリンク">
-                        >>{{ image.res_number }}
-                    </a>
-                </div>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="referrer" content="no-referrer">
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+        <link rel="icon" href="{{ url_for('static', filename='animanimg_favicon.png') }}" type="image/x-icon">
+        <title>{{ thread_title }}</title>
+    </head>
+    <body>
+        <header onclick="window.location.href='{{ thread_url }}'" style="cursor: pointer;">
+            <h1>{{ thread_title }}</h1>
+        </header>
+        <!-- 20241215 ２カラムレイアウト対応-->
+        <div class="container">
+            <!-- 左側カラム -->
+            <div class="left-column">
+                <a href="/" class="panel-link">メインページ</a>
+                <a href="/favorites" class="panel-link">画像一覧</a>
+                <a href="/favorite-threads" class="panel-link">スレッド一覧</a>
+            </div>
+            <!-- めいんからむ -->
+            <div class="main-column">
+                <!-- 20241213 画像一覧の絞り込み機能 altがImageかOutlinkかで決まる 外部リンクのサムネイルの場合はOutlinkです -->
                 <div class="button-container">
-                    <button class="copy-btn" onclick="copyToClipboard('{{ image.img_url }}')" title="コピー">
-                        <img src="{{ url_for('static', filename='icons/copy-icon.png') }}" alt="コピーアイコン" style="width: 24px; height: 24px;">
-                    </button>
-                    <button onclick="addToFavorites('{{ image.thumb_url }}', '{{ image.img_url }}', '{{ image.res_number }}', '{{ image.res_link }}')" title="お気に入り登録">
-                        <img src="{{ url_for('static', filename='icons/favorite-icon.png') }}" alt="お気に入りアイコン" style="width: 24px; height: 24px;">
-                    </button>
+                    <button type="button" class="filter-button active" onclick="filterCards('all', this)">すべて</button>
+                    <button type="button" class="filter-button" onclick="filterCards('Image', this)">コピー可能のみ</button>
+                    <button type="button" class="filter-button" onclick="filterCards('Outlink', this)">外部リンクのみ</button>
+                </div>
+                <div class="card-container">
+                    {% for image in images %}
+                    <div class="card">
+                        <!-- 2024年12月11日 thumbのcacheは保存することにした-->
+                        <!-- <img src="{{ image.thumb_url }}?nocache={{ current_timestamp }}" alt="Image"> -->
+                        <!-- 20241213 img_urlが外部リンクかが増加を判定してaltをOutlinkかImageにする -->
+                        <!--<img src="{{ image.thumb_url }}" 
+                            alt="Image" 
+                            onclick="viewImage('{{ image.img_url }}')">
+                            -->
+                            <img src="{{ image.thumb_url }}" 
+                            alt="{% if '/img' not in image.img_url %}Outlink{% else %}Image{% endif %}"
+                            onclick="viewImage('{{ image.img_url }}')">
+                        <!-- 上部の画像をそのまま配置 -->
+                        
+                        <!-- 下部に配置されるように設定 -->
+                        <div class="card-body">
+                            <div class="res-number-container">
+                                <a href="{{ image.res_link }}" target="_blank" class="link-res-number" title="スレッドリンク">
+                                    >>{{ image.res_number }}
+                                </a>
+                            </div>
+                            <div class="button-container">
+                                <button class="copy-btn" onclick="copyToClipboard('{{ image.img_url }}')" title="コピー">
+                                    <img src="{{ url_for('static', filename='icons/copy-icon.png') }}" alt="コピーアイコン" style="width: 24px; height: 24px;">
+                                </button>
+                                <button onclick="addToFavorites('{{ image.thumb_url }}', '{{ image.img_url }}', '{{ image.res_number }}', '{{ image.res_link }}')" title="お気に入り登録">
+                                    <img src="{{ url_for('static', filename='icons/favorite-icon.png') }}" alt="お気に入りアイコン" style="width: 24px; height: 24px;">
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
-        </div>
-        {% endfor %}
-    </div>
-
-        </div>
-        <!-- 左側カラム -->
-        <div class="left-column">
-            <a href="/" class="panel-link">メインページ</a>
-            <a href="/favorites" class="panel-link">画像一覧</a>
-            <a href="/favorite-threads" class="panel-link">スレッド一覧</a>
-        </div>
-    
-    
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
-</body>
-</html>
+            <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+        </body>
+    </html>

@@ -219,19 +219,6 @@ button#add-thread-btn:hover {
     margin-top: auto;
 }
 
-/* 660px未満でカードを3列表示 */
-@media (max-width: 660px) {
-    .card-container {
-        gap: 10px;
-        justify-content: space-between;
-    }
-
-    .card, .thread-item {
-        flex: 1 1 calc(33.33% - 10px);
-        max-width: calc(33.33% - 10px);
-        margin-bottom: 10px;
-    }
-}
 
 /* すべての要素にbox-sizingを適用 */
 * {
@@ -274,11 +261,33 @@ button#add-thread-btn:hover {
     border-radius: 5px;
 }
 
-/* 右カラム */
+/* メインカラム */
 .main-column {
     width: 90%;
     background-color: #fff;
     padding: 20px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
+}
+
+/* 660px未満でカードを3列表示 */
+@media (max-width: 660px) {
+    .card-container {
+        gap: 10px;
+        justify-content: space-between;
+    }
+
+    .card, .thread-item {
+        flex: 1 1 calc(33.33% - 10px);
+        max-width: calc(33.33% - 10px);
+        margin-bottom: 10px;
+    }
+    .container {
+        display: block; /* 2カラムレイアウトを解除 */
+    }
+    .main-column,
+    .left-column {
+        width: 100%;       /* 幅を100%にして縦並びに */
+        float: none;       /* floatを解除 */
+    }
 }

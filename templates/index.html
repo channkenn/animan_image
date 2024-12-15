@@ -25,6 +25,11 @@
     {% endif %}
     <!-- 20241215 ２カラムレイアウト対応-->
     <div class="container">
+        <!-- 左側カラム -->
+        <div class="left-column">
+            <a href="/favorites" class="panel-link">画像一覧</a>
+            <a href="/favorite-threads" class="panel-link">スレッド一覧</a>
+        </div>
         <!-- メインコンテンツ -->
         <div class="main-column">
             <form method="POST" style="margin-top: 20px; margin-bottom: 20px; width: 100%; margin: 0 auto;">
@@ -99,11 +104,6 @@
                 </div>
                 {% endfor %}
             </div>
-        </div>
-        <!-- 左側カラム -->
-        <div class="left-column">
-            <a href="/favorites" class="panel-link">画像一覧</a>
-            <a href="/favorite-threads" class="panel-link">スレッド一覧</a>
         </div>
     </div>
     
