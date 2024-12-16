@@ -274,9 +274,11 @@ if (bookmarkButton) {
 
 // ハンバーガーメニューのクリックイベント
 document.querySelector('.hamburger-menu').addEventListener('click', function() {
-    const sidebar = document.querySelector('.left-column');
+    const leftSidebar = document.querySelector('.left-column');
+    const rightSidebar = document.querySelector('.right-column');
     // サイドバーの表示・非表示を切り替える
-    sidebar.style.display = (sidebar.style.display === 'none' || sidebar.style.display === '') ? 'block' : 'none';
+    leftSidebar.style.display = (leftSidebar.style.display === 'none' || leftSidebar.style.display === '') ? 'block' : 'none';
+    rightSidebar.style.display = (rightSidebar.style.display === 'none' || rightSidebar.style.display === '') ? 'block' : 'none';
 });
 
 

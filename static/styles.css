@@ -316,7 +316,7 @@ button#add-thread-btn:hover {
     display: flex;
     flex-direction: row;
     gap: 20px;
-    max-width: 1200px;
+    max-width: 1480px;
     margin: 0 auto;
 }
 
@@ -337,7 +337,14 @@ button#add-thread-btn:hover {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
 }
-
+/* 右カラム */
+.right-column {
+    width: 10%;
+    background-color: #f4f4f4;
+    padding: 20px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
 /* 660px未満でカードを3列表示 */
 @media (max-width: 660px) {
     .card-container {
@@ -373,5 +380,9 @@ button#add-thread-btn:hover {
 
     .main-content {
         margin-left: 0;
+    }
+    .right-column {
+        width: 100%;
+        display: none; /* 初期状態は非表示 */
     }
 }
