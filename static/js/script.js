@@ -42,10 +42,14 @@ function loadFavorites() {
         <!-- <img src="${encodeURI(fav.thumbUrl)}?nocache=${new Date().getTime()}" alt="お気に入り画像"> -->
             <!-- 20241213 img_urlが外部リンクかが増加を判定してaltをOutlinkかImageにする -->
             <!-- <img src="${encodeURI(fav.thumbUrl)}" alt="お気に入り画像"  onclick="viewImage('${encodeURI(fav.imgUrl)}')"> -->
-            <img src="${encodeURI(fav.thumbUrl)}"
-                alt="${fav.imgUrl.includes('/img') ? 'Image' : 'Outlink'}"
-                onclick="viewImage('${encodeURI(fav.imgUrl)}')">
-
+            <div class="image-container">
+                <img src="${encodeURI(fav.thumbUrl)}"
+                    alt="${fav.imgUrl.includes('/img') ? 'Image' : 'Outlink'}"
+                    onclick="viewImage('${encodeURI(fav.imgUrl)}')">
+                <div class="overlay" onclick="viewImage('${encodeURI(fav.imgUrl)}')">
+                    元img表示
+                </div>
+            </div>
 
             <div class="card-body">
                 <div class="res-number-container">
@@ -122,7 +126,13 @@ function displayFavoriteThreads() {
                 card.classList.add("card");
                 card.innerHTML = `
                     <!-- 画像クリックでスレッド画像一覧にジャンプ -->
-                    <img src="${encodeURI(thread.thumb)}" alt="${thread.title}" class="thread-thumb" onclick="viewThread('${thread.url}')">
+                    <div class="image-container">
+                        <!-- 画像クリックでスレッド画像一覧にジャンプ -->
+                        <img src="${encodeURI(thread.thumb)}" alt="${thread.title}" class="thread-thumb" onclick="viewThread('${thread.url}')">
+                        <div class="overlay" onclick="viewThread('${thread.url}')">
+                            スレッド内画像一覧
+                        </div>
+                    </div>
                     <div class="card-body">
                         <a href="${encodeURI(thread.url)}" target="_blank">${thread.title}</a>
                         <div class="button-container">

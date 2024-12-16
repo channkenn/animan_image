@@ -78,10 +78,14 @@
                         alt="Image" 
                         onclick="viewImage('{{ image.img_url }}')">
                         -->
-                    <img src="{{ image.thumb_url }}" 
-                        alt="{% if '/img' not in image.img_url %}Outlink{% else %}Image{% endif %}"
-                        onclick="viewImage('{{ image.img_url }}')">
-                
+                    <div class="image-container">
+                        <img src="{{ image.thumb_url }}" 
+                            alt="{% if '/img' not in image.img_url %}Outlink{% else %}Image{% endif %}"
+                            onclick="viewImage('{{ image.img_url }}')">
+                        <div class="overlay" onclick="viewImage('{{ image.img_url }}')">   
+                            元img表示
+                        </div>
+                    </div>
 
                     <!-- 上部の画像をそのまま配置 -->
                     

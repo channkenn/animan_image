@@ -31,16 +31,14 @@
                 <div class="card-container">
                     {% for image in images %}
                     <div class="card">
-                        <!-- 2024年12月11日 thumbのcacheは保存することにした-->
-                        <!-- <img src="{{ image.thumb_url }}?nocache={{ current_timestamp }}" alt="Image"> -->
-                        <!-- 20241213 img_urlが外部リンクかが増加を判定してaltをOutlinkかImageにする -->
-                        <!--<img src="{{ image.thumb_url }}" 
-                            alt="Image" 
-                            onclick="viewImage('{{ image.img_url }}')">
-                            -->
+                        <div class="image-container">
                             <img src="{{ image.thumb_url }}" 
                             alt="{% if '/img' not in image.img_url %}Outlink{% else %}Image{% endif %}"
                             onclick="viewImage('{{ image.img_url }}')">
+                            <div class="overlay" onclick="viewImage('{{ image.img_url }}')">
+                                元img表示
+                            </div>
+                        </div>
                         <!-- 上部の画像をそのまま配置 -->
                         
                         <!-- 下部に配置されるように設定 -->
