@@ -9,9 +9,13 @@
         <title>{{ thread_title }}</title>
     </head>
     <body>
-        <header onclick="window.location.href='{{ thread_url }}'" style="cursor: pointer;">
-            <h1>{{ thread_title }}</h1>
+        <header>
+            <h1 onclick="window.location.href='{{ thread_url }}'" style="cursor: pointer;">
+                {{ thread_title }}
+            </h1>
+            <span class="hamburger-menu">&#9776;</span> <!-- ハンバーガーアイコン -->
         </header>
+        
         <!-- 20241215 ２カラムレイアウト対応-->
         <div class="container">
             <!-- 左側カラム -->

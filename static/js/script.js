@@ -272,6 +272,12 @@ if (bookmarkButton) {
     });
 }
 
+// ハンバーガーメニューのクリックイベント
+document.querySelector('.hamburger-menu').addEventListener('click', function() {
+    const sidebar = document.querySelector('.left-column');
+    // サイドバーの表示・非表示を切り替える
+    sidebar.style.display = (sidebar.style.display === 'none' || sidebar.style.display === '') ? 'block' : 'none';
+});
 
 
 // DOM読み込み後に各関数を実行
