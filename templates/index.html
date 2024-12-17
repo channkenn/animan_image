@@ -30,7 +30,27 @@
             <a href="/" class="panel-link">メインページ</a>
             <a href="/favorites" class="panel-link">画像一覧</a>
             <a href="/favorite-threads" class="panel-link">スレッド一覧</a>
-            <button id="bookmarkButton">ブックマークレットを追加(識者向け)</button>
+            <!-- Favorites用のエクスポートボタン -->
+            <a href="#" class="panel-link" id="exportFavoritesButton">お気に入り画像をエクスポート</a>
+            <!-- Favoritesデータ用のインポートフォーム -->
+            <form id="importFavoritesForm">
+                <label for="importFavorites">お気に入り画像データ</label>
+                <input type="text" id="importFavorites" placeholder="お気に入り画像データを入力" style="width: 100%; height: 60px; text-align: center;">
+                <button type="button" id="importFavoritesButton">画像データをインポート</button>
+            </form>
+            <!-- Favorite Threads用のエクスポートボタン -->
+            <a href="#" class="panel-link" id="exportFavoriteThreadsButton">お気に入りスレッドをエクスポート</a>
+
+            <!-- Favorite Threadsデータ用のインポートフォーム -->
+            <form id="importFavoriteThreadsForm">
+                <label for="importFavoriteThreads">お気に入りスレッドデータ</label>
+                <input type="text" id="importFavoriteThreads" placeholder="お気に入りスレッドデータを入力" style="width: 100%; height: 60px; text-align: center;"></textarea>
+                <button type="button" id="importFavoriteThreadsButton">スレッドデータをインポート</button>
+            </form>
+
+
+            <!-- ブックマークレット追加リンク -->
+            <a href="javascript:void(0);" class="panel-link" id="bookmarkLink" onclick="addBookmarklet();">ブックマークレットを追加(識者向け)</a>
         </div>
         <!-- メインコンテンツ -->
         <div class="main-column">
@@ -121,9 +141,11 @@
     
     <footer>
         <p><a href="/">あにまん掲示板&nbsp;お気に入り画像とスレッド</a></p>
-      </footer>
+    </footer>
       
     <!-- JavaScriptファイルを外部ファイルとして読み込む -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
+
 </body>
 </html>
