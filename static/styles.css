@@ -37,7 +37,21 @@ header button {
     font-size: 30px;
     cursor: pointer;
 }
-
+/* フッタースタイル */
+footer {
+    background-color: #104cd0; /* 背景色 */
+    color: white;              /* テキスト色 */
+    padding: 10px;             /* 余白 */
+    text-align: center;        /* テキスト中央揃え */
+    font-size: 1.5em;          /* フォントサイズ */
+    display: flex;             
+    justify-content: center;   /* 水平方向に中央揃え */
+    align-items: center;       /* 垂直方向に中央揃え */
+}
+footer a {
+    color: white;            /* リンクの文字色を白に設定 */
+    text-decoration: none;   /* リンクの下線を消す（任意） */
+}
 /* リンクスタイル */
 a {
     font-size: 16px;
