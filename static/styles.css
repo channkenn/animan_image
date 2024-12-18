@@ -342,7 +342,16 @@ button#add-thread-btn:hover {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
 }
-
+/* 左カラム 自サイトリンク*/
+.left-column-own{
+    width: 100%;        /* 左1カラムにするため幅を100%に設定 */
+    margin-bottom: 20px; /* 上下の余白を調整 */
+}
+/* 左カラム インポートエクスポート*/
+.left-column-io{
+    width: 100%;        /* 左1カラムにするため幅を100%に設定 */
+    margin-bottom: 20px; /* 上下の余白を調整 */
+}
 /* メインカラム */
 .main-column {
     width: 90%;

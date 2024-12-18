@@ -12,6 +12,7 @@
 </head>
 <body>
     <header>
+        <img src="static/icons/image-icon.png" alt="サムネイル画像" style="visibility: hidden; width: 0; height: 0;">
         <h1>あにまん掲示板&nbsp;お気に入り画像とスレッド</h1>
         <span class="hamburger-menu">&#9776;</span> <!-- ハンバーガーアイコン -->
     </header>
@@ -25,32 +26,11 @@
     {% endif %}
     <!-- 20241215 ２カラムレイアウト対応-->
     <div class="container">
-        <!-- 左側カラム -->
         <div class="left-column">
-            <a href="/" class="panel-link">メインページ</a>
-            <a href="/favorites" class="panel-link">画像一覧</a>
-            <a href="/favorite-threads" class="panel-link">スレッド一覧</a>
-            <!-- Favorites用のエクスポートボタン -->
-            <a href="#" class="panel-link" id="exportFavoritesButton">お気に入り画像をエクスポート</a>
-            <!-- Favoritesデータ用のインポートフォーム -->
-            <form id="importFavoritesForm">
-                <label for="importFavorites">お気に入り画像データ</label>
-                <input type="text" id="importFavorites" placeholder="お気に入り画像データを入力" style="width: 100%; height: 60px; text-align: center;">
-                <button type="button" id="importFavoritesButton">画像データをインポート</button>
-            </form>
-            <!-- Favorite Threads用のエクスポートボタン -->
-            <a href="#" class="panel-link" id="exportFavoriteThreadsButton">お気に入りスレッドをエクスポート</a>
-
-            <!-- Favorite Threadsデータ用のインポートフォーム -->
-            <form id="importFavoriteThreadsForm">
-                <label for="importFavoriteThreads">お気に入りスレッドデータ</label>
-                <input type="text" id="importFavoriteThreads" placeholder="お気に入りスレッドデータを入力" style="width: 100%; height: 60px; text-align: center;"></textarea>
-                <button type="button" id="importFavoriteThreadsButton">スレッドデータをインポート</button>
-            </form>
-
-
-            <!-- ブックマークレット追加リンク -->
-            <a href="javascript:void(0);" class="panel-link" id="bookmarkLink" onclick="addBookmarklet();">ブックマークレットを追加(識者向け)</a>
+            <!-- 左側カラム 自サイトリンク -->
+            {% include 'left-column-own.html' %}
+            <!-- 左側カラム インポートエクスポート -->
+            {% include 'left-column-io.html' %}
         </div>
         <!-- メインコンテンツ -->
         <div class="main-column">
@@ -132,11 +112,7 @@
             </div>
         </div>
         <!-- 右側カラム -->
-        <div class="right-column">
-            <a href="/" class="panel-link">スペース予約</a>
-            <a href="/" class="panel-link">外部リンクとか</a>
-            <a href="/" class="panel-link">あにまん掲示板とか</a>
-        </div>
+        {% include 'right-column.html' %}
     </div>
     
     <footer>

@@ -10,6 +10,7 @@
     </head>
     <body>
         <header>
+            <img src="static/icons/image-icon.png" alt="サムネイル画像" style="visibility: hidden; width: 0; height: 0;">
             <h1 onclick="window.location.href='{{ thread_url }}'" style="cursor: pointer;">
                 {{ thread_title }}
             </h1>
@@ -20,11 +21,9 @@
         <div class="container">
             <!-- 左側カラム -->
             <div class="left-column">
-                <a href="/" class="panel-link">メインページ</a>
-                <a href="/favorites" class="panel-link">画像一覧</a>
-                <a href="/favorite-threads" class="panel-link">スレッド一覧</a>
+                {% include 'left-column-own.html' %}
             </div>
-            <!-- めいんからむ -->
+           <!-- めいんからむ -->
             <div class="main-column">
                 <!-- 20241213 画像一覧の絞り込み機能 altがImageかOutlinkかで決まる 外部リンクのサムネイルの場合はOutlinkです -->
                 <div class="button-container">
@@ -66,11 +65,7 @@
                 </div>
             </div>
             <!-- 右側カラム -->
-            <div class="right-column">
-                <a href="/" class="panel-link">スペース予約</a>
-                <a href="/" class="panel-link">外部リンクとか</a>
-                <a href="/" class="panel-link">あにまん掲示板とか</a>
-            </div>
+            {% include 'right-column.html' %}
         </div>
             <footer>
                 <p><a href="/">あにまん掲示板&nbsp;お気に入り画像とスレッド</a></p>
