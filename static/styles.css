@@ -1,9 +1,14 @@
 /* 基本的なスタイル */
 body {
     font-family: Arial, sans-serif;
+    text-align: center;       /* テキストを中央揃え */
     margin: 20px;
 }
-
+h1 {
+    display: inline-block;  /* インラインブロックにして、テキストを中央に配置 */
+    font-size: 24px;         /* 必要に応じてサイズ調整 */
+    margin: 0;               /* 不要な余白をなくす */
+}
 /* ヘッダースタイル */
 header {
     background-color: #104cd0; /* ヘッダーの背景色 */
@@ -39,6 +44,19 @@ header button {
     font-size: 1em; /* ボタンのフォントサイズ調整 */
     cursor: pointer; /* ボタンをクリック可能に */
 }
+.header-title-link {
+    text-decoration: none;    /* リンクの下線を消す */
+    color: inherit;           /* 親要素の色を引き継ぐ */
+    display: inline;          /* インライン要素として表示 */
+    font-size: inherit;       /* 親のフォントサイズを引き継ぐ */
+    font-weight: inherit;     /* 親のフォントの太さを引き継ぐ */
+    cursor: pointer;          /* クリック可能であることを示す */
+}
+
+.header-title-link:hover {
+    text-decoration: underline; /* ホバー時に下線を表示（任意） */
+}
+
 /* ハンバーガーアイコンのスタイル */
 .hamburger-menu {
     font-size: 30px;
@@ -100,7 +118,14 @@ a.link-res-number:hover {
     font-size: 16px;
     text-align: center;
     transition: background-color 0.3s, box-shadow 0.3s;
+    
+    /* 折り返し設定 */
+    word-break: break-all;       /* 単語の途中で折り返し */
+    overflow-wrap: break-word;   /* 長い単語を折り返す */
+    white-space: normal;         /* 自動折り返しを許可 */
+    max-width: 100%;             /* 親要素の幅に収める */
 }
+
 
 .panel-link:hover {
     background-color: #e0e0e0;

@@ -1,9 +1,16 @@
 <div>
-    <!-- <button id="exportButton">エクスポート</button> -->
-    <a href="#" id="imageexportButton" class="panel-link">画像一覧エクスポート</a>
-    <input type="file" id="importimageFile" accept="image/png">
-    <a href="#" id="threadexportButton" class="panel-link">スレッド一覧エクスポート</a>
-    <input type="file" id="importthreadFile" accept="image/png">
+    <a href="#" id="imageexportButton" class="panel-link">エクスポート(画像)</a>
+    <label for="importimageFile" class="panel-link">インポート(画像)</label>
+    <input type="file" id="importimageFile" accept="image/png" style="display: none;">
+    
+    <a href="#" id="threadexportButton" class="panel-link">エクスポート(スレッド)</a>
+    <label for="importthreadFile" class="panel-link">インポート(スレッド)</label>
+    <input type="file" id="importthreadFile" accept="image/png" style="display: none;">
+    
     <canvas id="canvas" style="display: none;"></canvas>
+    <!-- ブックマークレット追加リンク -->
+    <a href="javascript:void(0);" class="panel-link" id="bookmarkLink" onclick="addBookmarklet();">ブックマークレットを追加(識者向け)</a>
+
 </div>
+
   

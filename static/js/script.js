@@ -588,7 +588,18 @@ document.addEventListener("DOMContentLoaded", function () {
         const binaryData = textToBinary(jsonString);
         console.log('Binary Data:', binaryData);
         binaryToRgbImage(binaryData, 300); // 幅300ピクセルで描画
-        downloadCanvasAsPNG('favorites_images.png');
+        // 現在の日付と時間を取得
+        var now = new Date();
+        var year = now.getFullYear();
+        var month = ("0" + (now.getMonth() + 1)).slice(-2);  // 2桁表示
+        var day = ("0" + now.getDate()).slice(-2);            // 2桁表示
+        var hours = ("0" + now.getHours()).slice(-2);         // 2桁表示
+        var minutes = ("0" + now.getMinutes()).slice(-2);     // 2桁表示
+        var seconds = ("0" + now.getSeconds()).slice(-2);     // 2桁表示
+
+        // ファイル名を作成
+        var formattedFilename = "image" + year + month + day + hours + minutes + seconds + ".png";
+        downloadCanvasAsPNG(formattedFilename);
         });
     }
     const threadexportButton = document.getElementById('threadexportButton');
@@ -600,7 +611,18 @@ document.addEventListener("DOMContentLoaded", function () {
         const binaryData = textToBinary(jsonString);
         console.log('Binary Data:', binaryData);
         binaryToRgbImage(binaryData, 300); // 幅300ピクセルで描画
-        downloadCanvasAsPNG('favorite_threads.png');
+        // 現在の日付と時間を取得
+        var now = new Date();
+        var year = now.getFullYear();
+        var month = ("0" + (now.getMonth() + 1)).slice(-2);  // 2桁表示
+        var day = ("0" + now.getDate()).slice(-2);            // 2桁表示
+        var hours = ("0" + now.getHours()).slice(-2);         // 2桁表示
+        var minutes = ("0" + now.getMinutes()).slice(-2);     // 2桁表示
+        var seconds = ("0" + now.getSeconds()).slice(-2);     // 2桁表示
+
+        // ファイル名を作成
+        var formattedFilename = "thread" + year + month + day + hours + minutes + seconds + ".png";
+        downloadCanvasAsPNG(formattedFilename);
         });
     }
      // インポートボタンのイベントリスナー

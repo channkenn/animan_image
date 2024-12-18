@@ -25,11 +25,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <header>
-        <img src="static/icons/image-icon.png" alt="サムネイル画像">
-        <h1>あにまん掲示板&nbsp;お気に入り画像とスレッド</h1>
-        <span class="hamburger-menu">&#9776;</span> <!-- ハンバーガーアイコン -->
-    </header>
+    <!-- ヘッダー -->
+    {% include 'header.html' %}
     <!-- 表示されるブックマークレットリンク -->
     <div id="bookmarkLink" style="display:none; text-align: center;">
         <a href="javascript:(function(){window.location.href=`https://linguistic-sherilyn-animanimage-50068fef.koyeb.app/?autofill=true&source=${encodeURIComponent(window.location.href)}`;})();" 

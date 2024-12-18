@@ -1,77 +1,76 @@
 <!DOCTYPE html>
 <html lang="ja">
-    <head>
-        <meta charset="UTF-8">
-        <meta property="og:description" content="あにまん掲示板のスレッドや画像を一覧できるようにします">
-        <meta property="og:image" content="https://linguistic-sherilyn-animanimage-50068fef.koyeb.app/static/icons/image-icon.png">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="referrer" content="no-referrer">
-        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-        <link rel="icon" href="{{ url_for('static', filename='animanimg_favicon.png') }}" type="image/x-icon">
-        <title>{{ thread_title }}</title>
-    </head>
-    <body>
-        <header>
-            <img src="static/icons/image-icon.png" alt="サムネイル画像" style="visibility: hidden; width: 0; height: 0;">
-            <h1 onclick="window.location.href='{{ thread_url }}'" style="cursor: pointer;">
-                {{ thread_title }}
-            </h1>
-            <span class="hamburger-menu">&#9776;</span> <!-- ハンバーガーアイコン -->
-        </header>
-        
-        <!-- 20241215 ２カラムレイアウト対応-->
-        <div class="container">
-            <!-- 左側カラム -->
-            <div class="left-column">
-                {% include 'left-column-own.html' %}
+<head>
+    <meta charset="UTF-8">
+    <meta property="og:description" content="あにまん掲示板のスレッドや画像を一覧できるようにします">
+    <meta property="og:image" content="https://linguistic-sherilyn-animanimage-50068fef.koyeb.app/static/icons/image-icon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='animanimg_favicon.png') }}" type="image/x-icon">
+    <title>{{ thread_title }}</title>
+</head>
+<body>
+    <!-- ヘッダー -->
+    {% include 'header.html' %}
+    <h1 onclick="window.location.href='{{ thread_url }}'" style="cursor: pointer;">
+        {{ thread_title }}
+    </h1>
+    <!-- 20241215 ２カラムレイアウト対応-->
+    <div class="container">
+        <!-- 左側カラム -->
+        <div class="left-column">
+            {% include 'left-column-own.html' %}
+            <!-- 左側カラム pngインポートエクスポート -->
+            {% include 'left-column-io-png.html' %}
+        </div>
+    <!-- めいんからむ -->
+        <div class="main-column">
+            <!-- 20241213 画像一覧の絞り込み機能 altがImageかOutlinkかで決まる 外部リンクのサムネイルの場合はOutlinkです -->
+            <div class="button-container">
+                <button type="button" class="filter-button active" onclick="filterCards('all', this)">すべて</button>
+                <button type="button" class="filter-button" onclick="filterCards('Image', this)">コピー可能のみ</button>
+                <button type="button" class="filter-button" onclick="filterCards('Outlink', this)">外部リンクのみ</button>
             </div>
-           <!-- めいんからむ -->
-            <div class="main-column">
-                <!-- 20241213 画像一覧の絞り込み機能 altがImageかOutlinkかで決まる 外部リンクのサムネイルの場合はOutlinkです -->
-                <div class="button-container">
-                    <button type="button" class="filter-button active" onclick="filterCards('all', this)">すべて</button>
-                    <button type="button" class="filter-button" onclick="filterCards('Image', this)">コピー可能のみ</button>
-                    <button type="button" class="filter-button" onclick="filterCards('Outlink', this)">外部リンクのみ</button>
-                </div>
-                <div class="card-container">
-                    {% for image in images %}
-                    <div class="card">
-                        <div class="image-container">
-                            <img src="{{ image.thumb_url }}" 
-                            alt="{% if '/img' not in image.img_url %}Outlink{% else %}Image{% endif %}"
-                            onclick="viewImage('{{ image.img_url }}')">
-                            <div class="overlay" onclick="viewImage('{{ image.img_url }}')">
-                                元img表示
-                            </div>
-                        </div>
-                        <!-- 上部の画像をそのまま配置 -->
-                        
-                        <!-- 下部に配置されるように設定 -->
-                        <div class="card-body">
-                            <div class="res-number-container">
-                                <a href="{{ image.res_link }}" target="_blank" class="link-res-number" title="スレッドリンク">
-                                    >>{{ image.res_number }}
-                                </a>
-                            </div>
-                            <div class="button-container">
-                                <button class="copy-btn" onclick="copyToClipboard('{{ image.img_url }}')" title="コピー">
-                                    <img src="{{ url_for('static', filename='icons/copy-icon.png') }}" alt="コピーアイコン" style="width: 24px; height: 24px;">
-                                </button>
-                                <button onclick="addToFavorites('{{ image.thumb_url }}', '{{ image.img_url }}', '{{ image.res_number }}', '{{ image.res_link }}')" title="お気に入り登録">
-                                    <img src="{{ url_for('static', filename='icons/favorite-icon.png') }}" alt="お気に入りアイコン" style="width: 24px; height: 24px;">
-                                </button>
-                            </div>
+            <div class="card-container">
+                {% for image in images %}
+                <div class="card">
+                    <div class="image-container">
+                        <img src="{{ image.thumb_url }}" 
+                        alt="{% if '/img' not in image.img_url %}Outlink{% else %}Image{% endif %}"
+                        onclick="viewImage('{{ image.img_url }}')">
+                        <div class="overlay" onclick="viewImage('{{ image.img_url }}')">
+                            元img表示
                         </div>
                     </div>
-                    {% endfor %}
+                    <!-- 上部の画像をそのまま配置 -->
+                    
+                    <!-- 下部に配置されるように設定 -->
+                    <div class="card-body">
+                        <div class="res-number-container">
+                            <a href="{{ image.res_link }}" target="_blank" class="link-res-number" title="スレッドリンク">
+                                >>{{ image.res_number }}
+                            </a>
+                        </div>
+                        <div class="button-container">
+                            <button class="copy-btn" onclick="copyToClipboard('{{ image.img_url }}')" title="コピー">
+                                <img src="{{ url_for('static', filename='icons/copy-icon.png') }}" alt="コピーアイコン" style="width: 24px; height: 24px;">
+                            </button>
+                            <button onclick="addToFavorites('{{ image.thumb_url }}', '{{ image.img_url }}', '{{ image.res_number }}', '{{ image.res_link }}')" title="お気に入り登録">
+                                <img src="{{ url_for('static', filename='icons/favorite-icon.png') }}" alt="お気に入りアイコン" style="width: 24px; height: 24px;">
+                            </button>
+                        </div>
+                    </div>
                 </div>
+                {% endfor %}
             </div>
-            <!-- 右側カラム -->
-            {% include 'right-column.html' %}
         </div>
-            <footer>
-                <p><a href="/">あにまん掲示板&nbsp;お気に入り画像とスレッド</a></p>
-            </footer>
-            <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-        </body>
-    </html>
+        <!-- 右側カラム -->
+        {% include 'right-column.html' %}
+    </div>
+        <footer>
+            <p><a href="/">あにまん掲示板&nbsp;お気に入り画像とスレッド</a></p>
+        </footer>
+        <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

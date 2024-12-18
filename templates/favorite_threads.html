@@ -11,16 +11,16 @@
     <title>スレッド一覧</title>
 </head>
 <body>
-    <header>
-        <img src="static/icons/image-icon.png" alt="サムネイル画像" style="visibility: hidden; width: 0; height: 0;">
-        <h1>お気に入りスレッド一覧</h1>
-        <span class="hamburger-menu">&#9776;</span> <!-- ハンバーガーアイコン -->
-    </header>
+    <!-- ヘッダー -->
+    {% include 'header.html' %}
+    <h1>お気に入りスレッド一覧</h1>
     <!-- 20241215 ２カラムレイアウト対応-->
     <div class="container">
         <!-- 左側カラム -->
         <div class="left-column">
             {% include 'left-column-own.html' %}
+            <!-- 左側カラム pngインポートエクスポート -->
+            {% include 'left-column-io-png.html' %}
         </div>
         <!-- メインカラム -->
         <div class="main-column">
