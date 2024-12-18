@@ -640,8 +640,24 @@ document.addEventListener("DOMContentLoaded", function () {
             // デコードされたテキストが有効なJSONであるか確認
             if (isValidJSON(importedText)) {
                 const importedData = JSON.parse(importedText); // JSONとして解析
-                addToLocalStorage('favorites', importedData); // ローカルストレージに追加
-                alert('画像一覧インポートが完了しました');
+                // 必要なキーのリスト
+                const requiredKeys = ['imgUrl', 'resLink', 'resNumber', 'thumbUrl']; 
+                // インポートされたデータが配列の場合、各アイテムをチェック
+                const isValid = Array.isArray(importedData) 
+                ? importedData.every(item => requiredKeys.every(key => key in item))
+                : requiredKeys.every(key => key in importedData);
+
+                if (isValid) {
+                    // 正しいキーを持っている場合、ローカルストレージに追加
+                    addToLocalStorage('favorites', importedData);
+                    alert('スレッド一覧インポートが完了しました');
+                } else {
+                    // キーが不足している場合、エラーメッセージを表示
+                    alert('インポートされたデータに不足しているキーがあります');
+                }
+
+                //addToLocalStorage('favorites', importedData); // ローカルストレージに追加
+                //alert('画像一覧インポートが完了しました');
             } else {
                 throw new Error('無効なJSONデータです');
             }
@@ -664,11 +680,27 @@ document.addEventListener("DOMContentLoaded", function () {
             
             try {
             // デコードされたテキストが有効なJSONであるか確認
-            if (isValidJSON(importedText)) {
-                const importedData = JSON.parse(importedText); // JSONとして解析
-                addToLocalStorage('favoriteThreads', importedData); // ローカルストレージに追加
-                alert('スレッド一覧インポートが完了しました');
-            } else {
+            // デコードされたテキストが有効なJSONであるか確認
+                if (isValidJSON(importedText)) {
+                    const importedData = JSON.parse(importedText); // JSONとして解析
+
+                    // 必要なキーのリスト
+                    const requiredKeys = ['thumb', 'title', 'url'];
+
+                    // インポートされたデータが配列の場合、各アイテムをチェック
+                    const isValid = Array.isArray(importedData) 
+                        ? importedData.every(item => requiredKeys.every(key => key in item))
+                        : requiredKeys.every(key => key in importedData);
+
+                    if (isValid) {
+                        // 正しいキーを持っている場合、ローカルストレージに追加
+                        addToLocalStorage('favoriteThreads', importedData);
+                        alert('スレッド一覧インポートが完了しました');
+                    } else {
+                        // キーが不足している場合、エラーメッセージを表示
+                        alert('インポートされたデータに不足しているキーがあります');
+                    }
+                } else {
                 throw new Error('無効なJSONデータです');
             }
             } catch (error) {
