@@ -579,9 +579,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     //20241218 ローカルストレージをpng画像エクスポートインポート
     // エクスポートボタンのイベントリスナー
-    const exportButton = document.getElementById('exportButton');
-    if (exportButton) {
-        exportButton.addEventListener('click', () => {
+    const imageexportButton = document.getElementById('imageexportButton');
+    if (imageexportButton) {
+        imageexportButton.addEventListener('click', () => {
         const data = localStorage.getItem('favorites') || '{}';
         const jsonString = JSON.stringify(JSON.parse(data));
         console.log(jsonString);
@@ -591,13 +591,23 @@ document.addEventListener("DOMContentLoaded", function () {
         downloadCanvasAsPNG('favorites_images.png');
         });
     }
-
+    const threadexportButton = document.getElementById('threadexportButton');
+    if (threadexportButton) {
+        threadexportButton.addEventListener('click', () => {
+        const data = localStorage.getItem('favoriteThreads') || '{}';
+        const jsonString = JSON.stringify(JSON.parse(data));
+        console.log(jsonString);
+        const binaryData = textToBinary(jsonString);
+        console.log('Binary Data:', binaryData);
+        binaryToRgbImage(binaryData, 300); // 幅300ピクセルで描画
+        downloadCanvasAsPNG('favorite_threads.png');
+        });
+    }
      // インポートボタンのイベントリスナー
-    // ここは、importFileのイベントリスナーを設定する部分に追加するコードです
-    const importFile = document.getElementById('importFile'); // インポートボタンのIDを取得
-
-    if (importFile) {
-    importFile.addEventListener('change', (e) => {
+    // ここは、importFileのイベントリスナーを設定する部分に追加するコードです 画像一覧
+    const importimageFile = document.getElementById('importimageFile'); // インポートボタンのIDを取得
+    if (importimageFile) {
+        importimageFile.addEventListener('change', (e) => {
         const file = e.target.files[0]; // 選択したファイルを取得
         if (file) {
         // 画像をデコードしてテキストに戻す関数を呼び出し
@@ -609,7 +619,33 @@ document.addEventListener("DOMContentLoaded", function () {
             if (isValidJSON(importedText)) {
                 const importedData = JSON.parse(importedText); // JSONとして解析
                 addToLocalStorage('favorites', importedData); // ローカルストレージに追加
-                alert('インポートが完了しました');
+                alert('画像一覧インポートが完了しました');
+            } else {
+                throw new Error('無効なJSONデータです');
+            }
+            } catch (error) {
+            alert('データのインポートに失敗しました: ' + error.message); // エラーメッセージを表示
+            }
+        });
+        }
+    });
+    }
+    // ここは、importthreadFileのイベントリスナーを設定する部分に追加するコードです スレッド一覧
+    const importthreadFile = document.getElementById('importthreadFile'); // インポートボタンのIDを取得
+    if (importthreadFile) {
+        importthreadFile.addEventListener('change', (e) => {
+        const file = e.target.files[0]; // 選択したファイルを取得
+        if (file) {
+        // 画像をデコードしてテキストに戻す関数を呼び出し
+        decodeImageToText(file).then((importedText) => {
+            console.log("インポートされたデータ:", importedText);  // 追加：インポートされたテキストを確認
+            
+            try {
+            // デコードされたテキストが有効なJSONであるか確認
+            if (isValidJSON(importedText)) {
+                const importedData = JSON.parse(importedText); // JSONとして解析
+                addToLocalStorage('favoriteThreads', importedData); // ローカルストレージに追加
+                alert('スレッド一覧インポートが完了しました');
             } else {
                 throw new Error('無効なJSONデータです');
             }
