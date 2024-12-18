@@ -418,6 +418,132 @@ function base64ToUtf8(base64) {
     }
     return new TextDecoder().decode(byteArray); // UTF-8に変換
 }
+
+//20241218 ローカルストレージをPNG画像に変換してエクスポートインポートする
+// JSONが有効かどうかを確認する関数
+function isValidJSON(str) {
+    try {
+      JSON.parse(str);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+// --- テキストをバイナリに変換する関数 ---
+// テキストをバイナリに変換する関数
+// テキストをバイナリに変換する関数
+function textToBinary(text) {
+    const encoder = new TextEncoder();
+    const uint8Array = encoder.encode(text);
+    let binaryString = '';
+    uint8Array.forEach(byte => {
+      binaryString += byte.toString(2).padStart(8, '0');  // 8ビットの2進数に変換
+    });
+    return binaryString;
+  }
+  
+  // バイナリデータをRGBカラー画像に変換する関数
+  function binaryToRgbImage(binaryData, width) {
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+  
+    // 高さの計算
+    const height = Math.ceil(binaryData.length / (width * 3));
+    canvas.width = width;
+    canvas.height = height;
+  
+    let pixelIndex = 0;
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        if (pixelIndex + 2 < binaryData.length) {
+          const r = binaryData[pixelIndex] === '1' ? 255 : 0;
+          const g = binaryData[pixelIndex + 1] === '1' ? 255 : 0;
+          const b = binaryData[pixelIndex + 2] === '1' ? 255 : 0;
+          ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+          ctx.fillRect(x, y, 1, 1);
+          pixelIndex += 3;
+        }
+      }
+    }
+  }
+  
+  // CanvasをPNGとしてダウンロードする関数
+  function downloadCanvasAsPNG(filename) {
+    const canvas = document.getElementById('canvas');
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png');
+    link.download = filename;
+    link.click();
+  }
+  
+  // 画像ファイルをデコードしてテキストに戻す関数
+  // 画像ファイルをデコードしてテキストに戻す関数
+  function decodeImageToText(file) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        img.src = e.target.result; // ファイルを画像として読み込む
+      };
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+  
+        const imageData = ctx.getImageData(0, 0, img.width, img.height).data;
+        let binaryString = '';
+        for (let i = 0; i < imageData.length; i += 4) {
+          binaryString += imageData[i] === 255 ? '1' : '0';
+          binaryString += imageData[i + 1] === 255 ? '1' : '0';
+          binaryString += imageData[i + 2] === 255 ? '1' : '0';
+        }
+  
+        const decoder = new TextDecoder();
+        const uint8Array = new Uint8Array(binaryString.match(/.{1,8}/g).map(b => parseInt(b, 2)));
+        const jsonString = decoder.decode(uint8Array); // デコードしたテキストを返す
+        // 末尾から最初の '}' を探して、そこまでを '}]' に変換
+        const decodedText = jsonString.replace(/}[^}]*$/, '}]');
+        // データ整合性チェック（長さが0でないか、期待されるフォーマットか）
+        if (decodedText.length > 0) {
+          resolve(decodedText);
+        } else {
+          throw new Error('デコードしたデータが空です');
+        }
+      };
+      reader.readAsDataURL(file); // 画像をデータURLとして読み込む
+    });
+  }
+  
+// JSONのバリデーションを行う関数
+function isValidJSON(str) {
+    try {
+      JSON.parse(str);  // JSONとして解析してみる
+      return true;
+    } catch (e) {
+      return false; // 解析に失敗した場合は無効なJSON
+    }
+  }
+  
+// ローカルストレージにデータを追加する関数
+function addToLocalStorage(key, data) {
+    // 既存のデータを取得（存在しない場合は空の配列を使用）
+    let existingData = JSON.parse(localStorage.getItem(key)) || [];
+  
+    // 新しいデータをフィルタリングして重複を除外
+    data.forEach(newItem => {
+      const isDuplicate = existingData.some(existingItem => JSON.stringify(existingItem) === JSON.stringify(newItem));
+      if (!isDuplicate) {
+        existingData.push(newItem);  // 重複がなければ追加
+      }
+    });
+  
+    // ローカルストレージに更新したデータを保存
+    localStorage.setItem(key, JSON.stringify(existingData));
+  }
+  
+
 // DOM読み込み後に各関数を実行
 document.addEventListener("DOMContentLoaded", function () {
     const addThreadButton = document.getElementById("add-thread-btn");
@@ -450,6 +576,49 @@ document.addEventListener("DOMContentLoaded", function () {
     const importFavoriteThreadsButton = document.getElementById('importFavoriteThreadsButton');
     if (importFavoriteThreadsButton) {
         importFavoriteThreadsButton.addEventListener('click', () => importData('favoriteThreads'));
+    }
+    //20241218 ローカルストレージをpng画像エクスポートインポート
+    // エクスポートボタンのイベントリスナー
+    const exportButton = document.getElementById('exportButton');
+    if (exportButton) {
+        exportButton.addEventListener('click', () => {
+        const data = localStorage.getItem('favorites') || '{}';
+        const jsonString = JSON.stringify(JSON.parse(data));
+        console.log(jsonString);
+        const binaryData = textToBinary(jsonString);
+        console.log('Binary Data:', binaryData);
+        binaryToRgbImage(binaryData, 300); // 幅300ピクセルで描画
+        downloadCanvasAsPNG('favorites_images.png');
+        });
+    }
+
+     // インポートボタンのイベントリスナー
+    // ここは、importFileのイベントリスナーを設定する部分に追加するコードです
+    const importFile = document.getElementById('importFile'); // インポートボタンのIDを取得
+
+    if (importFile) {
+    importFile.addEventListener('change', (e) => {
+        const file = e.target.files[0]; // 選択したファイルを取得
+        if (file) {
+        // 画像をデコードしてテキストに戻す関数を呼び出し
+        decodeImageToText(file).then((importedText) => {
+            console.log("インポートされたデータ:", importedText);  // 追加：インポートされたテキストを確認
+            
+            try {
+            // デコードされたテキストが有効なJSONであるか確認
+            if (isValidJSON(importedText)) {
+                const importedData = JSON.parse(importedText); // JSONとして解析
+                addToLocalStorage('favorites', importedData); // ローカルストレージに追加
+                alert('インポートが完了しました');
+            } else {
+                throw new Error('無効なJSONデータです');
+            }
+            } catch (error) {
+            alert('データのインポートに失敗しました: ' + error.message); // エラーメッセージを表示
+            }
+        });
+        }
+    });
     }
     // お気に入り画像とスレッドの一覧を表示
     loadFavorites();
