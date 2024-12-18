@@ -15,8 +15,6 @@ function addToFavorites(thumbUrl, imgUrl, resNumber, resLink) {
     localStorage.setItem("favorites", JSON.stringify(favorites));
     alert("画像一覧に追加されました");
 }
-
-
 // お気に入り画像の一覧を表示する
 function loadFavorites() {
     const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
@@ -76,9 +74,6 @@ function loadFavorites() {
     });
     
 }
-
-
-
 // お気に入り画像を削除する
 function removeFavorite(imgSrc) {
     let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
@@ -86,7 +81,6 @@ function removeFavorite(imgSrc) {
     localStorage.setItem("favorites", JSON.stringify(favorites));
     loadFavorites(); // 削除後にリストを更新
 }
-
 // スレッドをお気に入りに追加する
 function addThreadToFavorites(threadTitle, threadUrl, threadThumb) {
     const favoriteThreads = JSON.parse(localStorage.getItem("favoriteThreads")) || [];
@@ -104,8 +98,6 @@ function addThreadToFavorites(threadTitle, threadUrl, threadThumb) {
     localStorage.setItem("favoriteThreads", JSON.stringify(favoriteThreads));
     alert("スレッド一覧に追加されました");
 }
-
-
 // お気に入りスレッドの一覧を表示する
 function displayFavoriteThreads() {
     try {
@@ -157,9 +149,6 @@ function displayFavoriteThreads() {
     }
 }
 
-
-
-
 // お気に入りスレッドを削除する
 function removeThread(url) {
     const favoriteThreads = JSON.parse(localStorage.getItem("favoriteThreads")) || [];
@@ -167,12 +156,10 @@ function removeThread(url) {
     localStorage.setItem("favoriteThreads", JSON.stringify(updatedThreads));
     displayFavoriteThreads(); // リストを再描画
 }
-
 // お気に入りスレッドを表示する
 function viewThread(url) {
     window.location.href = `/view-thread?url=${encodeURIComponent(url)}`;
 }
-
 // URLをクリップボードにコピーする
 function copyToClipboard(text) {
     if (navigator.clipboard && window.isSecureContext) {
@@ -201,7 +188,6 @@ function copyToClipboard(text) {
         document.body.removeChild(textArea);
     }
 }
-
 // 20241212 <img> タグをクリックしたときに image.img_url をブラウザで表示する
 function viewImage(imageUrl) {
     console.log("Image URL: " + imageUrl); // ここでURLを確認
@@ -238,11 +224,9 @@ function filterCards(filterType, clickedButton) {
     buttons.forEach(button => button.classList.remove('active'));
     clickedButton.classList.add('active');
 }
-
 // 20241214 ブックマークレット対応
 // URLパラメータを取得
 const urlParams = new URLSearchParams(window.location.search);
-
 // 'autofill' パラメータが 'true' の場合に処理を実行
 if (urlParams.get('autofill') === 'true') {
   // 'source' パラメータの値を取得
@@ -281,8 +265,6 @@ function addBookmarklet() {
     // アラートでリンクを表示
    // alert("ブックマークレットリンクが作成されました: " + bookmarkletLink);
 }
-
-
 // ハンバーガーメニューのクリックイベント
 document.querySelector('.hamburger-menu').addEventListener('click', function() {
     const leftSidebar = document.querySelector('.left-column');
@@ -291,7 +273,6 @@ document.querySelector('.hamburger-menu').addEventListener('click', function() {
     leftSidebar.style.display = (leftSidebar.style.display === 'none' || leftSidebar.style.display === '') ? 'block' : 'none';
     rightSidebar.style.display = (rightSidebar.style.display === 'none' || rightSidebar.style.display === '') ? 'block' : 'none';
 });
-
 // UTF-8文字列をBase64エンコードする関数
 function utf8ToBase64(str) {
     const encoder = new TextEncoder();  // UTF-8エンコードを行う
@@ -302,7 +283,6 @@ function utf8ToBase64(str) {
     }
     return btoa(binary); // btoaでBase64エンコード
 }
-
 // ローカルストレージからfavoritesデータを取得
 function exportFavoritesData() {
     const favorites = localStorage.getItem('favorites');
@@ -330,7 +310,6 @@ function exportFavoritesData() {
         alert("クリップボードへのエクスポートに失敗しました: " + error);
     });
 }
-
 // ローカルストレージからfavoriteThreadsデータを取得
 function exportFavoriteThreadsData() {
     const favoriteThreads = localStorage.getItem('favoriteThreads');
@@ -358,11 +337,6 @@ function exportFavoriteThreadsData() {
             alert("クリップボードへのエクスポートに失敗しました: " + error);
         });
 }
-
-// エクスポートボタンをクリックで呼び出す
-//document.getElementById('exportFavoritesButton').addEventListener('click', exportFavoritesData);
-//document.getElementById('exportFavoriteThreadsButton').addEventListener('click', exportFavoriteThreadsData);
-
 // Base64データをインポートする関数（共通）
 function importData(dataType) {
     let inputData;
@@ -395,37 +369,45 @@ function importData(dataType) {
         // jsonDataが配列の場合にのみ処理を行う
         if (Array.isArray(jsonData)) {
             // 重複を除外するためのセットを作成
-            const dataSet = new Set(existingData.map(item => item.img_url || item.thread_url)); // URLで重複チェック
+            const dataSet = new Set(existingData.map(item => item.imgUrl || item.url)); // URLで重複チェック
 
             // データから重複を除外して追加
-            const uniqueData = jsonData.filter(item => !dataSet.has(item.img_url || item.thread_url));
+            const uniqueData = jsonData.filter(item => !dataSet.has(item.imgUrl || item.url));
 
             // 既存データに新しいデータを追加
             existingData.push(...uniqueData);
         } else if (jsonData.hasOwnProperty(storageKey)) {
             // jsonDataがオブジェクトで特定のキーが存在する場合
             const newData = jsonData[storageKey];
-            const dataSet = new Set(existingData.map(item => item.img_url || item.thread_url));
+            const dataSet = new Set(existingData.map(item => item.imgUrl || item.url));
 
             // 重複を除外して新しいデータを追加
-            const uniqueData = newData.filter(item => !dataSet.has(item.img_url || item.thread_url));
+            const uniqueData = newData.filter(item => !dataSet.has(item.imgUrl || item.url));
+
+            // 既存データに新しいデータを追加
             existingData.push(...uniqueData);
         } else {
-            throw new Error('Invalid data structure');
+            alert("無効なデータ形式です");
+            return;
         }
 
-        // 更新したデータをローカルストレージに保存
+        // ローカルストレージに更新されたデータを保存
         localStorage.setItem(storageKey, JSON.stringify(existingData));
 
-        alert(`${storageKey} のデータインポートが完了しました`);
-    } catch (e) {
-        alert("インポート中にエラーが発生しました: " + e.message);
+        // インポート後のリスト更新
+        if (dataType === 'favorites') {
+            loadFavorites();
+        } else if (dataType === 'favoriteThreads') {
+            displayFavoriteThreads();
+        }
+
+        alert("データがインポートされました");
+    } catch (error) {
+        console.error("エラーが発生しました:", error);
+        alert("データのインポートに失敗しました");
     }
 }
 
-// インポートボタンのクリックイベント
-//document.getElementById('importFavoritesButton').addEventListener('click', () => importData('favorites'));
-//document.getElementById('importFavoriteThreadsButton').addEventListener('click', () => importData('favoriteThreads'));
 
 // Base64をUTF-8にデコードする関数
 function base64ToUtf8(base64) {
@@ -436,8 +418,6 @@ function base64ToUtf8(base64) {
     }
     return new TextDecoder().decode(byteArray); // UTF-8に変換
 }
-
-
 // DOM読み込み後に各関数を実行
 document.addEventListener("DOMContentLoaded", function () {
     const addThreadButton = document.getElementById("add-thread-btn");
@@ -458,17 +438,15 @@ document.addEventListener("DOMContentLoaded", function () {
     if (exportFavoritesButton) {
         exportFavoritesButton.addEventListener('click', exportFavoritesData);
     }
-    
     const exportFavoriteThreadsButton = document.getElementById('exportFavoriteThreadsButton');
     if (exportFavoriteThreadsButton) {
         exportFavoriteThreadsButton.addEventListener('click', exportFavoriteThreadsData);
     }
+    // インポートボタンのクリックイベント
     const importFavoritesButton = document.getElementById('importFavoritesButton');
-    
     if (importFavoritesButton) {
         importFavoritesButton.addEventListener('click', () => importData('favorites'));
     }
-    
     const importFavoriteThreadsButton = document.getElementById('importFavoriteThreadsButton');
     if (importFavoriteThreadsButton) {
         importFavoriteThreadsButton.addEventListener('click', () => importData('favoriteThreads'));
