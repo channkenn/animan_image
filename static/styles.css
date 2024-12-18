@@ -15,6 +15,13 @@ header {
     justify-content: space-between; /* 左右に要素を配置 */
     align-items: center;      /* 縦方向の中央揃え */
 }
+/* 画像サイズを調整 */
+header img {
+    width: 50px;   /* 幅を50pxに設定 */
+    height: 50px;  /* 高さを50pxに設定 */
+    border: none;             /* 枠線を消す */
+}
+
 header h1 {
     margin: 0; /* h1のデフォルトマージンをリセット */
     font-size: 1.5em; /* フォントサイズの調整 */
