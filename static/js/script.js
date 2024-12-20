@@ -87,6 +87,80 @@ function loadFavorites() {
     favoritesContainer.appendChild(card);
   });
 }
+// 20241220 クリエイティブ用画像の一覧を表示 --start
+// お気に入り画像の一覧を表示する
+function loadFavoritesCreative() {
+  const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+  const favoritesContainer = document.getElementById("favorites-container");
+
+  // コンテナが存在しない場合は処理を中断
+  if (!favoritesContainer) {
+    console.warn("favorites-container 要素が見つかりません");
+    return;
+  }
+
+  console.log(favorites);
+  console.log(favoritesContainer);
+  favoritesContainer.innerHTML = ""; // 既存のリストをクリア
+
+  favorites.forEach((fav) => {
+    console.log(fav);
+    const card = document.createElement("div");
+    card.classList.add("card");
+
+    card.innerHTML = `
+          <!-- 2024年12月11日 thumbはcacheに残すようにした -->
+          <!-- <img src="${encodeURI(
+            fav.thumbUrl
+          )}?nocache=${new Date().getTime()}" alt="お気に入り画像"> -->
+              <!-- 20241213 img_urlが外部リンクかが増加を判定してaltをOutlinkかImageにする -->
+              <!-- <img src="${encodeURI(
+                fav.thumbUrl
+              )}" alt="お気に入り画像"  onclick="viewImage('${encodeURI(
+      fav.imgUrl
+    )}')"> -->
+              <div class="image-container">
+                  <img src="${encodeURI(fav.thumbUrl)}"
+                      alt="${fav.imgUrl.includes("/img") ? "Image" : "Outlink"}"
+                      onclick="viewImage('${encodeURI(fav.imgUrl)}')">
+                  <div class="overlay" onclick="viewImage('${encodeURI(
+                    fav.imgUrl
+                  )}')">
+                      元img表示
+                  </div>
+              </div>
+  
+              <div class="card-body">
+                  <div class="res-number-container">
+                      <a href="${encodeURI(
+                        fav.resLink
+                      )}" target="_blank" class="link-res-number" title="スレッドリンク">
+                          >>${encodeURI(fav.resNumber)}
+                      </a>
+                  </div>
+                  <div class="button-container">
+                      <!-- コピーボタン（アイコン形式） -->
+                      <button class="copy-btn" onclick="copyToClipboardCreative('${encodeURI(
+                        fav.imgUrl
+                      )}')" title="コピー">
+                          <img src="static/icons/copy-icon.png" alt="コピーアイコン" style="width: 24px; height: 24px;">
+                      </button>
+                      
+                      <!-- 削除ボタン（アイコン形式） -->
+                      <button class="remove-btn" onclick="removeFavorite('${encodeURI(
+                        fav.imgUrl
+                      )}')" title="削除">
+                          <img src="static/icons/delete-icon.png" alt="削除アイコン" style="width: 24px; height: 24px;">
+                      </button>
+                  </div>
+              </div>
+  
+          `;
+
+    favoritesContainer.appendChild(card);
+  });
+}
+// 20241220 クリエイティブ用画像の一覧を表示 --end
 // お気に入り画像を削除する
 function removeFavorite(imgSrc) {
   let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
@@ -223,6 +297,39 @@ function copyToClipboard(text) {
     document.body.removeChild(textArea);
   }
 }
+// 20241220 クリエイティブ用URLをクリップボードにコピーする alartなし --start
+// URLをクリップボードにコピーする
+function copyToClipboardCreative(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    // クリップボードAPIが使える場合
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        //alert("URLをコピーしました: " + text); クリエイティブ用は成功時にアラートを出さない
+      })
+      .catch((err) => {
+        alert("コピーに失敗しました: " + err);
+      });
+  } else {
+    // クリップボードAPIが使えない場合
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select(); // textareaの内容を選択
+
+    try {
+      // クリップボードへのコピーを試みる
+      document.execCommand("copy");
+      //alert("URLをコピーしました: " + text);  //クリエイティブ用はアラートを出さない
+    } catch (err) {
+      alert("コピーに失敗しました: " + err);
+      console.error("execCommandによるコピーエラー:", err);
+    }
+
+    document.body.removeChild(textArea);
+  }
+}
+// 20241220 クリエイティブ用URLをクリップボードにコピーする alartなし --end
 // 20241212 <img> タグをクリックしたときに image.img_url をブラウザで表示する
 function viewImage(imageUrl) {
   console.log("Image URL: " + imageUrl); // ここでURLを確認
@@ -602,7 +709,9 @@ function addToLocalStorage(key, data) {
   // ローカルストレージに更新したデータを保存
   localStorage.setItem(key, JSON.stringify(existingData));
 }
+// 20241220 画像をドラッグアンドドロップすることでAltデータを貼り付けられる機能 --ここから
 
+// 20241220 画像をドラッグアンドドロップすることでAltデータを貼り付けられる機能 --ここここまで
 // DOM読み込み後に各関数を実行
 document.addEventListener("DOMContentLoaded", function () {
   const addThreadButton = document.getElementById("add-thread-btn");
@@ -909,5 +1018,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   // お気に入り画像とスレッドの一覧を表示
   loadFavorites();
+  loadFavoritesCreative();
   displayFavoriteThreads();
 });

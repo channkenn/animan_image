@@ -50,6 +50,9 @@ def index():
 @app.route("/favorites", methods=["GET"])
 def favorites():
     return render_template("favorite.html")
+@app.route("/creative", methods=["GET"])
+def creative():
+    return render_template("creative.html")
 @app.route("/view-thread", methods=["GET"])
 def view_thread():
     thread_url = request.args.get("url")

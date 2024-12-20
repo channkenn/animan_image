@@ -1,443 +1,499 @@
 /* 基本的なスタイル */
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;       /* テキストを中央揃え */
-    margin: 20px;
+  font-family: Arial, sans-serif;
+  text-align: center; /* テキストを中央揃え */
+  margin: 20px;
 }
 h1 {
-    display: inline-block;  /* インラインブロックにして、テキストを中央に配置 */
-    font-size: 24px;         /* 必要に応じてサイズ調整 */
-    margin: 0;               /* 不要な余白をなくす */
+  display: inline-block; /* インラインブロックにして、テキストを中央に配置 */
+  font-size: 24px; /* 必要に応じてサイズ調整 */
+  margin: 0; /* 不要な余白をなくす */
 }
 /* ヘッダースタイル */
 header {
-    background-color: #104cd0; /* ヘッダーの背景色 */
-    color: white;             /* テキスト色を白に設定 */
-    padding: 10px;            /* 余白を追加 */
-    text-align: center;       /* テキストを中央揃え */
-    font-size: 1.5em;         /* フォントサイズを調整 */
-    display: flex;
-    justify-content: space-between; /* 左右に要素を配置 */
-    align-items: center;      /* 縦方向の中央揃え */
+  background-color: #104cd0; /* ヘッダーの背景色 */
+  color: white; /* テキスト色を白に設定 */
+  padding: 10px; /* 余白を追加 */
+  text-align: center; /* テキストを中央揃え */
+  font-size: 1.5em; /* フォントサイズを調整 */
+  display: flex;
+  justify-content: space-between; /* 左右に要素を配置 */
+  align-items: center; /* 縦方向の中央揃え */
 }
 /* 画像サイズを調整 */
 header img {
-    width: 50px;   /* 幅を50pxに設定 */
-    height: 50px;  /* 高さを50pxに設定 */
-    border: none;             /* 枠線を消す */
+  width: 50px; /* 幅を50pxに設定 */
+  height: 50px; /* 高さを50pxに設定 */
+  border: none; /* 枠線を消す */
 }
 
 header h1 {
-    margin: 0; /* h1のデフォルトマージンをリセット */
-    font-size: 1.5em; /* フォントサイズの調整 */
+  margin: 0; /* h1のデフォルトマージンをリセット */
+  font-size: 1.5em; /* フォントサイズの調整 */
 }
 
 header .hamburger-menu {
-    margin-top: 10px; /* h1とアイコンの間にスペースを確保 */
-    font-size: 2em; /* ハンバーガーアイコンの大きさ調整 */
-    cursor: pointer; /* アイコンをクリック可能に */
+  margin-top: 10px; /* h1とアイコンの間にスペースを確保 */
+  font-size: 2em; /* ハンバーガーアイコンの大きさ調整 */
+  cursor: pointer; /* アイコンをクリック可能に */
 }
 
 header button {
-    margin-top: 20px; /* アイコンとボタンの間にスペースを確保 */
-    padding: 10px 20px; /* ボタンのパディング調整 */
-    font-size: 1em; /* ボタンのフォントサイズ調整 */
-    cursor: pointer; /* ボタンをクリック可能に */
+  margin-top: 20px; /* アイコンとボタンの間にスペースを確保 */
+  padding: 10px 20px; /* ボタンのパディング調整 */
+  font-size: 1em; /* ボタンのフォントサイズ調整 */
+  cursor: pointer; /* ボタンをクリック可能に */
 }
 .header-title-link {
-    text-decoration: none;    /* リンクの下線を消す */
-    color: inherit;           /* 親要素の色を引き継ぐ */
-    display: inline;          /* インライン要素として表示 */
-    font-size: inherit;       /* 親のフォントサイズを引き継ぐ */
-    font-weight: inherit;     /* 親のフォントの太さを引き継ぐ */
-    cursor: pointer;          /* クリック可能であることを示す */
+  text-decoration: none; /* リンクの下線を消す */
+  color: inherit; /* 親要素の色を引き継ぐ */
+  display: inline; /* インライン要素として表示 */
+  font-size: inherit; /* 親のフォントサイズを引き継ぐ */
+  font-weight: inherit; /* 親のフォントの太さを引き継ぐ */
+  cursor: pointer; /* クリック可能であることを示す */
 }
 
 .header-title-link:hover {
-    text-decoration: underline; /* ホバー時に下線を表示（任意） */
+  text-decoration: underline; /* ホバー時に下線を表示（任意） */
 }
 
 /* ハンバーガーアイコンのスタイル */
 .hamburger-menu {
-    font-size: 30px;
-    cursor: pointer;
+  font-size: 30px;
+  cursor: pointer;
 }
 /* フッタースタイル */
 footer {
-    background-color: #104cd0; /* 背景色 */
-    color: white;              /* テキスト色 */
-    padding: 10px;             /* 余白 */
-    text-align: center;        /* テキスト中央揃え */
-    font-size: 1.5em;          /* フォントサイズ */
-    display: flex;             
-    justify-content: center;   /* 水平方向に中央揃え */
-    align-items: center;       /* 垂直方向に中央揃え */
+  background-color: #104cd0; /* 背景色 */
+  color: white; /* テキスト色 */
+  padding: 10px; /* 余白 */
+  text-align: center; /* テキスト中央揃え */
+  font-size: 1.5em; /* フォントサイズ */
+  display: flex;
+  justify-content: center; /* 水平方向に中央揃え */
+  align-items: center; /* 垂直方向に中央揃え */
 }
 footer a {
-    color: white;            /* リンクの文字色を白に設定 */
-    text-decoration: none;   /* リンクの下線を消す（任意） */
+  color: white; /* リンクの文字色を白に設定 */
+  text-decoration: none; /* リンクの下線を消す（任意） */
 }
 /* リンクスタイル */
 a {
-    font-size: 16px;
-    color: blue;
-    text-decoration: underline;
-    margin-bottom: 20px;
-    display: inline-block;
+  font-size: 16px;
+  color: blue;
+  text-decoration: underline;
+  margin-bottom: 20px;
+  display: inline-block;
 }
 
 a:hover {
-    color: darkblue;
+  color: darkblue;
 }
 
 /* リンクの背景色をヘッダーの背景色に変更 */
 a.link-res-number {
-    background-color: #104cd0;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 4px;
-    text-decoration: none;
-    display: inline-block;
+  background-color: #104cd0;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  text-decoration: none;
+  display: inline-block;
 }
 
 a.link-res-number:hover {
-    background-color: #0d3c9b;
-    color: white;
+  background-color: #0d3c9b;
+  color: white;
 }
 
 /* パネルリンクスタイル */
 .panel-link {
-    display: block;
-    padding: 15px;
-    margin: 10px 0;
-    background-color: #f0f0f0;
-    color: #333;
-    text-decoration: none;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 16px;
-    text-align: center;
-    transition: background-color 0.3s, box-shadow 0.3s;
-    
-    /* 折り返し設定 */
-    word-break: break-all;       /* 単語の途中で折り返し */
-    overflow-wrap: break-word;   /* 長い単語を折り返す */
-    white-space: normal;         /* 自動折り返しを許可 */
-    max-width: 100%;             /* 親要素の幅に収める */
+  display: block;
+  padding: 15px;
+  margin: 10px 0;
+  background-color: #f0f0f0;
+  color: #333;
+  text-decoration: none;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  text-align: center;
+  transition: background-color 0.3s, box-shadow 0.3s;
+
+  /* 折り返し設定 */
+  word-break: break-all; /* 単語の途中で折り返し */
+  overflow-wrap: break-word; /* 長い単語を折り返す */
+  white-space: normal; /* 自動折り返しを許可 */
+  max-width: 100%; /* 親要素の幅に収める */
 }
 
-
 .panel-link:hover {
-    background-color: #e0e0e0;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
+  background-color: #e0e0e0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
 }
 
 /* テーブルコンテナ */
 .table-container {
-    display: table;
-    width: 100%;
+  display: table;
+  width: 100%;
 }
 
 .row {
-    display: flex;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #ddd;
 }
 
 .cell {
-    flex: 1;
-    padding: 10px;
+  flex: 1;
+  padding: 10px;
 }
 
 /* 画像スタイル */
 img {
-    max-width: 200px;
-    height: auto;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+  max-width: 200px;
+  height: auto;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
 /* 画像コンテナ */
 .image-container {
-    position: relative;
-    display: inline-block;
-    max-width: 200px;
-    height: auto;
-    overflow: hidden;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+  position: relative;
+  display: inline-block;
+  max-width: 200px;
+  height: auto;
+  overflow: hidden;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
 /* 画像のスタイル */
 .image-container img {
-    width: 100%;
-    height: auto;
-    display: block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    object-fit: cover;
+  width: 100%;
+  height: auto;
+  display: block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  object-fit: cover;
 }
 
 /* オーバーレイのスタイル */
 .image-container .overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    color: #fff;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    cursor: pointer;
-    border-radius: 4px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+  border-radius: 4px;
 }
 
 /* ホバー時にオーバーレイを表示 */
 .image-container:hover .overlay {
-    opacity: 1;
+  opacity: 1;
 }
 
 /* ボタンスタイル */
 button {
-    padding: 5px 10px;
-    cursor: pointer;
-    margin-right: 5px;
-    border: none;
-    transition: opacity 0.3s;
+  padding: 5px 10px;
+  cursor: pointer;
+  margin-right: 5px;
+  border: none;
+  transition: opacity 0.3s;
 }
 
 button:hover {
-    opacity: 0.8;
+  opacity: 0.8;
 }
 
 button.copy-btn {
-    margin-left: 10px;
+  margin-left: 10px;
 }
 
 .remove-btn {
-    background-color: red;
-    color: white;
+  background-color: red;
+  color: white;
 }
 
 .remove-btn:hover {
-    background-color: darkred;
+  background-color: darkred;
 }
 
 /* 「お気に入りスレッドに追加」ボタン */
 button#add-thread-btn {
-    background-color: #007BFF;
-    color: white;
-    border: 1px solid #0056b3;
-    border-radius: 4px;
-    padding: 8px 12px;
-    font-size: 14px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s, box-shadow 0.3s;
+  background-color: #007bff;
+  color: white;
+  border: 1px solid #0056b3;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 14px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 button#add-thread-btn:hover {
-    background-color: #0056b3;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
+  background-color: #0056b3;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
 }
 
 /* フィルターボタンスタイル */
 .button-container {
-    display: flex;
-    width: 100%;
-    margin-bottom: 20px;
+  display: flex;
+  width: 100%;
+  margin-bottom: 20px;
 }
 
 .filter-button {
-    flex: 1;
-    padding: 10px 20px;
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    cursor: pointer;
-    font-size: 16px;
-    text-align: center;
-    transition: background-color 0.3s;
+  flex: 1;
+  padding: 10px 20px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  font-size: 16px;
+  text-align: center;
+  transition: background-color 0.3s;
 }
 
 .filter-button:not(:last-child) {
-    margin-right: 10px;
+  margin-right: 10px;
 }
 
 .filter-button.active {
-    background-color: #007BFF;
-    color: white;
-    border-color: #007BFF;
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
 }
 
 .filter-button:hover {
-    background-color: #0056b3;
-    color: white;
-    border-color: #004080;
+  background-color: #0056b3;
+  color: white;
+  border-color: #004080;
 }
 
 /* カード表示用スタイル */
 .card-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: flex-start;
 }
 
 .card {
-    width: 125px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
-    text-align: center;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    transition: transform 0.2s, box-shadow 0.2s;
+  width: 125px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  text-align: center;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .card img {
-    width: 100%;
-    height: auto;
-    border-radius: 4px;
-    margin-bottom: 10px;
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin-bottom: 10px;
 }
 
 .card .link {
-    display: block;
-    margin: 10px 0;
-    font-size: 14px;
-    color: #007bff;
-    text-decoration: none;
+  display: block;
+  margin: 10px 0;
+  font-size: 14px;
+  color: #007bff;
+  text-decoration: none;
 }
 
 .card .link:hover {
-    color: #0056b3;
+  color: #0056b3;
 }
 
 .card .button-container {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: auto;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: auto;
 }
 
 /* すべての要素にbox-sizingを適用 */
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 /* アイコンボタンのスタイル */
 .button-container button {
-    background-color: transparent;
-    border: none;
-    padding: 0;
-    cursor: pointer;
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 }
 
 .button-container button img {
-    width: 24px;
-    height: 24px;
+  width: 24px;
+  height: 24px;
 }
 
 .button-container button:hover img {
-    opacity: 0.8;
+  opacity: 0.8;
 }
 
 /* 2カラムレイアウト用のスタイル */
 .container {
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
-    max-width: 1480px;
-    margin: 0 auto;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  max-width: 1480px;
+  margin: 0 auto;
 }
 
 /* 左カラム */
 .left-column {
-    width: 10%;
-    background-color: #f4f4f4;
-    padding: 20px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
+  width: 10%;
+  background-color: #f4f4f4;
+  padding: 20px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
 }
 /* 左カラム 自サイトリンク*/
-.left-column-own{
-    width: 100%;        /* 左1カラムにするため幅を100%に設定 */
-    margin-bottom: 20px; /* 上下の余白を調整 */
+.left-column-own {
+  width: 100%; /* 左1カラムにするため幅を100%に設定 */
+  margin-bottom: 20px; /* 上下の余白を調整 */
 }
 /* 左カラム インポートエクスポート*/
-.left-column-io{
-    width: 100%;        /* 左1カラムにするため幅を100%に設定 */
-    margin-bottom: 20px; /* 上下の余白を調整 */
+.left-column-io {
+  width: 100%; /* 左1カラムにするため幅を100%に設定 */
+  margin-bottom: 20px; /* 上下の余白を調整 */
 }
 /* メインカラム */
 .main-column {
-    width: 90%;
-    background-color: #fff;
-    padding: 20px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
+  width: 90%;
+  background-color: #fff;
+  padding: 20px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
 }
+/* 横並びにする親コンテナ */
+.content-container {
+  display: flex;
+  gap: 10px; /* 隙間を設定（任意） */
+  margin-top: 10px; /* 上部の余白（任意） */
+}
+
+/* .content-container の直下にある .textarea-container のスタイル */
+.content-container > .textarea-container {
+  width: 40%;
+}
+
+/* .content-container の直下にある #favorites-container のスタイル */
+.content-container > #favorites-container {
+  width: 60%;
+  max-height: 600px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
 /* 右カラム */
 .right-column {
-    width: 10%;
-    background-color: #f4f4f4;
-    padding: 20px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
+  width: 10%;
+  background-color: #f4f4f4;
+  padding: 20px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+}
+/* テキストエリアのサイズを指定 */
+#textArea {
+  width: 100%; /* 横幅を100%に設定（親要素に合わせる） */
+  height: 400px; /* 高さを200pxに設定 */
 }
 /* 660px未満でカードを3列表示 */
 @media (max-width: 660px) {
-    .card-container {
-        gap: 10px;
-        justify-content: space-between;
-    }
+  .card-container {
+    gap: 10px;
+    justify-content: space-between;
+  }
 
-    .card, .thread-item {
-        flex: 1 1 calc(33.33% - 10px);
-        max-width: calc(33.33% - 10px);
-        margin-bottom: 10px;
-    }
-    .container {
-        display: block; /* 2カラムレイアウトを解除 */
-    }
-    .main-column,
-    .left-column {
-        width: 100%;       /* 幅を100%にして縦並びに */
-        float: none;       /* floatを解除 */
-    }
+  .card,
+  .thread-item {
+    flex: 1 1 calc(33.33% - 10px);
+    max-width: calc(33.33% - 10px);
+    margin-bottom: 10px;
+  }
+  .container {
+    display: block; /* 2カラムレイアウトを解除 */
+  }
+  .main-column,
+  .left-column {
+    width: 100%; /* 幅を100%にして縦並びに */
+    float: none; /* floatを解除 */
+  }
+  /* 縦並びにする親コンテナ */
+  /* 親コンテナのスタイル */
+  .content-container {
+    width: 100%; /* 幅を100%にして縦並びに */
+    display: flex;
+    flex-direction: column; /* 縦並びにする */
+    gap: 10px; /* アイテム間の隙間 */
+    margin-top: 10px; /* 上部の余白 */
+  }
+
+  /* .textarea-container内のテキストエリアに高さを設定 */
+  /* .content-container の直下にある .textarea-container のスタイル */
+  .content-container > .textarea-container {
+    width: 100%;
+  }
+  /* .content-container内のテキストエリアに高さを設定 */
+  .textarea-container > #textArea {
+    width: 100%; /* 幅を親要素に合わせて100% */
+    max-width: 660px; /* 最大幅を600pxに設定（任意） */
+    height: 200px; /* 任意の高さに設定 */
+    resize: both; /* ユーザーがサイズを変更できるように */
+  }
+
+  /* .content-containerの直下にある #favorites-container のスタイル */
+  .content-container > #favorites-container {
+    width: 100%; /* 幅を100%に設定 */
+    border: 1px solid #ccc;
+    padding: 10px;
+    clear: both; /* 浮動要素の解除 */
+  }
 }
 
 /* スクリーン幅が768px以下の場合にハンバーガーアイコンを表示 */
 @media (max-width: 768px) {
-    .hamburger-menu {
-        display: block;
-    }
+  .hamburger-menu {
+    display: block;
+  }
 
-    .left-column {
-        width: 100%;
-        display: none; /* 初期状態は非表示 */
-    }
+  .left-column {
+    width: 100%;
+    display: none; /* 初期状態は非表示 */
+  }
 
-    .main-content {
-        margin-left: 0;
-    }
-    .right-column {
-        width: 100%;
-        display: none; /* 初期状態は非表示 */
-    }
+  .main-content {
+    margin-left: 0;
+  }
+  .right-column {
+    width: 100%;
+    display: none; /* 初期状態は非表示 */
+  }
 }

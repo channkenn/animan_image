@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-SXRM6YR259"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-SXRM6YR259");
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="no-referrer" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='animanimg_favicon.png') }}"
+      type="image/x-icon"
+    />
+    <title>クリエイター向け</title>
+  </head>
+  <body>
+    <!-- ヘッダー -->
+    {% include 'header.html' %}
+    <h1>クリエイター向け</h1>
+    <!-- 20241215 ２カラムレイアウト対応-->
+    <div class="container">
+      <!-- 左側カラム -->
+      <div class="left-column">
+        {% include 'left-column-own.html' %}
+        <!-- 左側カラム pngインポートエクスポート -->
+        {% include 'left-column-io-png.html' %}
+      </div>
+      <!-- メインカラム -->
+      <div class="main-column">
+        <!-- 20241213 画像一覧の絞り込み機能 altがImageかOutlinkかで決まる 外部リンクのサムネイルの場合はOutlinkです -->
+        <div class="button-container">
+          <button
+            type="button"
+            class="filter-button"
+            onclick="filterCards('all', this)"
+          >
+            すべて
+          </button>
+          <button
+            type="button"
+            class="filter-button active"
+            onclick="filterCards('Image', this)"
+          >
+            コピー可能のみ
+          </button>
+          <button
+            type="button"
+            class="filter-button"
+            onclick="filterCards('Outlink', this)"
+          >
+            外部リンクのみ
+          </button>
+        </div>
+        <!-- 横並びにするコンテナ -->
+        <div class="content-container">
+          <div class="textarea-container">
+            <!-- メインカラム textarea -->
+            {% include 'textarea.html' %}
+          </div>
+          <div id="favorites-container" class="card-container"></div>
+        </div>
+      </div>
+      <!-- 右側カラム -->
+      {% include 'right-column.html' %}
+    </div>
+    <footer>
+      <p><a href="/">あにまん掲示板&nbsp;お気に入り画像とスレッド</a></p>
+    </footer>
+    <script src="/static/js/script.js"></script>
+  </body>
+</html>
