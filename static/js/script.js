@@ -602,52 +602,6 @@ function addToLocalStorage(key, data) {
   // ローカルストレージに更新したデータを保存
   localStorage.setItem(key, JSON.stringify(existingData));
 }
-//20241220 csvダウンロード部分追加 --ここから
-// ローカルストレージからデータを取得
-// CSVデータに変換する関数
-function convertToCSV(arr) {
-  const headers = Object.keys(arr[0]);
-  const rows = arr.map((obj) =>
-    headers.map((fieldName) => obj[fieldName]).join(",")
-  );
-
-  return [headers.join(","), ...rows].join("\n");
-}
-
-// パネルがクリックされた時にCSVファイルをダウンロード
-document.querySelector(".panel-link").addEventListener("click", function () {
-  // ローカルストレージからデータを取得
-  const data = JSON.parse(localStorage.getItem("favorites")) || [
-    {
-      imgUrl: "https://example.com/image1.jpg",
-      resLink: "https://example.com/res1",
-      resNumber: "123",
-      thumbUrl: "https://example.com/thumb1.jpg",
-    },
-    {
-      imgUrl: "https://example.com/image2.jpg",
-      resLink: "https://example.com/res2",
-      resNumber: "456",
-      thumbUrl: "https://example.com/thumb2.jpg",
-    },
-  ];
-
-  // CSV形式に変換
-  const csvData = convertToCSV(data);
-
-  // Blobオブジェクトを作成
-  const blob = new Blob([csvData], { type: "text/csv" });
-
-  // ダウンロードリンクを作成
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = "favorites.csv";
-
-  // ダウンロードを実行
-  link.click();
-});
-
-//20241220 csvダウンロード部分追加 --ここまで
 
 // DOM読み込み後に各関数を実行
 document.addEventListener("DOMContentLoaded", function () {
