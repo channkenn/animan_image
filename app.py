@@ -53,6 +53,9 @@ def favorites():
 @app.route("/creative", methods=["GET"])
 def creative():
     return render_template("creative.html")
+@app.route("/resize", methods=["GET"])
+def resize():
+    return render_template("resize.html")
 @app.route("/view-thread", methods=["GET"])
 def view_thread():
     thread_url = request.args.get("url")
