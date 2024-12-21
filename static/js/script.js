@@ -1042,12 +1042,13 @@ document.addEventListener("DOMContentLoaded", function () {
     // 貼り付けたテキストを取得
     const pastedText = e.clipboardData.getData("text");
 
-    // URLパターンを正規表現で検出
-    const urlPattern = /https?:\/\/bbs\.animanch\.com\/img\/(\d+)\/(\d+)/g;
+    // URLパターンを正規表現で検出（末尾の数字部分を除外）
+    const urlPattern = /https?:\/\/bbs\.animanch\.com\/img\/(\d+)\/(\d+)/;
 
     // もし貼り付けたテキストがURLの形式に一致した場合
     if (urlPattern.test(pastedText)) {
-      let newUrl = pastedText;
+      // 正規表現に一致した部分を抽出
+      let newUrl = pastedText.replace(/\/\d+$/, ""); // 末尾の数字部分を削除
 
       // すでにそのURLがあるかを確認
       if (urlCounts[newUrl]) {
