@@ -709,9 +709,7 @@ function addToLocalStorage(key, data) {
   // ローカルストレージに更新したデータを保存
   localStorage.setItem(key, JSON.stringify(existingData));
 }
-// 20241220 画像をドラッグアンドドロップすることでAltデータを貼り付けられる機能 --ここから
 
-// 20241220 画像をドラッグアンドドロップすることでAltデータを貼り付けられる機能 --ここここまで
 // DOM読み込み後に各関数を実行
 document.addEventListener("DOMContentLoaded", function () {
   const addThreadButton = document.getElementById("add-thread-btn");
@@ -1020,4 +1018,16 @@ document.addEventListener("DOMContentLoaded", function () {
   loadFavorites();
   loadFavoritesCreative();
   displayFavoriteThreads();
+  //20241221 画像のフィルタリング機能をhtmlページごとにする機能 --ここから
+  // ボタンを取得
+  const button = document.getElementById("filter-copyable");
+
+  // ボタンが存在するか確認してクリック
+  if (button) {
+    button.click(); // ボタンをクリック
+    console.log("ボタンがクリックされました。");
+  } else {
+    console.error("指定されたボタンが見つかりません。");
+  }
+  //20241221 画像のフィルタリング機能をhtmlページごとにする機能 --ここまで
 });
