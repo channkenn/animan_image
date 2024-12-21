@@ -1030,4 +1030,108 @@ document.addEventListener("DOMContentLoaded", function () {
     console.error("指定されたボタンが見つかりません。");
   }
   //20241221 画像のフィルタリング機能をhtmlページごとにする機能 --ここまで
+  // 20241221 クリエイター向けのテキストエリアにimgURLを貼り付けた時に重複した場合自動で末尾にナンバリングを加える --start
+  // 既存のURLとそのカウントを保存するためのオブジェクト
+  const urlCounts = {};
+
+  // テキストエリアを取得
+  const textArea = document.getElementById("textArea");
+
+  // 貼り付け時の処理
+  textArea.addEventListener("paste", (e) => {
+    // 貼り付けたテキストを取得
+    const pastedText = e.clipboardData.getData("text");
+
+    // URLパターンを正規表現で検出
+    const urlPattern = /https?:\/\/bbs\.animanch\.com\/img\/(\d+)\/(\d+)/g;
+
+    // もし貼り付けたテキストがURLの形式に一致した場合
+    if (urlPattern.test(pastedText)) {
+      let newUrl = pastedText;
+
+      // すでにそのURLがあるかを確認
+      if (urlCounts[newUrl]) {
+        // すでに存在する場合、末尾にカウントアップ
+        urlCounts[newUrl]++;
+        newUrl = `${newUrl}/${urlCounts[newUrl]}`;
+      } else {
+        // 新しいURLの場合、カウントを1に設定
+        urlCounts[newUrl] = 1;
+        newUrl = `${newUrl}/1`;
+      }
+
+      // 既存のテキストエリアの内容に新しいURLを追加
+      textArea.value += newUrl + "\n";
+
+      // デフォルトの貼り付け処理を無効化（テキストエリアにURLをそのまま貼り付けるのを防ぐ）
+      e.preventDefault();
+    }
+  });
+
+  // コピーボタンの処理
+  document.getElementById("copyButton").addEventListener("click", () => {
+    const textArea = document.getElementById("textArea");
+
+    // テキストを選択してコピー
+    textArea.select();
+    navigator.clipboard
+      .writeText(textArea.value)
+      .then(() => {
+        document.getElementById("copyMessage").style.display = "block";
+        setTimeout(() => {
+          document.getElementById("copyMessage").style.display = "none";
+        }, 2000);
+      })
+      .catch((err) => {
+        console.error("コピーに失敗しました:", err);
+      });
+  });
+
+  // クリアボタンの処理
+  document.getElementById("clearButton").addEventListener("click", () => {
+    const textArea = document.getElementById("textArea");
+    textArea.value = ""; // テキストエリアを空にする
+    updateCount(); // カウントを更新
+  });
+
+  // テキストエリアの入力に対して文字数と行数を更新
+  document.getElementById("textArea").addEventListener("input", updateCount);
+
+  // 文字数と行数をカウントして表示する関数
+  function updateCount() {
+    const textArea = document.getElementById("textArea");
+    const text = textArea.value;
+
+    // 文字数をカウント
+    const charCount = text.length;
+
+    // 行数をカウント（改行で分割して行数を計算）
+    const lineCount = text.split("\n").length;
+
+    // 文字数と行数を表示
+    const charCountSpan = document.getElementById("charCount");
+    const lineCountSpan = document.getElementById("lineCount");
+
+    charCountSpan.textContent = charCount;
+    lineCountSpan.textContent = lineCount;
+
+    // 文字数が1000以上の場合、赤色に変更
+    if (charCount >= 1000) {
+      charCountSpan.style.color = "red";
+    } else {
+      charCountSpan.style.color = "black";
+    }
+
+    // 行数が30以上の場合、赤色に変更
+    if (lineCount >= 30) {
+      lineCountSpan.style.color = "red";
+    } else {
+      lineCountSpan.style.color = "black";
+    }
+  }
+
+  // ページ読み込み時にカウントを初期化
+  updateCount();
+
+  // 20241221 クリエイター向けのテキストエリアにimgURLを貼り付けた時に重複した場合自動で末尾にナンバリングを加える --end
 });
