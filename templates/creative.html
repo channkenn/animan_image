@@ -43,6 +43,25 @@
       </div>
       <!-- メインカラム -->
       <div class="main-column">
+        <button onclick="toggleIframe()">
+          あにまん掲示板:ウマ娘・競馬 表示 / 非表示
+        </button>
+
+        <iframe
+          id="myIframe"
+          src="https://bbs.animanch.com/category8/"
+          style="display: none; width: 100%; height: 500px"
+        ></iframe>
+        <script>
+          function toggleIframe() {
+            const iframe = document.getElementById("myIframe");
+            if (iframe.style.display === "none") {
+              iframe.style.display = "block"; // 表示
+            } else {
+              iframe.style.display = "none"; // 非表示
+            }
+          }
+        </script>
         <!-- 20241221 画像絞り込みの初期値を割り振るための措置 -->
         <div class="filter-container">
           <!-- 20241213 画像一覧の絞り込み機能 altがImageかOutlinkかで決まる 外部リンクのサムネイルの場合はOutlinkです -->
@@ -76,7 +95,7 @@
         <div class="content-container">
           <div class="textarea-container">
             <!-- メインカラム textarea -->
-            {% include 'textarea.html' %}
+            {% include 'textarea.html' %} {% include 'resize_.html' %}
           </div>
           <div id="favorites-container" class="card-container"></div>
         </div>

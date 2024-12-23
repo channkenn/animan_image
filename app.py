@@ -56,6 +56,9 @@ def creative():
 @app.route("/resize", methods=["GET"])
 def resize():
     return render_template("resize.html")
+@app.route("/resize_with_drawing", methods=["GET"])
+def resize_with_drawing():
+    return render_template("resize_with_drawing.html")
 @app.route("/view-thread", methods=["GET"])
 def view_thread():
     thread_url = request.args.get("url")
