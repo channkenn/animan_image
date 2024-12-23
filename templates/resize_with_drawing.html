@@ -1,17 +1,59 @@
-<input type="file" id="fileInput" accept="image/png" />
-<input type="number" id="heightInput" placeholder="指定する高さ (px)" min="1" />
-<button id="resizeButton">リサイズ</button>
-<button id="downloadButton" style="display: none">ダウンロード</button>
-<button id="eraserButton">消しゴムモード切り替え</button>
-<button id="undoButton">元に戻す</button>
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-SXRM6YR259"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
 
-<!-- ペンの色選択 -->
-<label for="penColor">ペンの色:</label>
-<input type="color" id="penColor" value="#ff0000" />
+      gtag("config", "G-SXRM6YR259");
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="no-referrer" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='animanimg_favicon.png') }}"
+      type="image/x-icon"
+    />
+    <title>画像編集(別窓)</title>
+  </head>
+  <body>
+    <input type="file" id="fileInput" accept="image/png" />
+    <input
+      type="number"
+      id="heightInput"
+      placeholder="指定する高さ (px)"
+      min="1"
+    />
+    <button id="resizeButton">リサイズ</button>
+    <button id="downloadButton" style="display: none">ダウンロード</button>
+    <button id="eraserButton">消しゴムモード切り替え</button>
+    <button id="undoButton">元に戻す</button>
 
-<!-- ペンの太さ選択 -->
-<label for="penWidth">ペンの太さ:</label>
-<input type="range" id="penWidth" min="1" max="10" value="2" />
-<p id="imageInfo">選択した画像の情報: -</p>
-<canvas id="canvas" style="border: 1px solid black; display: block"></canvas>
-<script src="/static/js/resize_with_drawing.js"></script>
+    <!-- ペンの色選択 -->
+    <label for="penColor">ペンの色:</label>
+    <input type="color" id="penColor" value="#ff0000" />
+
+    <!-- ペンの太さ選択 -->
+    <label for="penWidth">ペンの太さ:</label>
+    <input type="range" id="penWidth" min="1" max="10" value="2" />
+    <p id="imageInfo">選択した画像の情報: -</p>
+    <canvas
+      id="canvas"
+      style="border: 1px solid black; display: block"
+    ></canvas>
+    <script src="/static/js/resize_with_drawing.js"></script>
+  </body>
+</html>
