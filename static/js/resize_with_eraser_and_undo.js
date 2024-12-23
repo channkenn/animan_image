@@ -51,28 +51,32 @@ undoButton.addEventListener("click", () => {
   }
 });
 
-// 画像を選択して描画
-fileInput.addEventListener("change", (event) => {
-  const file = event.target.files[0];
-  if (!file) {
-    alert("ファイルを選択してください。");
-    return;
-  }
+// ファイル選択イベント
+fileInput.addEventListener("change", () => {
+  const file = fileInput.files[0];
+  if (!file) return;
 
   const reader = new FileReader();
   reader.onload = (e) => {
-    const img = new Image();
-    img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
-      saveHistory(); // 最初の状態を履歴に保存
+    originalImage = new Image();
+    originalImage.onload = () => {
+      // キャンバスのリセット
+      canvas.width = originalImage.width;
+      canvas.height = originalImage.height;
+      ctx.clearRect(0, 0, canvas.width, canvas.height); // キャンバスをクリア
+      ctx.drawImage(originalImage, 0, 0);
+
+      // 画像情報を表示
+      imageInfo.textContent = `選択した画像の情報: 幅 ${originalImage.width}px, 高さ ${originalImage.height}px`;
+
+      // 描画履歴をリセット
+      history.length = 0; // 履歴を空にする
+      historyIndex = -1; // 履歴位置を初期化
     };
-    img.src = e.target.result;
+    originalImage.src = e.target.result;
   };
   reader.readAsDataURL(file);
 });
-
 // 消しゴムモード切り替え
 eraserButton.addEventListener("click", () => {
   isEraserMode = !isEraserMode;
@@ -114,30 +118,41 @@ canvas.addEventListener("mousemove", (event) => {
 canvas.addEventListener("mouseup", () => (isDrawing = false));
 canvas.addEventListener("mouseout", () => (isDrawing = false));
 
-// 指定した高さでリサイズしてダウンロード
+// リサイズボタンイベント
 resizeButton.addEventListener("click", () => {
-  const specifiedHeight = parseInt(heightInput.value, 10);
-
-  if (!specifiedHeight || specifiedHeight <= 0) {
-    alert("有効な高さを入力してください。");
+  if (!originalImage) {
+    alert("画像を選択してください。");
     return;
   }
 
-  const aspectRatio = canvas.width / canvas.height;
+  const specifiedHeight = parseInt(heightInput.value, 10);
+  if (!specifiedHeight || specifiedHeight <= 0) {
+    alert("有効な高さ(px)を入力してください。");
+    return;
+  }
+
+  const aspectRatio = originalImage.width / originalImage.height;
   const newWidth = specifiedHeight * aspectRatio;
 
-  // リサイズ用のオフスクリーンキャンバスを作成
-  const offscreenCanvas = document.createElement("canvas");
-  const offscreenCtx = offscreenCanvas.getContext("2d");
+  // キャンバスをリサイズして再描画
+  canvas.width = newWidth;
+  canvas.height = specifiedHeight;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(originalImage, 0, 0, newWidth, specifiedHeight);
 
-  offscreenCanvas.width = newWidth;
-  offscreenCanvas.height = specifiedHeight;
-  offscreenCtx.drawImage(canvas, 0, 0, newWidth, specifiedHeight);
+  // リサイズ後の画像情報を表示
+  imageInfo.textContent = `選択した画像の情報: 幅 ${canvas.width}px, 高さ ${canvas.height}px`;
 
-  offscreenCanvas.toBlob((blob) => {
+  alert("リサイズが完了しました。");
+  downloadButton.style.display = "block"; // ダウンロードボタン表示
+});
+
+// ダウンロードボタンイベント
+downloadButton.addEventListener("click", () => {
+  canvas.toBlob((blob) => {
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = `resized_image_${specifiedHeight}px.png`;
+    link.download = `resized_image_${canvas.height}px.png`;
     link.click();
   }, "image/png");
 });

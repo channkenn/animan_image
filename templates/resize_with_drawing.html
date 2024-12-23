@@ -1,6 +1,7 @@
 <input type="file" id="fileInput" accept="image/png" />
 <input type="number" id="heightInput" placeholder="指定する高さ (px)" min="1" />
-<button id="resizeButton">リサイズしてダウンロード</button>
+<button id="resizeButton">リサイズ</button>
+<button id="downloadButton" style="display: none">ダウンロード</button>
 <button id="eraserButton">消しゴムモード切り替え</button>
 <button id="undoButton">元に戻す</button>
 
@@ -11,6 +12,6 @@
 <!-- ペンの太さ選択 -->
 <label for="penWidth">ペンの太さ:</label>
 <input type="range" id="penWidth" min="1" max="10" value="2" />
-
+<p id="imageInfo">選択した画像の情報: -</p>
 <canvas id="canvas" style="border: 1px solid black; display: block"></canvas>
 <script src="/static/js/resize_with_eraser_and_undo.js"></script>
