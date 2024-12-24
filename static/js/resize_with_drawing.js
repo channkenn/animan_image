@@ -164,12 +164,18 @@ downloadButton.addEventListener("click", () => {
   const fileName = originalFileName.split(".")[0]; // 拡張子を除いたファイル名
   const newFileName = `${fileName}_${canvas.height}px.png`; // 新しいファイル名
 
-  canvas.toBlob((blob) => {
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = newFileName;
-    link.click();
-  }, "image/png");
+  try {
+    canvas.toBlob((blob) => {
+      // Blobが取得できた場合、通常通りダウンロード
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "image.png";
+      link.click();
+    });
+  } catch (e) {
+    // Tainted canvasエラー時
+    alert(`右クリックで保存してください：${originalFileName}`);
+  }
 });
 
 const urlInput = document.getElementById("urlInput");
@@ -179,6 +185,22 @@ const urlLoadButton = document.getElementById("urlLoadButton");
 urlLoadButton.addEventListener("click", () => {
   const imageUrl = urlInput.value.trim();
   if (!imageUrl) {
+    alert("有効なURLを入力してください。");
+    return;
+  }
+
+  // ファイル名を生成
+  try {
+    const url = new URL(imageUrl);
+    const pathSegments = url.pathname.split("/").filter(Boolean); // パスのセグメントを取得
+    if (pathSegments.length > 1) {
+      // "img" 以降の部分を連結してファイル名に変換
+      const fileNamePart = pathSegments.slice(1).join("_"); // "img"を除外
+      originalFileName = `img_${fileNamePart}.png`; // 希望の形式に変換
+    } else {
+      originalFileName = "unknown.png"; // フォーマットに合わない場合
+    }
+  } catch (e) {
     alert("有効なURLを入力してください。");
     return;
   }
@@ -193,7 +215,7 @@ urlLoadButton.addEventListener("click", () => {
     ctx.drawImage(originalImage, 0, 0);
 
     // 画像情報を表示
-    imageInfo.textContent = `選択した画像の情報: 幅 ${originalImage.width}px, 高さ ${originalImage.height}px`;
+    imageInfo.textContent = `選択した画像の情報: 幅 ${originalImage.width}px, 高さ ${originalImage.height}px, ファイル名: ${originalFileName}`;
 
     // 描画履歴をリセット
     history.length = 0;
