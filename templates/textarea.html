@@ -23,9 +23,41 @@
       placeholder="本文を入力 (最大30行/1000文字まで) クリエイティブではimageURLをコピーした際にアラートはでません imgURLを貼り付けると自動で末尾に/数字が付与されますのでURL重複が回避されます"
     ></textarea>
     <br />
-    <button id="copyButton">コピーする</button>
-    <button id="clearButton">クリア</button>
-
+    <div
+      style="
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+      "
+    >
+      <button
+        id="copyButton"
+        class="panel-link"
+        style="
+          width: 45%;
+          height: 30px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        "
+      >
+        コピーする
+      </button>
+      <button
+        id="clearButton"
+        class="panel-link"
+        style="
+          width: 45%;
+          height: 30px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        "
+      >
+        クリア
+      </button>
+    </div>
     <div class="count-container">
       <p>文字数: <span id="charCount">0</span></p>
       <p>行数: <span id="lineCount">1</span></p>

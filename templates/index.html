@@ -49,8 +49,6 @@
         <div class="left-column">
             <!-- 左側カラム 自サイトリンク -->
             {% include 'left-column-own.html' %}
-            <!-- 左側カラム インポートエクスポート -->
-            <!-- left-column-io.html 削除すみ -->
             <!-- 左側カラム pngインポートエクスポート -->
             {% include 'left-column-io-png.html' %}
         </div>
@@ -62,9 +60,9 @@
                     required pattern="https:\/\/bbs\.animanch\.com\/.*"
                     title="https://bbs.animanch.com/ から始まるURLを入力してください"
                     placeholder="あにまん掲示板スレッドのURLを入力してください" />
-                <button type="submit" style="width: 100%; height: 60px;">画像を取得</button>
+                <button type="submit" class="panel-link" style="width: 100%; height: 60px;">画像を取得</button>
             </form>
-            <button onclick="toggleIframe()">あにまん掲示板:ウマ娘・競馬 表示 / 非表示</button>
+            <button onclick="toggleIframe()" class="panel-link" style="width: 100%; height: 30px;display: flex; align-items: center; justify-content: center;">あにまん掲示板:ウマ娘・競馬 表示 / 非表示</button>
 
             <iframe id="myIframe" src="https://bbs.animanch.com/category8/" style="display: none;width: 100%; height: 500px;"></iframe>
             <script>
