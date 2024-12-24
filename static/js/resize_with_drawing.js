@@ -171,3 +171,38 @@ downloadButton.addEventListener("click", () => {
     link.click();
   }, "image/png");
 });
+
+const urlInput = document.getElementById("urlInput");
+const urlLoadButton = document.getElementById("urlLoadButton");
+
+// URLから画像を読み込む機能を追加
+urlLoadButton.addEventListener("click", () => {
+  const imageUrl = urlInput.value.trim();
+  if (!imageUrl) {
+    alert("有効なURLを入力してください。");
+    return;
+  }
+
+  originalImage = new Image();
+  //originalImage.crossOrigin = "anonymous"; // クロスオリジン対応
+  originalImage.onload = () => {
+    // キャンバスのリセット
+    canvas.width = originalImage.width;
+    canvas.height = originalImage.height;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(originalImage, 0, 0);
+
+    // 画像情報を表示
+    imageInfo.textContent = `選択した画像の情報: 幅 ${originalImage.width}px, 高さ ${originalImage.height}px`;
+
+    // 描画履歴をリセット
+    history.length = 0;
+    historyIndex = -1;
+  };
+
+  originalImage.onerror = () => {
+    alert("画像の読み込みに失敗しました。URLを確認してください。");
+  };
+
+  originalImage.src = imageUrl; // URLから画像を読み込む
+});
