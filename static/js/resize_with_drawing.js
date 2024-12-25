@@ -91,7 +91,7 @@ eraserButton.addEventListener("click", () => {
     ? "ペンモードに切り替え"
     : "消しゴムモードに切り替え";
 });
-
+/* 20241225 スマホ対応のため一時コメントアウト
 // 描画または消しゴム機能
 canvas.addEventListener("mousedown", (event) => {
   isDrawing = true;
@@ -124,6 +124,83 @@ canvas.addEventListener("mousemove", (event) => {
 
 canvas.addEventListener("mouseup", () => (isDrawing = false));
 canvas.addEventListener("mouseout", () => (isDrawing = false));
+*/
+// 20241225 スマホ対応 デバイスに応じたイベントを設定
+if ("ontouchstart" in window) {
+  // スマホ向けタッチイベント
+  canvas.addEventListener("touchstart", (event) => {
+    isDrawing = true;
+    const touch = event.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    [lastX, lastY] = [touch.clientX - rect.left, touch.clientY - rect.top];
+    saveHistory(); // 操作開始時に履歴を保存
+  });
+
+  canvas.addEventListener("touchmove", (event) => {
+    if (!isDrawing) return;
+
+    const touch = event.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    const [x, y] = [touch.clientX - rect.left, touch.clientY - rect.top];
+
+    if (isEraserMode) {
+      // 消しゴムモード
+      ctx.globalCompositeOperation = "destination-out";
+      ctx.beginPath();
+      ctx.arc(x, y, 10, 0, Math.PI * 2, false); // 消しゴムサイズ（10px）
+      ctx.fill();
+      ctx.globalCompositeOperation = "source-over";
+    } else {
+      // 通常の描画
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(x, y);
+      ctx.strokeStyle = penColor; // ユーザーが選んだペンの色
+      ctx.lineWidth = penWidth; // ユーザーが選んだペンの太さ
+      ctx.stroke();
+    }
+
+    [lastX, lastY] = [x, y];
+  });
+
+  canvas.addEventListener("touchend", () => (isDrawing = false));
+  canvas.addEventListener("touchcancel", () => (isDrawing = false));
+} else {
+  // PC向けマウスイベント
+  canvas.addEventListener("mousedown", (event) => {
+    isDrawing = true;
+    [lastX, lastY] = [event.offsetX, event.offsetY];
+    saveHistory(); // 操作開始時に履歴を保存
+  });
+
+  canvas.addEventListener("mousemove", (event) => {
+    if (!isDrawing) return;
+
+    const [x, y] = [event.offsetX, event.offsetY];
+    if (isEraserMode) {
+      // 消しゴムモード
+      ctx.globalCompositeOperation = "destination-out";
+      ctx.beginPath();
+      ctx.arc(x, y, 10, 0, Math.PI * 2, false); // 消しゴムサイズ（10px）
+      ctx.fill();
+      ctx.globalCompositeOperation = "source-over";
+    } else {
+      // 通常の描画
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(x, y);
+      ctx.strokeStyle = penColor; // ユーザーが選んだペンの色
+      ctx.lineWidth = penWidth; // ユーザーが選んだペンの太さ
+      ctx.stroke();
+    }
+
+    [lastX, lastY] = [x, y];
+  });
+
+  canvas.addEventListener("mouseup", () => (isDrawing = false));
+  canvas.addEventListener("mouseout", () => (isDrawing = false));
+}
+//20241225 スマホ対応ここまで
 
 // リサイズボタンイベント
 resizeButton.addEventListener("click", () => {
