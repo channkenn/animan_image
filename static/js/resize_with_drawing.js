@@ -74,7 +74,8 @@ fileInput.addEventListener("change", () => {
 
       // 画像情報を表示
       imageInfo.textContent = `選択した画像の情報: 幅 ${originalImage.width}px, 高さ ${originalImage.height}px`;
-
+      // canvasの高さを取得し、inputに設定
+      document.getElementById("heightInput").value = canvas.height;
       // 描画履歴をリセット
       history.length = 0; // 履歴を空にする
       historyIndex = -1; // 履歴位置を初期化
@@ -226,7 +227,8 @@ resizeButton.addEventListener("click", () => {
 
   // リサイズ後の画像情報を表示
   imageInfo.textContent = `選択した画像の情報: 幅 ${canvas.width}px, 高さ ${canvas.height}px`;
-
+  // canvasの高さを取得し、inputに設定
+  document.getElementById("heightInput").value = canvas.height;
   alert("リサイズが完了しました。");
   downloadButton.style.display = "block"; // ダウンロードボタン表示
 });
@@ -293,7 +295,8 @@ urlLoadButton.addEventListener("click", () => {
 
     // 画像情報を表示
     imageInfo.textContent = `選択した画像の情報: 幅 ${originalImage.width}px, 高さ ${originalImage.height}px, ファイル名: ${originalFileName}`;
-
+    // canvasの高さを取得し、inputに設定
+    document.getElementById("heightInput").value = canvas.height;
     // 描画履歴をリセット
     history.length = 0;
     historyIndex = -1;

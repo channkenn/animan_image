@@ -35,19 +35,27 @@
     <title>画像編集(別窓)</title>
   </head>
   <body>
-    <input type="file" id="fileInput" accept="image/png" />
-    <input type="text" id="urlInput" placeholder="画像URLを入力" />
-    <button id="urlLoadButton">URLから画像を読み込む</button>
+    <input type="file" id="fileInput" accept="image/png" class="panel-link" />
+    <input
+      type="text"
+      id="urlInput"
+      placeholder="画像URLを入力"
+      class="panel-link"
+    />
+    <button id="urlLoadButton" class="panel-link">URLから画像を読み込む</button>
     <input
       type="number"
       id="heightInput"
       placeholder="指定する高さ (px)"
       min="1"
+      class="panel-link"
     />
-    <button id="resizeButton">リサイズ</button>
-    <button id="downloadButton" style="display: none">ダウンロード</button>
-    <button id="eraserButton">消しゴムモード切り替え</button>
-    <button id="undoButton">元に戻す</button>
+    <button id="resizeButton" class="panel-link">リサイズ</button>
+    <button id="downloadButton" class="panel-link" style="display: none">
+      ダウンロード
+    </button>
+    <button id="eraserButton" class="panel-link">消しゴムモード切り替え</button>
+    <button id="undoButton" class="panel-link">元に戻す</button>
 
     <!-- ペンの色選択 -->
     <label for="penColor">ペンの色:</label>

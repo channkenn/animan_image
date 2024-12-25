@@ -13,3 +13,7 @@ canvas {
   margin: 0 auto;
   border: 1px solid #000;
 }
+#urlInput.panel-link,
+#heightInput.panel-link {
+  background-color: #fff; /* 任意の背景色に変更 */
+}
