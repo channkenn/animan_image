@@ -1,3 +1,36 @@
+// マイグレーションコード localstrage.favoriteThreadsにdate情報を追加する
+(function migrateFavoriteThreads() {
+  let favoriteThreads = JSON.parse(
+    localStorage.getItem("favoriteThreads") || "[]"
+  );
+
+  // マイグレーション処理: date プロパティがない場合にデフォルト値を追加
+  favoriteThreads = favoriteThreads.map((thread) => {
+    if (!thread.date) {
+      thread.date = "1970-01-01T00:00:00.000Z"; // デフォルト値
+    }
+    return thread;
+  });
+
+  // ローカルストレージを更新
+  localStorage.setItem("favoriteThreads", JSON.stringify(favoriteThreads));
+})();
+// マイグレーションコード localstrage.favoritesにdate情報を追加する
+(function migrateFavorites() {
+  let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+
+  // マイグレーション処理: date プロパティがない場合にデフォルト値を追加
+  favorites = favorites.map((favorite) => {
+    if (!favorite.date) {
+      favorite.date = "1970-01-01T00:00:00.000Z"; // デフォルト値
+    }
+    return favorite;
+  });
+
+  // ローカルストレージを更新
+  localStorage.setItem("favorites", JSON.stringify(favorites));
+})();
+
 // お気に入り画像を追加する
 function addToFavorites(thumbUrl, imgUrl, resNumber, resLink) {
   const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
@@ -9,9 +42,15 @@ function addToFavorites(thumbUrl, imgUrl, resNumber, resLink) {
     alert("この画像はすでにお気に入りに追加されています");
     return; // 重複しているので何もせずに終了
   }
-
+  const nowtime = new Date().toISOString();
   // 重複していない場合は画像を追加
-  favorites.push({ thumbUrl, imgUrl, resNumber, resLink });
+  favorites.push({
+    thumbUrl,
+    imgUrl,
+    resNumber,
+    resLink,
+    date: nowtime, // 現在時刻を追加
+  });
   localStorage.setItem("favorites", JSON.stringify(favorites));
   alert("画像一覧に追加されました");
 }
@@ -182,12 +221,13 @@ function addThreadToFavorites(threadTitle, threadUrl, threadThumb) {
     alert("このスレッドはすでにお気に入りに追加されています");
     return; // 重複しているので何もせずに終了
   }
-
+  const nowtime = new Date().toISOString();
   // 重複していない場合はスレッドを追加
   favoriteThreads.push({
     title: threadTitle,
     url: threadUrl,
     thumb: threadThumb,
+    date: nowtime,
   });
   localStorage.setItem("favoriteThreads", JSON.stringify(favoriteThreads));
   alert("スレッド一覧に追加されました");
@@ -689,21 +729,116 @@ function isValidJSON(str) {
 
 // ローカルストレージにデータを追加する関数
 function addToLocalStorage(key, data) {
-  // 既存のデータを取得（存在しない場合は空の配列を使用）
   let existingData = JSON.parse(localStorage.getItem(key)) || [];
 
-  // 新しいデータをフィルタリングして重複を除外
   data.forEach((newItem) => {
-    const isDuplicate = existingData.some(
-      (existingItem) => JSON.stringify(existingItem) === JSON.stringify(newItem)
-    );
+    const isDuplicate =
+      key === "favorites"
+        ? existingData.some(
+            (existingItem) => existingItem.imgUrl === newItem.imgUrl
+          )
+        : key === "favoriteThreads"
+        ? existingData.some((existingItem) => existingItem.url === newItem.url)
+        : existingData.some(
+            (existingItem) =>
+              JSON.stringify(existingItem) === JSON.stringify(newItem)
+          );
+
     if (!isDuplicate) {
-      existingData.push(newItem); // 重複がなければ追加
+      existingData.push(newItem);
     }
   });
 
-  // ローカルストレージに更新したデータを保存
   localStorage.setItem(key, JSON.stringify(existingData));
+}
+// 現在のソート状態を保持 20241228
+let currentSortCriteria = "date";
+let currentSortOrder = "desc"; // "asc" or "desc"
+
+// ソート基準を設定して再描画 20241228
+function setSortCriteria(criterion) {
+  if (currentSortCriteria === criterion) {
+    // 同じ基準を選択した場合は順序を切り替え
+    currentSortOrder = currentSortOrder === "asc" ? "desc" : "asc";
+  } else {
+    // 基準を変更
+    currentSortCriteria = criterion;
+    currentSortOrder = "desc"; // デフォルトは降順
+  }
+
+  // 再描画
+  displayFavoriteThreads();
+}
+
+// ソート関数 20241228
+function sortThreads(threads, criterion = "date", order = "desc") {
+  return threads.sort((a, b) => {
+    if (criterion === "date") {
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+      return order === "desc" ? dateB - dateA : dateA - dateB;
+    } else if (criterion === "title") {
+      const titleA = a.title.toLowerCase();
+      const titleB = b.title.toLowerCase();
+      if (titleA < titleB) return order === "asc" ? -1 : 1;
+      if (titleA > titleB) return order === "asc" ? 1 : -1;
+      return 0;
+    }
+    return 0;
+  });
+}
+
+// お気に入りスレッドを表示する 20241228
+function displayFavoriteThreads() {
+  try {
+    let favoriteThreads =
+      JSON.parse(localStorage.getItem("favoriteThreads")) || [];
+    const container = document.getElementById("threads-container");
+
+    if (!container) {
+      console.warn("threads-container 要素が見つかりません");
+      return;
+    }
+
+    if (favoriteThreads.length === 0) {
+      container.innerHTML = "<p>お気に入りスレッドがありません</p>";
+    } else {
+      // ソート
+      favoriteThreads = sortThreads(
+        favoriteThreads,
+        currentSortCriteria,
+        currentSortOrder
+      );
+
+      // 描画
+      container.innerHTML = ""; // 既存の内容をクリア
+      favoriteThreads.forEach((thread) => {
+        const card = document.createElement("div");
+        card.classList.add("card");
+        card.innerHTML = `
+          <div class="image-container">
+              <img src="${encodeURI(thread.thumb)}" alt="${
+          thread.title
+        }" class="thread-thumb" onclick="viewThread('${thread.url}')">
+              <div class="overlay" onclick="viewThread('${thread.url}')">
+                  スレッド内画像一覧
+              </div>
+          </div>
+          <div class="card-body">
+              <a href="${encodeURI(thread.url)}" target="_blank">${
+          thread.title
+        }</a>
+              <p>${
+                thread.date ? new Date(thread.date).toLocaleString() : ""
+              }</p>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+  } catch (error) {
+    console.error("エラーが発生しました:", error);
+  }
 }
 
 // DOM読み込み後に各関数を実行

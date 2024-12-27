@@ -1,48 +1,70 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
+  <head>
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SXRM6YR259"></script>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-SXRM6YR259"
+    ></script>
     <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
 
-    gtag('config', 'G-SXRM6YR259');
+      gtag("config", "G-SXRM6YR259");
     </script>
-    <meta charset="UTF-8">
-    <meta property="og:description" content="あにまん掲示板のスレッドや画像を一覧できるようにします">
-    <meta property="og:image" content="https://linguistic-sherilyn-animanimage-50068fef.koyeb.app/static/icons/image-icon.png">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="referrer" content="no-referrer">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <link rel="icon" href="{{ url_for('static', filename='animanimg_favicon.png') }}" type="image/x-icon">
+    <meta charset="UTF-8" />
+    <meta
+      property="og:description"
+      content="あにまん掲示板のスレッドや画像を一覧できるようにします"
+    />
+    <meta
+      property="og:image"
+      content="https://linguistic-sherilyn-animanimage-50068fef.koyeb.app/static/icons/image-icon.png"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="no-referrer" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='animanimg_favicon.png') }}"
+      type="image/x-icon"
+    />
     <title>スレッド一覧</title>
-</head>
-<body>
+  </head>
+  <body>
     <!-- ヘッダー -->
     {% include 'header.html' %}
     <h1>お気に入りスレッド一覧</h1>
     <!-- 20241215 ２カラムレイアウト対応-->
     <div class="container">
-        <!-- 左側カラム -->
-        <div class="left-column">
-            {% include 'left-column-own.html' %}
-            <!-- 左側カラム pngインポートエクスポート -->
-            {% include 'left-column-io-png.html' %}
+      <!-- 左側カラム -->
+      <div class="left-column">
+        {% include 'left-column-own.html' %}
+        <!-- 左側カラム pngインポートエクスポート -->
+        {% include 'left-column-io-png.html' %}
+      </div>
+      <!-- メインカラム -->
+      <div class="main-column">
+        <div id="sort-buttons">
+          <button onclick="setSortCriteria('date')">日付でソート</button>
+          <button onclick="setSortCriteria('title')">タイトルでソート</button>
         </div>
-        <!-- メインカラム -->
-        <div class="main-column">
-            <!-- スレッド一覧のコンテナ -->
-            <div id="threads-container" class="card-container"></div>
-        </div>
-        <!-- 右側カラム -->
-        {% include 'right-column.html' %}
+        <!-- スレッド一覧のコンテナ -->
+        <div id="threads-container" class="card-container"></div>
+      </div>
+      <!-- 右側カラム -->
+      {% include 'right-column.html' %}
     </div>
     <footer>
-        <p><a href="/">あにまん掲示板&nbsp;お気に入り画像とスレッド</a></p>
+      <p><a href="/">あにまん掲示板&nbsp;お気に入り画像とスレッド</a></p>
     </footer>
     <!-- 外部スクリプトを読み込む -->
     <script src="/static/js/script.js"></script>
-</body>
+  </body>
 </html>
