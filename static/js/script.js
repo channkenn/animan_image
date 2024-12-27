@@ -429,7 +429,7 @@ document
   });
 // UTF-8文字列をBase64エンコードする関数
 function utf8ToBase64(str) {
-  const encoder = new TextEncoder(); // UTF-8エンコードを行う
+  const encoder = new TextEncoder("utf-8"); // UTF-8エンコードを行う
   const bytes = encoder.encode(str); // Uint8Arrayに変換
   let binary = "";
   for (let i = 0; i < bytes.length; i++) {
@@ -515,10 +515,17 @@ function importData(dataType) {
 
   try {
     // Base64 → 圧縮解除 → JSON
-    const decodedData = base64ToUtf8(inputData); // Base64デコード
-    const decompressedData = LZString.decompressFromUTF16(decodedData); // 圧縮解除
-    const jsonData = JSON.parse(decompressedData); // JSONに変換
+    const decodedData = base64ToUtf8(inputData); // Base64をデコード (UTF-8対応)
+    let decompressedData;
+    try {
+      // UTF-8圧縮データの解除を試みる
+      decompressedData = LZString.decompress(decodedData);
+    } catch (e) {
+      // UTF-16圧縮データの解除を試みる
+      decompressedData = LZString.decompressFromUTF16(decodedData);
+    }
 
+    const jsonData = JSON.parse(decompressedData); // JSONに変換
     // ローカルストレージから既存データを取得
     const existingData = JSON.parse(localStorage.getItem(storageKey) || "[]");
 
@@ -579,19 +586,9 @@ function base64ToUtf8(base64) {
   for (let i = 0; i < decodedString.length; i++) {
     byteArray[i] = decodedString.charCodeAt(i);
   }
-  return new TextDecoder().decode(byteArray); // UTF-8に変換
+  return new TextDecoder("utf-8").decode(byteArray); // UTF-8に変換
 }
 
-//20241218 ローカルストレージをPNG画像に変換してエクスポートインポートする
-// JSONが有効かどうかを確認する関数
-function isValidJSON(str) {
-  try {
-    JSON.parse(str);
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
 // --- テキストをバイナリに変換する関数 ---
 // テキストをバイナリに変換する関数
 // テキストをバイナリに変換する関数
@@ -640,7 +637,6 @@ function downloadCanvasAsPNG(filename) {
 }
 
 // 画像ファイルをデコードしてテキストに戻す関数
-// 画像ファイルをデコードしてテキストに戻す関数
 function decodeImageToText(file) {
   return new Promise((resolve) => {
     const img = new Image();
@@ -663,7 +659,7 @@ function decodeImageToText(file) {
         binaryString += imageData[i + 2] === 255 ? "1" : "0";
       }
 
-      const decoder = new TextDecoder();
+      const decoder = new TextDecoder("utf-8");
       const uint8Array = new Uint8Array(
         binaryString.match(/.{1,8}/g).map((b) => parseInt(b, 2))
       );
@@ -680,14 +676,14 @@ function decodeImageToText(file) {
     reader.readAsDataURL(file); // 画像をデータURLとして読み込む
   });
 }
-
-// JSONのバリデーションを行う関数
+//20241218 ローカルストレージをPNG画像に変換してエクスポートインポートする
+// JSONが有効かどうかを確認する関数
 function isValidJSON(str) {
   try {
-    JSON.parse(str); // JSONとして解析してみる
+    JSON.parse(str);
     return true;
   } catch (e) {
-    return false; // 解析に失敗した場合は無効なJSON
+    return false;
   }
 }
 

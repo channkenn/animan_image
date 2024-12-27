@@ -251,3 +251,88 @@ urlLoadButton.addEventListener("click", () => {
 
 // イベント設定
 setupDrawingEvents();
+
+// 20241226 貼り付け機能追加
+let startX, startY, endX, endY; // 範囲選択の座標
+let isSelecting = false; // 範囲選択中フラグ
+let overlayCanvas = document.createElement("canvas");
+overlayCanvas.width = canvas.width;
+overlayCanvas.height = canvas.height;
+let overlayCtx = overlayCanvas.getContext("2d");
+
+// 範囲選択の開始
+canvas.addEventListener("mousedown", (e) => {
+  startX = e.offsetX;
+  startY = e.offsetY;
+  isSelecting = true;
+  overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+});
+
+// 範囲選択の描画
+canvas.addEventListener("mousemove", (e) => {
+  if (isSelecting) {
+    endX = e.offsetX;
+    endY = e.offsetY;
+
+    // オーバーレイに選択範囲の描画（無色）
+    overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+    overlayCtx.strokeStyle = "rgba(0, 0, 0, 0)"; // 無色の透明線
+    overlayCtx.lineWidth = 2; // 線の太さ
+    overlayCtx.strokeRect(startX, startY, endX - startX, endY - startY);
+
+    // オーバーレイをメインキャンバスに描画
+    ctx.drawImage(overlayCanvas, 0, 0);
+  }
+});
+
+// 範囲選択の終了
+canvas.addEventListener("mouseup", () => {
+  isSelecting = false;
+});
+
+// 貼り付けイベントリスナー
+document.addEventListener("paste", async (event) => {
+  const items = event.clipboardData.items;
+
+  for (const item of items) {
+    if (item.type.startsWith("image/")) {
+      const blob = item.getAsFile();
+      const img = new Image();
+
+      img.onload = () => {
+        if (
+          startX !== undefined &&
+          startY !== undefined &&
+          endX !== undefined &&
+          endY !== undefined
+        ) {
+          const selectionWidth = Math.abs(endX - startX);
+          const selectionHeight = Math.abs(endY - startY);
+          const x = Math.min(startX, endX);
+          const y = Math.min(startY, endY);
+
+          // 選択範囲に画像をリサイズして描画
+          ctx.drawImage(
+            img,
+            0,
+            0,
+            img.width,
+            img.height, // 元画像全体
+            x,
+            y,
+            selectionWidth,
+            selectionHeight // 選択範囲にリサイズして描画
+          );
+        } else {
+          alert("まず範囲を選択してください！");
+        }
+
+        // 画像を貼り付けた後に範囲選択の無色線を消去
+        overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height); // ここで無色線を消去
+      };
+
+      // BlobをImageオブジェクトに変換
+      img.src = URL.createObjectURL(blob);
+    }
+  }
+});
