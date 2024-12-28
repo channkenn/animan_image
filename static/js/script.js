@@ -4,10 +4,13 @@
     localStorage.getItem("favoriteThreads") || "[]"
   );
 
-  // マイグレーション処理: date プロパティがない場合にデフォルト値を追加
+  // マイグレーション処理: date, register プロパティがない場合にデフォルト値を追加
   favoriteThreads = favoriteThreads.map((thread) => {
     if (!thread.date) {
       thread.date = "1970-01-01T00:00:00.000Z"; // デフォルト値
+    }
+    if (!thread.register) {
+      thread.register = "1970-01-01T00:00:00.000Z"; // デフォルト値
     }
     return thread;
   });
@@ -19,10 +22,13 @@
 (function migrateFavorites() {
   let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
 
-  // マイグレーション処理: date プロパティがない場合にデフォルト値を追加
+  // マイグレーション処理: date, register プロパティがない場合にデフォルト値を追加
   favorites = favorites.map((favorite) => {
     if (!favorite.date) {
       favorite.date = "1970-01-01T00:00:00.000Z"; // デフォルト値
+    }
+    if (!favorite.register) {
+      favorite.register = "1970-01-01T00:00:00.000Z"; // デフォルト値
     }
     return favorite;
   });
@@ -51,6 +57,7 @@ function addToFavorites(thumbUrl, imgUrl, resNumber, resLink) {
     resNumber,
     resLink,
     date: nowtime, // 現在時刻を追加
+    register: nowtime,
   });
   localStorage.setItem("favorites", JSON.stringify(favorites));
   alert("画像一覧に追加されました");
@@ -237,6 +244,7 @@ function addThreadToFavorites(threadTitle, threadUrl, threadThumb) {
     url: threadUrl,
     thumb: threadThumb,
     date: nowtime,
+    register: nowtime,
   });
   localStorage.setItem("favoriteThreads", JSON.stringify(favoriteThreads));
   alert("スレッド一覧に追加されました");
@@ -354,6 +362,10 @@ function sortThreads(threads, criterion = "date", order = "desc") {
     if (criterion === "date") {
       const dateA = new Date(a.date);
       const dateB = new Date(b.date);
+      return order === "desc" ? dateB - dateA : dateA - dateB;
+    } else if (criterion === "register") {
+      const dateA = new Date(a.register);
+      const dateB = new Date(b.register);
       return order === "desc" ? dateB - dateA : dateA - dateB;
     } else if (criterion === "title") {
       const titleA = a.title.toLowerCase();
