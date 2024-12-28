@@ -272,13 +272,19 @@ function displayFavoriteThreads() {
           <div class="image-container">
               <img src="${encodeURI(thread.thumb)}" alt="${
           thread.title
-        }" class="thread-thumb" onclick="viewThread('${thread.url}')">
-              <div class="overlay" onclick="viewThread('${thread.url}')">
+        }" class="thread-thumb" onclick="viewThread('${
+          thread.url
+        }'); updateThreadDate('${thread.url}')">
+              <div class="overlay" onclick="viewThread('${
+                thread.url
+              }'); updateThreadDate('${thread.url}')">
                   スレッド内画像一覧
               </div>
           </div>
           <div class="card-body">
-              <a href="${encodeURI(thread.url)}" target="_blank">${
+              <a href="${encodeURI(
+                thread.url
+              )}" target="_blank" onclick="updateThreadDate('${thread.url}')">${
           thread.title
         }</a>
               <p>${
@@ -289,7 +295,9 @@ function displayFavoriteThreads() {
                             <!-- ボタンのonclickで正確にURLを渡す -->
                             <button class="copy-btn" onclick="copyToClipboard('${encodeURI(
                               thread.url
-                            )}')" title="コピー">
+                            )}'); updateThreadDate('${
+          thread.url
+        }')" title="コピー">
                                 <img src="static/icons/copy-icon.png" alt="コピーアイコン" style="width: 24px; height: 24px;">
                             </button>
 
@@ -360,6 +368,23 @@ function sortThreads(threads, criterion = "date", order = "desc") {
 // #endregion スレッド一覧のfunction群 ここまで
 
 // #region Utilityだとおもう ここから
+// ローカルストレージのfavoriteThreadsの日時を更新
+function updateThreadDate(url) {
+  // ローカルストレージのfavoriteThreadsを取得
+  const favoriteThreads =
+    JSON.parse(localStorage.getItem("favoriteThreads")) || [];
+
+  // 対象スレッドの`date`を現在時刻で更新
+  const threadIndex = favoriteThreads.findIndex((thread) => thread.url === url);
+  if (threadIndex !== -1) {
+    favoriteThreads[threadIndex].date = new Date().toISOString(); // 現在時刻をISO形式で保存
+    localStorage.setItem("favoriteThreads", JSON.stringify(favoriteThreads));
+    console.log("Updated date for:", url);
+  } else {
+    console.warn("Thread not found in favoriteThreads:", url);
+  }
+}
+
 // URLをクリップボードにコピーする
 function copyToClipboard(text) {
   if (navigator.clipboard && window.isSecureContext) {
