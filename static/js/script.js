@@ -235,7 +235,7 @@ function addThreadToFavorites(threadTitle, threadUrl, threadThumb) {
 // お気に入りスレッドの一覧を表示する
 function displayFavoriteThreads() {
   try {
-    const favoriteThreads =
+    let favoriteThreads =
       JSON.parse(localStorage.getItem("favoriteThreads")) || [];
     const container = document.getElementById("threads-container");
 
@@ -247,28 +247,35 @@ function displayFavoriteThreads() {
     if (favoriteThreads.length === 0) {
       container.innerHTML = "<p>お気に入りスレッドがありません</p>";
     } else {
+      // ソート
+      favoriteThreads = sortThreads(
+        favoriteThreads,
+        currentSortCriteria,
+        currentSortOrder
+      );
+
+      // 描画
       container.innerHTML = ""; // 既存の内容をクリア
       favoriteThreads.forEach((thread) => {
         const card = document.createElement("div");
         card.classList.add("card");
         card.innerHTML = `
-                    <!-- 画像クリックでスレッド画像一覧にジャンプ -->
-                    <div class="image-container">
-                        <!-- 画像クリックでスレッド画像一覧にジャンプ -->
-                        <img src="${encodeURI(thread.thumb)}" alt="${
+          <div class="image-container">
+              <img src="${encodeURI(thread.thumb)}" alt="${
           thread.title
         }" class="thread-thumb" onclick="viewThread('${thread.url}')">
-                        <div class="overlay" onclick="viewThread('${
-                          thread.url
-                        }')">
-                            スレッド内画像一覧
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <a href="${encodeURI(thread.url)}" target="_blank">${
+              <div class="overlay" onclick="viewThread('${thread.url}')">
+                  スレッド内画像一覧
+              </div>
+          </div>
+          <div class="card-body">
+              <a href="${encodeURI(thread.url)}" target="_blank">${
           thread.title
         }</a>
-                        <div class="button-container">
+              <p>${
+                thread.date ? new Date(thread.date).toLocaleString() : ""
+              }</p>
+              <div class="button-container">
                             <!-- クリップボードにURLをコピーするボタン -->
                             <!-- ボタンのonclickで正確にURLを渡す -->
                             <button class="copy-btn" onclick="copyToClipboard('${encodeURI(
@@ -284,8 +291,8 @@ function displayFavoriteThreads() {
                                 <img src="static/icons/delete-icon.png" alt="削除アイコン" style="width: 24px; height: 24px;">
                             </button>
                         </div>
-                    </div>
-                `;
+          </div>
+        `;
         container.appendChild(card);
       });
     }
@@ -789,57 +796,6 @@ function sortThreads(threads, criterion = "date", order = "desc") {
 }
 
 // お気に入りスレッドを表示する 20241228
-function displayFavoriteThreads() {
-  try {
-    let favoriteThreads =
-      JSON.parse(localStorage.getItem("favoriteThreads")) || [];
-    const container = document.getElementById("threads-container");
-
-    if (!container) {
-      console.warn("threads-container 要素が見つかりません");
-      return;
-    }
-
-    if (favoriteThreads.length === 0) {
-      container.innerHTML = "<p>お気に入りスレッドがありません</p>";
-    } else {
-      // ソート
-      favoriteThreads = sortThreads(
-        favoriteThreads,
-        currentSortCriteria,
-        currentSortOrder
-      );
-
-      // 描画
-      container.innerHTML = ""; // 既存の内容をクリア
-      favoriteThreads.forEach((thread) => {
-        const card = document.createElement("div");
-        card.classList.add("card");
-        card.innerHTML = `
-          <div class="image-container">
-              <img src="${encodeURI(thread.thumb)}" alt="${
-          thread.title
-        }" class="thread-thumb" onclick="viewThread('${thread.url}')">
-              <div class="overlay" onclick="viewThread('${thread.url}')">
-                  スレッド内画像一覧
-              </div>
-          </div>
-          <div class="card-body">
-              <a href="${encodeURI(thread.url)}" target="_blank">${
-          thread.title
-        }</a>
-              <p>${
-                thread.date ? new Date(thread.date).toLocaleString() : ""
-              }</p>
-          </div>
-        `;
-        container.appendChild(card);
-      });
-    }
-  } catch (error) {
-    console.error("エラーが発生しました:", error);
-  }
-}
 
 // DOM読み込み後に各関数を実行
 document.addEventListener("DOMContentLoaded", function () {
