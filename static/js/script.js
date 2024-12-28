@@ -31,6 +31,7 @@
   localStorage.setItem("favorites", JSON.stringify(favorites));
 })();
 
+// #region 画像一覧のfunction群 ここから
 // お気に入り画像を追加する
 function addToFavorites(thumbUrl, imgUrl, resNumber, resLink) {
   const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
@@ -126,15 +127,20 @@ function loadFavorites() {
     favoritesContainer.appendChild(card);
   });
 }
+// #endregion 画像一覧のfunction群 ここまで
+
+// #region クリエイティブ用のfunction群 ここから
 // 20241220 クリエイティブ用画像の一覧を表示 --start
 // お気に入り画像の一覧を表示する
 function loadFavoritesCreative() {
   const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-  const favoritesContainer = document.getElementById("favorites-container");
+  const favoritesContainer = document.getElementById(
+    "favoritesCreative-container"
+  );
 
   // コンテナが存在しない場合は処理を中断
   if (!favoritesContainer) {
-    console.warn("favorites-container 要素が見つかりません");
+    console.warn("favoritesCreative-container 要素が見つかりません");
     return;
   }
 
@@ -207,6 +213,9 @@ function removeFavorite(imgSrc) {
   localStorage.setItem("favorites", JSON.stringify(favorites));
   loadFavorites(); // 削除後にリストを更新
 }
+// #endregion クリエイティブ用のfunction群 ここまで
+
+// #region スレッド一覧のfunction群 ここから
 // スレッドをお気に入りに追加する
 function addThreadToFavorites(threadTitle, threadUrl, threadThumb) {
   const favoriteThreads =
@@ -300,7 +309,6 @@ function displayFavoriteThreads() {
     console.error("エラーが発生しました:", error);
   }
 }
-
 // お気に入りスレッドを削除する
 function removeThread(url) {
   const favoriteThreads =
@@ -313,6 +321,45 @@ function removeThread(url) {
 function viewThread(url) {
   window.location.href = `/view-thread?url=${encodeURIComponent(url)}`;
 }
+// 現在のソート状態を保持 20241228
+let currentSortCriteria = "date";
+let currentSortOrder = "desc"; // "asc" or "desc"
+
+// ソート基準を設定して再描画 20241228
+function setSortCriteria(criterion) {
+  if (currentSortCriteria === criterion) {
+    // 同じ基準を選択した場合は順序を切り替え
+    currentSortOrder = currentSortOrder === "asc" ? "desc" : "asc";
+  } else {
+    // 基準を変更
+    currentSortCriteria = criterion;
+    currentSortOrder = "desc"; // デフォルトは降順
+  }
+
+  // 再描画
+  displayFavoriteThreads();
+}
+
+// ソート関数 20241228
+function sortThreads(threads, criterion = "date", order = "desc") {
+  return threads.sort((a, b) => {
+    if (criterion === "date") {
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+      return order === "desc" ? dateB - dateA : dateA - dateB;
+    } else if (criterion === "title") {
+      const titleA = a.title.toLowerCase();
+      const titleB = b.title.toLowerCase();
+      if (titleA < titleB) return order === "asc" ? -1 : 1;
+      if (titleA > titleB) return order === "asc" ? 1 : -1;
+      return 0;
+    }
+    return 0;
+  });
+}
+// #endregion スレッド一覧のfunction群 ここまで
+
+// #region Utilityだとおもう ここから
 // URLをクリップボードにコピーする
 function copyToClipboard(text) {
   if (navigator.clipboard && window.isSecureContext) {
@@ -413,6 +460,8 @@ function filterCards(filterType, clickedButton) {
   buttons.forEach((button) => button.classList.remove("active"));
   clickedButton.classList.add("active");
 }
+// #endregion Utilityだとおもう ここから
+
 // 20241214 ブックマークレット対応
 // URLパラメータを取得
 const urlParams = new URLSearchParams(window.location.search);
@@ -458,6 +507,7 @@ function addBookmarklet() {
   // アラートでリンクを表示
   // alert("ブックマークレットリンクが作成されました: " + bookmarkletLink);
 }
+
 // ハンバーガーメニューのクリックイベント
 document
   .querySelector(".hamburger-menu")
@@ -474,6 +524,8 @@ document
         ? "block"
         : "none";
   });
+
+// #region インポート・エクスポート機能群だとおもう ここから
 // UTF-8文字列をBase64エンコードする関数
 function utf8ToBase64(str) {
   const encoder = new TextEncoder("utf-8"); // UTF-8エンコードを行う
@@ -758,44 +810,7 @@ function addToLocalStorage(key, data) {
 
   localStorage.setItem(key, JSON.stringify(existingData));
 }
-// 現在のソート状態を保持 20241228
-let currentSortCriteria = "date";
-let currentSortOrder = "desc"; // "asc" or "desc"
-
-// ソート基準を設定して再描画 20241228
-function setSortCriteria(criterion) {
-  if (currentSortCriteria === criterion) {
-    // 同じ基準を選択した場合は順序を切り替え
-    currentSortOrder = currentSortOrder === "asc" ? "desc" : "asc";
-  } else {
-    // 基準を変更
-    currentSortCriteria = criterion;
-    currentSortOrder = "desc"; // デフォルトは降順
-  }
-
-  // 再描画
-  displayFavoriteThreads();
-}
-
-// ソート関数 20241228
-function sortThreads(threads, criterion = "date", order = "desc") {
-  return threads.sort((a, b) => {
-    if (criterion === "date") {
-      const dateA = new Date(a.date);
-      const dateB = new Date(b.date);
-      return order === "desc" ? dateB - dateA : dateA - dateB;
-    } else if (criterion === "title") {
-      const titleA = a.title.toLowerCase();
-      const titleB = b.title.toLowerCase();
-      if (titleA < titleB) return order === "asc" ? -1 : 1;
-      if (titleA > titleB) return order === "asc" ? 1 : -1;
-      return 0;
-    }
-    return 0;
-  });
-}
-
-// お気に入りスレッドを表示する 20241228
+// #endregion インポート・エクスポート機能群だとおもう ここまで
 
 // DOM読み込み後に各関数を実行
 document.addEventListener("DOMContentLoaded", function () {
