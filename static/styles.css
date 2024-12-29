@@ -404,7 +404,8 @@ button#add-thread-btn:hover {
 }
 
 /* .content-container の直下にある #favorites-container のスタイル */
-.content-container > #favorites-container {
+.content-container > #favorites-container,
+.content-container > #favoritesCreative-container {
   width: 60%;
   max-height: 600px;
   overflow-y: auto;
