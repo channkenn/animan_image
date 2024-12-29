@@ -43,6 +43,11 @@
       </div>
       <!-- メインカラム -->
       <div class="main-column">
+        <div id="sort-buttons">
+          <button onclick="setSortCriteria('date')">閲覧日</button>
+          <button onclick="setSortCriteria('register')">登録日</button>
+          <button onclick="setSortCriteria('count')">閲覧回数</button>
+        </div>
         <!-- 20241221 画像絞り込みの初期値を割り振るための措置 -->
         <div class="filter-container">
           <!-- 20241213 画像一覧の絞り込み機能 altがImageかOutlinkかで決まる 外部リンクのサムネイルの場合はOutlinkです -->

@@ -4,13 +4,16 @@
     localStorage.getItem("favoriteThreads") || "[]"
   );
 
-  // マイグレーション処理: date, register プロパティがない場合にデフォルト値を追加
+  // マイグレーション処理: date, register, count プロパティがない場合にデフォルト値を追加
   favoriteThreads = favoriteThreads.map((thread) => {
     if (!thread.date) {
       thread.date = "1970-01-01T00:00:00.000Z"; // デフォルト値
     }
     if (!thread.register) {
       thread.register = "1970-01-01T00:00:00.000Z"; // デフォルト値
+    }
+    if (!thread.count) {
+      thread.count = "0"; // デフォルト値
     }
     return thread;
   });
@@ -22,13 +25,16 @@
 (function migrateFavorites() {
   let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
 
-  // マイグレーション処理: date, register プロパティがない場合にデフォルト値を追加
+  // マイグレーション処理: date, register, count プロパティがない場合にデフォルト値を追加
   favorites = favorites.map((favorite) => {
     if (!favorite.date) {
       favorite.date = "1970-01-01T00:00:00.000Z"; // デフォルト値
     }
     if (!favorite.register) {
       favorite.register = "1970-01-01T00:00:00.000Z"; // デフォルト値
+    }
+    if (!favorite.count) {
+      favorite.count = "0"; // デフォルト値
     }
     return favorite;
   });
@@ -58,13 +64,14 @@ function addToFavorites(thumbUrl, imgUrl, resNumber, resLink) {
     resLink,
     date: nowtime, // 現在時刻を追加
     register: nowtime,
+    count: "0",
   });
   localStorage.setItem("favorites", JSON.stringify(favorites));
   alert("画像一覧に追加されました");
 }
 // お気に入り画像の一覧を表示する
 function loadFavorites() {
-  const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+  let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
   const favoritesContainer = document.getElementById("favorites-container");
 
   // コンテナが存在しない場合は処理を中断
@@ -72,13 +79,15 @@ function loadFavorites() {
     console.warn("favorites-container 要素が見つかりません");
     return;
   }
-
-  console.log(favorites);
-  console.log(favoritesContainer);
+  if (favorites.length === 0) {
+    container.innerHTML = "<p>お気に入り画像がありません</p>";
+  } else {
+    // ソート
+    favorites = sortThreads(favorites, currentSortCriteria, currentSortOrder);
+  }
   favoritesContainer.innerHTML = ""; // 既存のリストをクリア
 
   favorites.forEach((fav) => {
-    console.log(fav);
     const card = document.createElement("div");
     card.classList.add("card");
 
@@ -96,10 +105,12 @@ function loadFavorites() {
             <div class="image-container">
                 <img src="${encodeURI(fav.thumbUrl)}"
                     alt="${fav.imgUrl.includes("/img") ? "Image" : "Outlink"}"
-                    onclick="viewImage('${encodeURI(fav.imgUrl)}')">
+                    onclick="viewImage('${encodeURI(
+                      fav.imgUrl
+                    )}'); updateFavoriteDate('${fav.imgUrl}')">
                 <div class="overlay" onclick="viewImage('${encodeURI(
                   fav.imgUrl
-                )}')">
+                )}'); updateFavoriteDate('${fav.imgUrl}')">
                     元img表示
                 </div>
             </div>
@@ -108,7 +119,9 @@ function loadFavorites() {
                 <div class="res-number-container">
                     <a href="${encodeURI(
                       fav.resLink
-                    )}" target="_blank" class="link-res-number" title="スレッドリンク">
+                    )}" target="_blank" class="link-res-number" title="スレッドリンク" onclick="updateFavoriteDate('${
+      fav.imgUrl
+    }')">
                         >>${encodeURI(fav.resNumber)}
                     </a>
                 </div>
@@ -116,7 +129,7 @@ function loadFavorites() {
                     <!-- コピーボタン（アイコン形式） -->
                     <button class="copy-btn" onclick="copyToClipboard('${encodeURI(
                       fav.imgUrl
-                    )}')" title="コピー">
+                    )}'); updateFavoriteDate('${fav.imgUrl}')" title="コピー">
                         <img src="static/icons/copy-icon.png" alt="コピーアイコン" style="width: 24px; height: 24px;">
                     </button>
                     
@@ -245,6 +258,7 @@ function addThreadToFavorites(threadTitle, threadUrl, threadThumb) {
     thumb: threadThumb,
     date: nowtime,
     register: nowtime,
+    count: 0,
   });
   localStorage.setItem("favoriteThreads", JSON.stringify(favoriteThreads));
   alert("スレッド一覧に追加されました");
@@ -342,6 +356,7 @@ let currentSortCriteria = "date";
 let currentSortOrder = "desc"; // "asc" or "desc"
 
 // ソート基準を設定して再描画 20241228
+// ソート基準を設定して再描画
 function setSortCriteria(criterion) {
   if (currentSortCriteria === criterion) {
     // 同じ基準を選択した場合は順序を切り替え
@@ -352,8 +367,12 @@ function setSortCriteria(criterion) {
     currentSortOrder = "desc"; // デフォルトは降順
   }
 
-  // 再描画
-  displayFavoriteThreads();
+  // 呼び出し元に応じて再描画
+  if (document.location.pathname.endsWith("/favorites")) {
+    loadFavorites();
+  } else {
+    displayFavoriteThreads();
+  }
 }
 
 // ソート関数 20241228
@@ -373,6 +392,10 @@ function sortThreads(threads, criterion = "date", order = "desc") {
       if (titleA < titleB) return order === "asc" ? -1 : 1;
       if (titleA > titleB) return order === "asc" ? 1 : -1;
       return 0;
+    } else if (criterion === "count") {
+      const countA = a.count || 0; // 初期値がない場合は 0 を使用
+      const countB = b.count || 0;
+      return order === "desc" ? countB - countA : countA - countB;
     }
     return 0;
   });
@@ -380,7 +403,33 @@ function sortThreads(threads, criterion = "date", order = "desc") {
 // #endregion スレッド一覧のfunction群 ここまで
 
 // #region Utilityだとおもう ここから
-// ローカルストレージのfavoriteThreadsの日時を更新
+// ローカルストレージのfavoritesの日時とcountを更新 20241229
+function updateFavoriteDate(url) {
+  // ローカルストレージのfavoritesを取得
+  const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+
+  // 対象アイテムの`date`を現在時刻で更新
+  const favoriteIndex = favorites.findIndex((item) => item.imgUrl === url);
+  if (favoriteIndex !== -1) {
+    favorites[favoriteIndex].date = new Date().toISOString(); // 現在時刻をISO形式で保存
+
+    // countをインクリメント (文字列の場合を考慮して数値に変換)
+    const currentCount = parseInt(favorites[favoriteIndex].count || 0, 10);
+    favorites[favoriteIndex].count = currentCount + 1;
+
+    // ローカルストレージを更新
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+
+    // デバッグ情報を出力
+    console.log("Updated date and count for:", url);
+    console.log("After update:", favorites[favoriteIndex]);
+  } else {
+    console.warn("Item not found in favorites:", url);
+  }
+}
+
+// ローカルストレージのfavoriteThreadsの日時を更新 20241229
+//ついでにカウンタも更新 20241229
 function updateThreadDate(url) {
   // ローカルストレージのfavoriteThreadsを取得
   const favoriteThreads =
@@ -391,7 +440,21 @@ function updateThreadDate(url) {
   if (threadIndex !== -1) {
     favoriteThreads[threadIndex].date = new Date().toISOString(); // 現在時刻をISO形式で保存
     localStorage.setItem("favoriteThreads", JSON.stringify(favoriteThreads));
-    console.log("Updated date for:", url);
+    console.log("Updated date for:", url); // countをインクリメント
+    // countをインクリメント (文字列の場合を考慮して数値に変換)
+    const currentCount = parseInt(favoriteThreads[threadIndex].count || 0, 10);
+    favoriteThreads[threadIndex].count = currentCount + 1;
+    // デバッグ情報を出力
+    // デバッグログ: 更新後のデータ
+    console.log("After update:", favoriteThreads[threadIndex]);
+
+    // ローカルストレージを更新
+    localStorage.setItem("favoriteThreads", JSON.stringify(favoriteThreads));
+
+    // デバッグログ: 成功メッセージ
+    console.log(
+      `Updated date and count for: ${url}, new count: ${favoriteThreads[threadIndex].count}`
+    );
   } else {
     console.warn("Thread not found in favoriteThreads:", url);
   }
