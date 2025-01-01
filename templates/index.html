@@ -41,6 +41,11 @@
         <a href="javascript:(function(){window.location.href=`https://linguistic-sherilyn-animanimage-50068fef.koyeb.app/?autofill=true&source=${encodeURIComponent(window.location.href)}`;})();" 
         title="a">ブックマークレットリンクをドラッグ＆ドロップ<br>あにまん掲示板のスレッドで実行するとURLが入力された状態でメインページが開きます</a>
     </div>
+    <!-- 表示されるブックマークレットリンク -->
+    <div id="bookmarkLink2" style="display:none; text-align: center;">
+        <a href="javascript:(function(){let s=document.createElement('script');s.src='https://channkenn.github.io/umamusume_dice/js/script.js';document.body.appendChild(s);})();" 
+        title="a">ブックマークレットリンクをドラッグ＆ドロップ<br>ダイスの数字を選択して実行するとクリップボードに該当のウマ娘ネームがコピーされます</a>
+    </div>
     {% if warning_message %}
         <p style="color: red; font-weight: bold;">{{ warning_message }}</p>
     {% endif %}

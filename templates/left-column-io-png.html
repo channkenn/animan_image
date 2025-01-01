@@ -1,20 +1,46 @@
 <div>
-    <a href="#" id="imageexportButton" class="panel-link">エクスポート(画像)</a>
-    <label for="importimageFile" class="panel-link">インポート(画像)</label>
-    <input type="file" id="importimageFile" accept="image/png" style="display: none;">
-    
-    <a href="#" id="threadexportButton" class="panel-link">エクスポート(スレッド)</a>
-    <label for="importthreadFile" class="panel-link">インポート(スレッド)</label>
-    <input type="file" id="importthreadFile" accept="image/png" style="display: none;">
-    
-    <canvas id="canvas" style="display: none;"></canvas>
-    <!-- パネルリンク -->
-    <a href="#" id="imagecsvdownload" class="panel-link">画像一覧のcsvファイルをダウンロード</a>
-    <!-- パネルリンク -->
-    <a href="#" id="threadcsvdownloadButton" class="panel-link">スレッド一覧のcsvファイルをダウンロード</a>
-    <!-- ブックマークレット追加リンク -->
-    <a href="javascript:void(0);" class="panel-link" id="bookmarkLink" onclick="addBookmarklet();">ブックマークレットを追加(識者向け)</a>
+  <a href="#" id="imageexportButton" class="panel-link">エクスポート(画像)</a>
+  <label for="importimageFile" class="panel-link">インポート(画像)</label>
+  <input
+    type="file"
+    id="importimageFile"
+    accept="image/png"
+    style="display: none"
+  />
 
+  <a href="#" id="threadexportButton" class="panel-link"
+    >エクスポート(スレッド)</a
+  >
+  <label for="importthreadFile" class="panel-link">インポート(スレッド)</label>
+  <input
+    type="file"
+    id="importthreadFile"
+    accept="image/png"
+    style="display: none"
+  />
+
+  <canvas id="canvas" style="display: none"></canvas>
+  <!-- パネルリンク -->
+  <a href="#" id="imagecsvdownload" class="panel-link"
+    >画像一覧のcsvファイルをダウンロード</a
+  >
+  <!-- パネルリンク -->
+  <a href="#" id="threadcsvdownloadButton" class="panel-link"
+    >スレッド一覧のcsvファイルをダウンロード</a
+  >
+  <!-- ブックマークレット追加リンク -->
+  <a
+    href="javascript:void(0);"
+    class="panel-link"
+    id="bookmarkLink"
+    onclick="addBookmarklet();"
+    >スレッドURL取得ブックマークレットを追加(識者向け)</a
+  >
+  <a
+    href="javascript:void(0);"
+    class="panel-link"
+    id="bookmarkLink2"
+    onclick="addBookmarklet2();"
+    >ウマ娘ダイスブックマークレットを追加(識者向け)</a
+  >
 </div>
-
-  

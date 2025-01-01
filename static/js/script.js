@@ -467,7 +467,7 @@ function copyToClipboard(text) {
     navigator.clipboard
       .writeText(text)
       .then(() => {
-        alert("URLをコピーしました: " + text);
+        //alert("URLをコピーしました: " + text);
       })
       .catch((err) => {
         alert("コピーに失敗しました: " + err);
@@ -482,7 +482,7 @@ function copyToClipboard(text) {
     try {
       // クリップボードへのコピーを試みる
       document.execCommand("copy");
-      alert("URLをコピーしました: " + text);
+      //alert("URLをコピーしました: " + text);
     } catch (err) {
       alert("コピーに失敗しました: " + err);
       console.error("execCommandによるコピーエラー:", err);
@@ -590,6 +590,7 @@ if (urlParams.get("autofill") === "true") {
     }
   }
 }
+
 // ボタンをクリックしたときにブックマークレットリンクを表示
 function addBookmarklet() {
   const bookmarkletLink = `javascript:(function(){window.location.href='https://linguistic-sherilyn-animanimage-50068fef.koyeb.app/?autofill=true&source='+encodeURIComponent(window.location.href);})();`;
@@ -603,11 +604,21 @@ function addBookmarklet() {
     // リンクを表示する
     bookmarkLinkElement.style.display = "block";
   }
-
-  // アラートでリンクを表示
-  // alert("ブックマークレットリンクが作成されました: " + bookmarkletLink);
 }
+// ボタンをクリックしたときにブックマークレットリンクを表示
+function addBookmarklet2() {
+  const bookmarkletLink2 = `javascript:(function(){let s=document.createElement('script');s.src='https://channkenn.github.io/umamusume_dice/js/script.js';document.body.appendChild(s);})();`;
 
+  // ブックマークレットリンクを表示する
+  const bookmarkLinkElement2 = document.getElementById("bookmarkLink2");
+  if (bookmarkLinkElement2) {
+    // リンクの内容を更新
+    bookmarkLinkElement2.querySelector("a").href = bookmarkletLink2;
+
+    // リンクを表示する
+    bookmarkLinkElement2.style.display = "block";
+  }
+}
 // ハンバーガーメニューのクリックイベント
 document
   .querySelector(".hamburger-menu")
