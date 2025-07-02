@@ -1076,6 +1076,89 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // 20241220 画像一覧のcsvファイル出力 --ここまで
+  // 20250702 画像一覧csvのファイル入力 --ここから
+  const csvImportInput = document.getElementById("csvimport");
+
+  if (csvImportInput) {
+    csvImportInput.addEventListener("change", function (event) {
+      const file = event.target.files[0];
+      if (!file) {
+        alert("ファイルが選択されていません");
+        return;
+      }
+
+      // 拡張子チェック
+      if (!file.name.endsWith(".csv")) {
+        alert("CSVファイル（.csv）を選んでください");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const csvText = e.target.result;
+
+        function parseCSV(csv) {
+          const lines = csv.split("\n").filter((line) => line.trim() !== "");
+          const headers = lines[0].split(",").map((h) => h.trim());
+          const expectedHeaders = [
+            "thumbUrl",
+            "imgUrl",
+            "resNumber",
+            "resLink",
+            "date",
+            "register",
+            "count",
+          ];
+
+          const isValidHeader = expectedHeaders.every((h) =>
+            headers.includes(h)
+          );
+          if (!isValidHeader) {
+            alert(
+              "CSVのヘッダーが不正です。\n必要な列: " +
+                expectedHeaders.join(", ")
+            );
+            return null;
+          }
+
+          return lines.slice(1).map((line) => {
+            const values = line.split(",");
+            const obj = {};
+            headers.forEach((header, index) => {
+              obj[header] = values[index]?.trim() ?? "";
+            });
+            return obj;
+          });
+        }
+
+        const parsed = parseCSV(csvText);
+        if (!parsed) return;
+
+        // 既存のfavoritesを取得
+        const existing = JSON.parse(localStorage.getItem("favorites") || "[]");
+
+        // 重複チェック（resLinkが一意とする）
+        const existingLinks = new Set(existing.map((item) => item.resLink));
+        const newItems = parsed.filter(
+          (item) => !existingLinks.has(item.resLink)
+        );
+
+        if (newItems.length === 0) {
+          alert("すべてのデータが既に登録済みです（resLinkが重複）");
+          return;
+        }
+
+        // 保存
+        const combined = [...existing, ...newItems];
+        localStorage.setItem("favorites", JSON.stringify(combined));
+        alert(`${newItems.length} 件の画像を追加しました`);
+      };
+
+      reader.readAsText(file);
+    });
+  }
+
+  // 20250702 画像一覧csvのファイル入力 --ここまで
   // 20241220 スレッド一覧のcsvファイル出力 --ここから
   // エクスポートボタンのイベントリスナー
   const threadcsvdownloadButton = document.getElementById(
@@ -1132,6 +1215,92 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
   // 20241220 スレッド一覧のcsvファイル出力 --ここまで
+  // 20250702 スレッド一覧csvのインポート --ここから
+  const csvUploadInput = document.getElementById("csvupload");
+
+  if (csvUploadInput) {
+    csvUploadInput.addEventListener("change", function (event) {
+      const file = event.target.files[0];
+      if (!file) {
+        alert("ファイルが選択されていません");
+        return;
+      }
+
+      // 拡張子チェック
+      if (!file.name.endsWith(".csv")) {
+        alert("CSVファイル（.csv）を選んでください");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const csvText = e.target.result;
+
+        // CSVをオブジェクト配列に変換する関数
+        function parseCSV(csv) {
+          const lines = csv.split("\n").filter((line) => line.trim() !== "");
+          const headers = lines[0].split(",").map((h) => h.trim());
+          const expectedHeaders = [
+            "title",
+            "url",
+            "thumb",
+            "date",
+            "register",
+            "count",
+          ];
+
+          const isValidHeader = expectedHeaders.every((h) =>
+            headers.includes(h)
+          );
+          if (!isValidHeader) {
+            alert(
+              "CSVの列に誤りがあります。必要な列は: " +
+                expectedHeaders.join(", ")
+            );
+            return null;
+          }
+
+          const data = lines.slice(1).map((line) => {
+            const values = line.split(",");
+            const obj = {};
+            headers.forEach((header, index) => {
+              obj[header] = values[index]?.trim() ?? "";
+            });
+            return obj;
+          });
+
+          return data;
+        }
+
+        const parsedData = parseCSV(csvText);
+        if (!parsedData) return;
+
+        // 既存データを取得
+        const existing = JSON.parse(
+          localStorage.getItem("favoriteThreads") || "[]"
+        );
+        const existingUrls = new Set(existing.map((item) => item.url));
+
+        // 重複を除外した新しいデータだけを追加
+        const newItems = parsedData.filter(
+          (item) => !existingUrls.has(item.url)
+        );
+
+        if (newItems.length === 0) {
+          alert("すべてのデータが既に登録済みです（urlが重複しています）");
+          return;
+        }
+
+        const combined = [...existing, ...newItems];
+        localStorage.setItem("favoriteThreads", JSON.stringify(combined));
+        alert(`${newItems.length} 件を追加しました（重複URLは除外）`);
+      };
+
+      reader.readAsText(file);
+    });
+  }
+
+  // 20250702 スレッド一覧csvのインポート --ここまで
 
   // インポートボタンのイベントリスナー
   // ここは、importFileのイベントリスナーを設定する部分に追加するコードです 画像一覧

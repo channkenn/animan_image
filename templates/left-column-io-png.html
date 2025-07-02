@@ -25,10 +25,21 @@
   <a href="#" id="imagecsvdownload" class="panel-link"
     >画像一覧のcsvファイルをダウンロード</a
   >
+  <!-- CSVインポート（スタイル共通化済み） -->
+  <label for="csvimport" class="panel-link" style="cursor: pointer">
+    画像一覧のcsvファイルををアップロード
+  </label>
+  <input type="file" id="csvimport" accept=".csv" style="display: none" />
   <!-- パネルリンク -->
   <a href="#" id="threadcsvdownloadButton" class="panel-link"
     >スレッド一覧のcsvファイルをダウンロード</a
   >
+  <!-- CSVインポート（ファイル選択） -->
+  <label for="csvupload" class="panel-link" style="cursor: pointer">
+    スレッド一覧のcsvファイルをアップロード
+  </label>
+  <input type="file" id="csvupload" accept=".csv" style="display: none" />
+
   <!-- ブックマークレット追加リンク -->
   <a
     href="javascript:void(0);"
