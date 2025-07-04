@@ -23,6 +23,7 @@ def fetch_images_and_title(thread_url):
                 thumb_url = urljoin(thread_url, img_tag.get("src"))
                 img_url = thumb_url.replace("/thumb_m/", "/img/") if "thumb_m" in thumb_url else thumb_url
                 img_url = img_url.replace("/storage", "")
+                img_url = img_url.replace("/arc", "") #20250705追加機能
 
                 # レス番号を取得
                 res_number_tag = li.find("span", class_="resnumber")
