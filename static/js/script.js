@@ -1076,6 +1076,21 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // 20241220 画像一覧のcsvファイル出力 --ここまで
+  // 20250716 画像一覧のcsvファイルからダウンロードするバッチ.zip出力ここから
+  document.getElementById("downloadZipLink").addEventListener("click", (e) => {
+    e.preventDefault(); // aタグのデフォルト遷移を防ぐ
+    downloadZip();
+  });
+  function downloadZip() {
+    const zipUrl = "static/bat/bat_scripts.zip"; // zipファイルのパス（batフォルダに置く想定）
+    const a = document.createElement("a");
+    a.href = zipUrl;
+    a.download = "bat_scripts.zip";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+  // 20250716 画像一覧のcsvファイルからダウンロードするバッチ.zip出力ここまで
   // 20250702 画像一覧csvのファイル入力 --ここから
   const csvImportInput = document.getElementById("csvimport");
 
