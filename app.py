@@ -4,9 +4,11 @@ import re  # 正規表現モジュールをインポート
 import requests  # requestsモジュールをインポート
 import sqlite3   # ← SQLite を扱うために追加
 from flask import Flask, request, render_template, render_template_string, jsonify
+from flask_cors import CORS
 from utils.scraper import fetch_images_and_title
 
 app = Flask(__name__)
+CORS(app)  # ← これを追加
 
 @app.route("/", methods=["GET", "POST"])
 def index():
