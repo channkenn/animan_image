@@ -2,7 +2,8 @@ import os
 import time
 import re  # 正規表現モジュールをインポート
 import requests  # requestsモジュールをインポート
-from flask import Flask, request, render_template, render_template_string
+import sqlite3   # ← SQLite を扱うために追加
+from flask import Flask, request, render_template, render_template_string, jsonify
 from utils.scraper import fetch_images_and_title
 
 app = Flask(__name__)
@@ -91,7 +92,58 @@ def fetch_thread_info():
         return {"error": "スレッドタイトルを取得できませんでした"}, 404
 
     return {"title": thread_title}
+# -------------------------
+# ここから新しいAPI機能 (SQLite 読み取り)
+# -------------------------
 
+DB_PATH = "db/umamusume_relation.db"  # SQLiteファイルの場所を調整してください
+
+@app.route("/api/characters", methods=["GET"])
+def get_characters():
+    """キャラ一覧を返す"""
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+    cur.execute("SELECT id, text FROM text_data WHERE category=6")
+    rows = cur.fetchall()
+    conn.close()
+    return jsonify([{"id": r[0], "name": r[1]} for r in rows])
+
+@app.route("/api/character/<int:chara_id>", methods=["GET"])
+def get_character(chara_id):
+    """指定キャラの情報を返す"""
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+    cur.execute("SELECT id, text FROM text_data WHERE category=6 AND id=?", (chara_id,))
+    row = cur.fetchone()
+    conn.close()
+    if row:
+        return jsonify({"id": row[0], "name": row[1]})
+    else:
+        return jsonify({"error": "Character not found"}), 404
+
+@app.route("/api/relation", methods=["GET"])
+def get_relation():
+    """2キャラ間の関係値を返す"""
+    c1 = request.args.get("c1", type=int)
+    c2 = request.args.get("c2", type=int)
+    if not c1 or not c2:
+        return jsonify({"error": "c1 and c2 are required"}), 400
+
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT SUM(r.relation_point)
+        FROM succession_relation r
+        JOIN succession_relation_member m1 ON r.relation_type = m1.relation_type
+        JOIN succession_relation_member m2 ON r.relation_type = m2.relation_type
+        WHERE m1.chara_id = ? AND m2.chara_id = ?
+    """, (c1, c2))
+    total = cur.fetchone()[0]
+    conn.close()
+
+    return jsonify({"c1": c1, "c2": c2, "total": total or 0})
+
+# -------------------------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     #app.run(host="0.0.0.0", port=port)
