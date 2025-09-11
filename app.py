@@ -3,10 +3,10 @@ import time
 import re  # 正規表現モジュールをインポート
 import requests  # requestsモジュールをインポート
 import sqlite3   # ← SQLite を扱うために追加
-from flask import Flask, request, render_template, render_template_string, jsonify
+import urllib.parse
+from flask import Flask, request, render_template, render_template_string, jsonify,send_from_directory
 from flask_cors import CORS
 from utils.scraper import fetch_images_and_title
-
 app = Flask(__name__)
 CORS(app)  # ← これを追加
 
@@ -99,11 +99,18 @@ def fetch_thread_info():
 # -------------------------
 
 DB_PATH = "db/umamusume_relation.db"  # SQLiteファイルの場所を調整してください
-
+@app.route("/images/<path:filename>")
+def serve_image(filename):
+    # URLデコード
+    filename = urllib.parse.unquote(filename)
+    images_dir = os.path.join(app.root_path, "images")  # imagesフォルダのパス
+    return send_from_directory(images_dir, filename)
 @app.route("/api/characters", methods=["GET"])
 def get_characters():
     """キャラ一覧を返す"""
+    
     conn = sqlite3.connect(DB_PATH)
+    conn.text_factory = str  # 日本語対応
     cur = conn.cursor()
     cur.execute("SELECT id, text FROM text_data WHERE category=6")
     rows = cur.fetchall()
@@ -114,6 +121,7 @@ def get_characters():
 def get_character(chara_id):
     """指定キャラの情報を返す"""
     conn = sqlite3.connect(DB_PATH)
+    conn.text_factory = str  # 日本語対応
     cur = conn.cursor()
     cur.execute("SELECT id, text FROM text_data WHERE category=6 AND id=?", (chara_id,))
     row = cur.fetchone()
@@ -132,6 +140,7 @@ def get_relation():
         return jsonify({"error": "c1 and c2 are required"}), 400
 
     conn = sqlite3.connect(DB_PATH)
+    conn.text_factory = str  # 日本語対応
     cur = conn.cursor()
     cur.execute("""
         SELECT SUM(r.relation_point)
