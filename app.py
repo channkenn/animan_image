@@ -9,8 +9,7 @@ from flask_cors import CORS
 from utils.scraper import fetch_images_and_title
 
 app = Flask(__name__)
-CORS(app)
-
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 # -------------------------
 # 既存のページルート
 # -------------------------
