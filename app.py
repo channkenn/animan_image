@@ -218,15 +218,15 @@ def calculate_total(chars0, current_fixed):
 def get_character_name(chara_id):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute("SELECT text FROM text_data WHERE category=6 AND id=?", (chara_id,))
+    cursor.execute(
+        "SELECT `index`, text FROM text_data WHERE category=6 AND `index`=?",
+        (chara_id,)
+    )
     row = cursor.fetchone()
     conn.close()
     if row:
-        print(f"【DEBUG】get_character_name id={chara_id}, name={row[0]}")
-        return (chara_id, row[0])
-    else:
-        print(f"【DEBUG】get_character_name id={chara_id} → 名前なし")
-        return (chara_id, None)
+        return (chara_id, row[1])  # row[1] が text（名前）
+    return (chara_id, f"ID_{chara_id}")  # 名前がなければID文字列で返す
 
 # -------------------------
 # 固定キャラAPI（CORS対応済み・デバッグ用ログ追加）
