@@ -221,8 +221,12 @@ def get_character_name(chara_id):
     cursor.execute("SELECT text FROM text_data WHERE category=6 AND id=?", (chara_id,))
     row = cursor.fetchone()
     conn.close()
-    if row: return (chara_id, row[0])
-    return (None, None)
+    if row:
+        print(f"【DEBUG】get_character_name id={chara_id}, name={row[0]}")
+        return (chara_id, row[0])
+    else:
+        print(f"【DEBUG】get_character_name id={chara_id} → 名前なし")
+        return (chara_id, None)
 
 # -------------------------
 # 固定キャラAPI（CORS対応済み・デバッグ用ログ追加）
