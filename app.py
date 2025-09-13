@@ -177,11 +177,18 @@ def get_candidate_chars0(current_fixed):
     return [c for c in candidates if c not in exclude_ids]
 
 def calculate_total(chars0, current_fixed):
-    # chars0 は候補1キャラ、current_fixed は6名固定
+    """
+    chars0: 候補キャラ1人のID
+    current_fixed: 6名固定キャラ [(id, name), ...]
+    """
+    # 7名の組み合わせ
     chars = [chars0] + [cid for cid,_ in current_fixed]
+    print(f"【DEBUG】calculate_total chars: {chars}")
+
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute(f"""
+
+    sql = f"""
     WITH chars(id) AS (
         SELECT {chars[0]} UNION SELECT {chars[1]} UNION SELECT {chars[2]} UNION
         SELECT {chars[3]} UNION SELECT {chars[4]} UNION SELECT {chars[5]} UNION SELECT {chars[6]}
@@ -191,15 +198,22 @@ def calculate_total(chars0, current_fixed):
         FROM chars c1
         JOIN chars c2 ON c1.id < c2.id
     )
-    SELECT SUM(r.relation_point)
+    SELECT r.relation_type, SUM(r.relation_point) as total_points
     FROM pairs p
     JOIN succession_relation_member m1 ON p.id1 = m1.chara_id
     JOIN succession_relation_member m2 ON p.id2 = m2.chara_id AND m1.relation_type = m2.relation_type
     JOIN succession_relation r ON m1.relation_type = r.relation_type
-    """)
-    result = cursor.fetchone()[0]
+    GROUP BY r.relation_type
+    """
+
+    cursor.execute(sql)
+    rows = cursor.fetchall()
     conn.close()
-    return result or 0
+
+    total = sum(row[1] for row in rows if row[1] is not None)
+    print(f"【DEBUG】calculate_total result rows: {rows}, total: {total}")
+
+    return total or 0
 
 def get_character_name(chara_id):
     conn = sqlite3.connect(DB_PATH)
@@ -211,35 +225,56 @@ def get_character_name(chara_id):
     return (None, None)
 
 # -------------------------
-# 固定キャラAPI（CORS対応済み）
+# 固定キャラAPI（CORS対応済み・デバッグ用ログ追加）
 # -------------------------
 @app.route("/api/fixed_names", methods=["GET", "POST", "OPTIONS"])
 def api_fixed_names():
     if request.method == "OPTIONS":
         # preflight は空応答
         return jsonify({}), 200
+
     if request.method == "GET":
         return jsonify(list(CHAR_DICT.keys()))
+
     if request.method == "POST":
         data = request.json
         if not data or "names" not in data:
             return jsonify({"error": "JSON body with 'names' required"}), 400
+
         names = data["names"]
         if len(names) != 6:
             return jsonify({"error": "6名分の名前を送信してください"}), 400
-        try: current_fixed = names_to_fixed_chars(names)
-        except ValueError as e: return jsonify({"error": str(e)}), 400
+
+        try:
+            current_fixed = names_to_fixed_chars(names)
+        except ValueError as e:
+            return jsonify({"error": str(e)}), 400
+
+        print("【DEBUG】current_fixed:", current_fixed)
+
         candidates = get_candidate_chars0(current_fixed)
+        print("【DEBUG】候補キャラIDs:", candidates)
+
         best_char = None
         best_total = -1
+
         for c in candidates:
             total = calculate_total(c, current_fixed)
             _, name = get_character_name(c)
+            print(f"【DEBUG】候補ID={c}, 名前={name}, total={total}")
             if total > best_total:
                 best_total = total
                 best_char = c
+
+        if best_char is None:
+            print("【DEBUG】最適キャラが見つかりませんでした")
+            return jsonify({"best_character": None, "score": best_total})
+
         _, name = get_character_name(best_char)
+        print(f"【DEBUG】最終 best_char={best_char}, 名前={name}, スコア={best_total}")
+
         return jsonify({"best_character": name, "score": best_total})
+
 
 # -------------------------
 if __name__ == "__main__":
