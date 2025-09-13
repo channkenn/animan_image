@@ -9,7 +9,24 @@ from flask_cors import CORS
 from utils.scraper import fetch_images_and_title
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "*"}})
+
+# -------------------------
+# 全 /api/* に対して CORS 許可
+# -------------------------
+CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
+
+# -------------------------
+# OPTIONS リクエスト対応（preflight）
+# -------------------------
+@app.before_request
+def handle_options():
+    if request.method == 'OPTIONS':
+        resp = app.make_default_options_response()
+        headers = resp.headers
+        headers['Access-Control-Allow-Origin'] = '*'
+        headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+        headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        return resp
 
 # -------------------------
 # 既存ページルート
@@ -164,7 +181,6 @@ def calculate_total(chars0, current_fixed):
     chars = [chars0] + [cid for cid,_ in current_fixed]
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    # 7名の組み合わせごとの合計相性ポイント
     cursor.execute(f"""
     WITH chars(id) AS (
         SELECT {chars[0]} UNION SELECT {chars[1]} UNION SELECT {chars[2]} UNION
@@ -195,13 +211,16 @@ def get_character_name(chara_id):
     return (None, None)
 
 # -------------------------
-# 固定キャラAPI
+# 固定キャラAPI（CORS対応済み）
 # -------------------------
-@app.route("/api/fixed_names", methods=["GET", "POST"])
+@app.route("/api/fixed_names", methods=["GET", "POST", "OPTIONS"])
 def api_fixed_names():
+    if request.method == "OPTIONS":
+        # preflight は空応答
+        return jsonify({}), 200
     if request.method == "GET":
         return jsonify(list(CHAR_DICT.keys()))
-    elif request.method == "POST":
+    if request.method == "POST":
         data = request.json
         if not data or "names" not in data:
             return jsonify({"error": "JSON body with 'names' required"}), 400
