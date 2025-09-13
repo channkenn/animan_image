@@ -1,5 +1,4 @@
 import os
-import time
 import re
 import requests
 import sqlite3
@@ -13,7 +12,7 @@ app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # -------------------------
-# 既存のページルート
+# 既存ページルート
 # -------------------------
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -28,17 +27,16 @@ def index():
             if not re.match(r"https://bbs.animanch.com/board/\d+/", thread_url):
                 warning_message = "あにまん掲示板のスレッドURLでおねがいします"
                 return render_template("index.html", warning_message=warning_message)
-            else:
-                try:
-                    response = requests.get(thread_url, allow_redirects=True)
-                    if response.status_code == 404 or response.url == "https://bbs.animanch.com/":
-                        warning_message = "指定されたスレッドは存在しません"
-                        return render_template("index.html", warning_message=warning_message)
-                except requests.exceptions.RequestException as e:
-                    warning_message = f"URLの確認中にエラーが発生しました: {str(e)}"
+            try:
+                response = requests.get(thread_url, allow_redirects=True)
+                if response.status_code == 404 or response.url == "https://bbs.animanch.com/":
+                    warning_message = "指定されたスレッドは存在しません"
                     return render_template("index.html", warning_message=warning_message)
+            except requests.exceptions.RequestException as e:
+                warning_message = f"URLの確認中にエラーが発生しました: {str(e)}"
+                return render_template("index.html", warning_message=warning_message)
 
-                thread_title, images = fetch_images_and_title(thread_url)
+            thread_title, images = fetch_images_and_title(thread_url)
 
     return render_template(
         "index.html",
@@ -48,55 +46,39 @@ def index():
         warning_message=warning_message
     )
 
-@app.route("/favorites", methods=["GET"])
-def favorites():
-    return render_template("favorite.html")
-
-@app.route("/creative", methods=["GET"])
-def creative():
-    return render_template("creative.html")
-
-@app.route("/resize", methods=["GET"])
-def resize():
-    return render_template("resize.html")
-
-@app.route("/resize_with_drawing", methods=["GET"])
-def resize_with_drawing():
-    return render_template("resize_with_drawing.html")
-
-@app.route("/view-thread", methods=["GET"])
+# -------------------------
+# ページルート
+# -------------------------
+@app.route("/favorites")
+def favorites(): return render_template("favorite.html")
+@app.route("/creative")
+def creative(): return render_template("creative.html")
+@app.route("/resize")
+def resize(): return render_template("resize.html")
+@app.route("/resize_with_drawing")
+def resize_with_drawing(): return render_template("resize_with_drawing.html")
+@app.route("/view-thread")
 def view_thread():
     thread_url = request.args.get("url")
-    if not thread_url:
-        return "URLが提供されていません", 400
+    if not thread_url: return "URLが提供されていません", 400
     thread_title, images = fetch_images_and_title(thread_url)
-    return render_template(
-        "view_thread.html",
-        thread_url=thread_url,
-        thread_title=thread_title,
-        images=images
-    )
-
-@app.route("/favorite-threads", methods=["GET"])
-def favorite_threads():
-    return render_template("favorite_threads.html")
-
-@app.route("/fetch-thread-info", methods=["GET"])
+    return render_template("view_thread.html", thread_url=thread_url, thread_title=thread_title, images=images)
+@app.route("/favorite-threads")
+def favorite_threads(): return render_template("favorite_threads.html")
+@app.route("/fetch-thread-info")
 def fetch_thread_info():
     thread_url = request.args.get("url")
-    if not thread_url:
-        return {"error": "URLが提供されていません"}, 400
-
+    if not thread_url: return {"error": "URLが提供されていません"}, 400
     thread_title, _ = fetch_images_and_title(thread_url)
-    if not thread_title:
-        return {"error": "スレッドタイトルを取得できませんでした"}, 404
-
+    if not thread_title: return {"error": "スレッドタイトルを取得できませんでした"}, 404
     return {"title": thread_title}
 
 # -------------------------
 # DB関連API
 # -------------------------
 DB_PATH = "db/umamusume_relation.db"
+CSV_PATH = "csv/characters.csv"
+roles = ["父", "父父", "父母", "母", "母父", "母母"]
 
 @app.route("/images/<path:filename>")
 def serve_image(filename):
@@ -104,7 +86,7 @@ def serve_image(filename):
     images_dir = os.path.join(app.root_path, "images")
     return send_from_directory(images_dir, filename)
 
-@app.route("/api/characters", methods=["GET"])
+@app.route("/api/characters")
 def get_characters():
     conn = sqlite3.connect(DB_PATH)
     conn.text_factory = str
@@ -114,7 +96,7 @@ def get_characters():
     conn.close()
     return jsonify([{"id": r[0], "name": r[1]} for r in rows])
 
-@app.route("/api/character/<int:chara_id>", methods=["GET"])
+@app.route("/api/character/<int:chara_id>")
 def get_character(chara_id):
     conn = sqlite3.connect(DB_PATH)
     conn.text_factory = str
@@ -122,18 +104,14 @@ def get_character(chara_id):
     cur.execute("SELECT id, text FROM text_data WHERE category=6 AND id=?", (chara_id,))
     row = cur.fetchone()
     conn.close()
-    if row:
-        return jsonify({"id": row[0], "name": row[1]})
-    else:
-        return jsonify({"error": "Character not found"}), 404
+    if row: return jsonify({"id": row[0], "name": row[1]})
+    return jsonify({"error": "Character not found"}), 404
 
-@app.route("/api/relation", methods=["GET"])
+@app.route("/api/relation")
 def get_relation():
     c1 = request.args.get("c1", type=int)
     c2 = request.args.get("c2", type=int)
-    if not c1 or not c2:
-        return jsonify({"error": "c1 and c2 are required"}), 400
-
+    if not c1 or not c2: return jsonify({"error": "c1 and c2 are required"}), 400
     conn = sqlite3.connect(DB_PATH)
     conn.text_factory = str
     cur = conn.cursor()
@@ -146,18 +124,10 @@ def get_relation():
     """, (c1, c2))
     total = cur.fetchone()[0]
     conn.close()
-
     return jsonify({"c1": c1, "c2": c2, "total": total or 0})
 
 # -------------------------
-# 新機能: 選択キャラ固定用API
-# -------------------------
-DB_PATH = "db/umamusume_relation.db"
-CSV_PATH = "csv/characters.csv"
-roles = ["父", "父父", "父母", "母", "母父", "母母"]
-
-# -------------------------
-# CSV からキャラ辞書作成
+# CSV読み込み
 # -------------------------
 def load_char_dict():
     char_dict = {}
@@ -168,122 +138,89 @@ def load_char_dict():
     return char_dict
 
 CHAR_DICT = load_char_dict()
-
-# マイナスリスト（候補除外）
-EXCLUDE_NAMES = [
-    "テイエムオペラオー",
-    "クロノジェネシス",
-    "アグネスデジタル",
-    "ダイワスカーレット",
-    "ジェンティルドンナ",
-    "メジロラモーヌ",
-    "ユキノビジン",
-    "シリウスシンボリ",
-    "メジロドーベル",
-    "ウオッカ",
-]
+EXCLUDE_NAMES = ["テイエムオペラオー","クロノジェネシス","アグネスデジタル",
+                 "ダイワスカーレット","ジェンティルドンナ","メジロラモーヌ",
+                 "ユキノビジン","シリウスシンボリ","メジロドーベル","ウオッカ"]
 EXCLUDE_IDS = [CHAR_DICT[name] for name in EXCLUDE_NAMES if name in CHAR_DICT]
 
-# -------------------------
-# CSV名 -> (id, name) 変換
-# -------------------------
 def names_to_fixed_chars(names):
     fixed_chars = []
     for n in names:
-        if n not in CHAR_DICT:
-            raise ValueError(f"名前が不正: {n}")
+        if n not in CHAR_DICT: raise ValueError(f"名前が不正: {n}")
         fixed_chars.append((CHAR_DICT[n], n))
     return fixed_chars
 
-# -------------------------
-# 候補キャラ取得
-# -------------------------
 def get_candidate_chars0(current_fixed):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("SELECT DISTINCT chara_id FROM succession_relation_member")
     candidates = [row[0] for row in cursor.fetchall()]
     conn.close()
-    exclude_ids = [cid for cid, _ in current_fixed] + EXCLUDE_IDS
+    exclude_ids = [cid for cid,_ in current_fixed] + EXCLUDE_IDS
     return [c for c in candidates if c not in exclude_ids]
 
-# -------------------------
-# 合計相性計算
-# -------------------------
 def calculate_total(chars0, current_fixed):
-    chars = [chars0] + [cid for cid, _ in current_fixed]
-    sql = f"""
-    WITH chars AS (
-        SELECT {chars[0]} AS id, 0 AS idx UNION ALL
-        SELECT {chars[1]}, 1 UNION ALL
-        SELECT {chars[2]}, 2 UNION ALL
-        SELECT {chars[3]}, 3 UNION ALL
-        SELECT {chars[4]}, 4 UNION ALL
-        SELECT {chars[5]}, 5 UNION ALL
-        SELECT {chars[6]}, 6
-    ),
-    combination_points AS (
-        -- 既存の組み合わせ計算SQLをそのまま利用してください
-    )
-    SELECT SUM(total) FROM combination_points;
-    """
+    # chars0 は候補1キャラ、current_fixed は6名固定
+    chars = [chars0] + [cid for cid,_ in current_fixed]
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute(sql)
+    # 7名の組み合わせごとの合計相性ポイント
+    cursor.execute(f"""
+    WITH chars(id) AS (
+        SELECT {chars[0]} UNION SELECT {chars[1]} UNION SELECT {chars[2]} UNION
+        SELECT {chars[3]} UNION SELECT {chars[4]} UNION SELECT {chars[5]} UNION SELECT {chars[6]}
+    ),
+    pairs AS (
+        SELECT c1.id AS id1, c2.id AS id2
+        FROM chars c1
+        JOIN chars c2 ON c1.id < c2.id
+    )
+    SELECT SUM(r.relation_point)
+    FROM pairs p
+    JOIN succession_relation_member m1 ON p.id1 = m1.chara_id
+    JOIN succession_relation_member m2 ON p.id2 = m2.chara_id AND m1.relation_type = m2.relation_type
+    JOIN succession_relation r ON m1.relation_type = r.relation_type
+    """)
     result = cursor.fetchone()[0]
     conn.close()
-    return result
+    return result or 0
 
-# -------------------------
-# id -> 名前取得
-# -------------------------
 def get_character_name(chara_id):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute(
-        "SELECT `index`, text FROM text_data WHERE category=6 AND `index`=?",
-        (chara_id,)
-    )
+    cursor.execute("SELECT text FROM text_data WHERE category=6 AND id=?", (chara_id,))
     row = cursor.fetchone()
     conn.close()
-    if row:
-        return row
+    if row: return (chara_id, row[0])
     return (None, None)
 
 # -------------------------
-# 新API: フロントから6名受け取り最適キャラを返す
+# 固定キャラAPI
 # -------------------------
-@app.route("/api/fixed_names_search", methods=["POST"])
-def api_fixed_names_search():
-    data = request.json
-    if not data or "names" not in data:
-        return jsonify({"error": "JSON body with 'names' required"}), 400
-
-    names = data["names"]
-    if len(names) != 6:
-        return jsonify({"error": "6名分の名前を送信してください"}), 400
-
-    try:
-        current_fixed = names_to_fixed_chars(names)
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 400
-
-    candidates = get_candidate_chars0(current_fixed)
-    best_char = None
-    best_total = -1
-
-    for c in candidates:
-        total = calculate_total(c, current_fixed)
-        idx, name = get_character_name(c)
-        if total > best_total:
-            best_total = total
-            best_char = c
-
-    idx, name = get_character_name(best_char)
-    return jsonify({
-        "best_character": name,
-        "score": best_total
-    })
+@app.route("/api/fixed_names", methods=["GET", "POST"])
+def api_fixed_names():
+    if request.method == "GET":
+        return jsonify(list(CHAR_DICT.keys()))
+    elif request.method == "POST":
+        data = request.json
+        if not data or "names" not in data:
+            return jsonify({"error": "JSON body with 'names' required"}), 400
+        names = data["names"]
+        if len(names) != 6:
+            return jsonify({"error": "6名分の名前を送信してください"}), 400
+        try: current_fixed = names_to_fixed_chars(names)
+        except ValueError as e: return jsonify({"error": str(e)}), 400
+        candidates = get_candidate_chars0(current_fixed)
+        best_char = None
+        best_total = -1
+        for c in candidates:
+            total = calculate_total(c, current_fixed)
+            _, name = get_character_name(c)
+            if total > best_total:
+                best_total = total
+                best_char = c
+        _, name = get_character_name(best_char)
+        return jsonify({"best_character": name, "score": best_total})
 
 # -------------------------
 if __name__ == "__main__":
