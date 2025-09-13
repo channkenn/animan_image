@@ -177,43 +177,119 @@ def get_candidate_chars0(current_fixed):
     return [c for c in candidates if c not in exclude_ids]
 
 def calculate_total(chars0, current_fixed):
-    """
-    chars0: 候補キャラ1人のID
-    current_fixed: 6名固定キャラ [(id, name), ...]
-    """
-    # 7名の組み合わせ
     chars = [chars0] + [cid for cid,_ in current_fixed]
-    print(f"【DEBUG】calculate_total chars: {chars}")
+
+    sql = f"""
+    WITH chars AS (
+        SELECT {chars[0]} AS id, 0 AS idx UNION ALL
+        SELECT {chars[1]}, 1 UNION ALL
+        SELECT {chars[2]}, 2 UNION ALL
+        SELECT {chars[3]}, 3 UNION ALL
+        SELECT {chars[4]}, 4 UNION ALL
+        SELECT {chars[5]}, 5 UNION ALL
+        SELECT {chars[6]}, 6
+    ),
+    combination_points AS (
+        -- 1と2
+        SELECT CASE WHEN (SELECT id FROM chars WHERE idx=0) = (SELECT id FROM chars WHERE idx=1) THEN 0
+                    ELSE COALESCE(SUM(sr.relation_point),0) END AS total
+        FROM succession_relation sr
+        WHERE sr.relation_type IN (
+            SELECT srm1.relation_type
+            FROM succession_relation_member srm1
+            JOIN succession_relation_member srm2
+              ON srm1.relation_type = srm2.relation_type
+            WHERE srm1.chara_id = (SELECT id FROM chars WHERE idx=0)
+              AND srm2.chara_id = (SELECT id FROM chars WHERE idx=1)
+        )
+        UNION ALL
+        -- 1と5
+        SELECT CASE WHEN (SELECT id FROM chars WHERE idx=0) = (SELECT id FROM chars WHERE idx=4) THEN 0
+                    ELSE COALESCE(SUM(sr.relation_point),0) END
+        FROM succession_relation sr
+        WHERE sr.relation_type IN (
+            SELECT srm1.relation_type
+            FROM succession_relation_member srm1
+            JOIN succession_relation_member srm2
+              ON srm1.relation_type = srm2.relation_type
+            WHERE srm1.chara_id = (SELECT id FROM chars WHERE idx=0)
+              AND srm2.chara_id = (SELECT id FROM chars WHERE idx=4)
+        )
+        UNION ALL
+        -- 2と5
+        SELECT CASE WHEN (SELECT id FROM chars WHERE idx=1) = (SELECT id FROM chars WHERE idx=4) THEN 0
+                    ELSE COALESCE(SUM(sr.relation_point),0) END
+        FROM succession_relation sr
+        WHERE sr.relation_type IN (
+            SELECT srm1.relation_type
+            FROM succession_relation_member srm1
+            JOIN succession_relation_member srm2
+              ON srm1.relation_type = srm2.relation_type
+            WHERE srm1.chara_id = (SELECT id FROM chars WHERE idx=1)
+              AND srm2.chara_id = (SELECT id FROM chars WHERE idx=4)
+        )
+        UNION ALL
+        -- 1,2,3
+        SELECT CASE WHEN (
+            (SELECT COUNT(DISTINCT id) FROM chars WHERE idx IN (0,1,2)) < 3
+        ) THEN 0 ELSE COALESCE(SUM(sr.relation_point),0) END
+        FROM succession_relation sr
+        WHERE sr.relation_type IN (
+            SELECT relation_type
+            FROM succession_relation_member
+            WHERE chara_id IN (SELECT id FROM chars WHERE idx IN (0,1,2))
+            GROUP BY relation_type
+            HAVING COUNT(DISTINCT chara_id) = 3
+        )
+        UNION ALL
+        -- 1,2,4
+        SELECT CASE WHEN (
+            (SELECT COUNT(DISTINCT id) FROM chars WHERE idx IN (0,1,3)) < 3
+        ) THEN 0 ELSE COALESCE(SUM(sr.relation_point),0) END
+        FROM succession_relation sr
+        WHERE sr.relation_type IN (
+            SELECT relation_type
+            FROM succession_relation_member
+            WHERE chara_id IN (SELECT id FROM chars WHERE idx IN (0,1,3))
+            GROUP BY relation_type
+            HAVING COUNT(DISTINCT chara_id) = 3
+        )
+        UNION ALL
+        -- 1,5,6
+        SELECT CASE WHEN (
+            (SELECT COUNT(DISTINCT id) FROM chars WHERE idx IN (0,4,5)) < 3
+        ) THEN 0 ELSE COALESCE(SUM(sr.relation_point),0) END
+        FROM succession_relation sr
+        WHERE sr.relation_type IN (
+            SELECT relation_type
+            FROM succession_relation_member
+            WHERE chara_id IN (SELECT id FROM chars WHERE idx IN (0,4,5))
+            GROUP BY relation_type
+            HAVING COUNT(DISTINCT chara_id) = 3
+        )
+        UNION ALL
+        -- 1,5,7
+        SELECT CASE WHEN (
+            (SELECT COUNT(DISTINCT id) FROM chars WHERE idx IN (0,4,6)) < 3
+        ) THEN 0 ELSE COALESCE(SUM(sr.relation_point),0) END
+        FROM succession_relation sr
+        WHERE sr.relation_type IN (
+            SELECT relation_type
+            FROM succession_relation_member
+            WHERE chara_id IN (SELECT id FROM chars WHERE idx IN (0,4,6))
+            GROUP BY relation_type
+            HAVING COUNT(DISTINCT chara_id) = 3
+        )
+    )
+    SELECT SUM(total) FROM combination_points;
+    """
 
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-
-    sql = f"""
-    WITH chars(id) AS (
-        SELECT {chars[0]} UNION SELECT {chars[1]} UNION SELECT {chars[2]} UNION
-        SELECT {chars[3]} UNION SELECT {chars[4]} UNION SELECT {chars[5]} UNION SELECT {chars[6]}
-    ),
-    pairs AS (
-        SELECT c1.id AS id1, c2.id AS id2
-        FROM chars c1
-        JOIN chars c2 ON c1.id < c2.id
-    )
-    SELECT r.relation_type, SUM(r.relation_point) as total_points
-    FROM pairs p
-    JOIN succession_relation_member m1 ON p.id1 = m1.chara_id
-    JOIN succession_relation_member m2 ON p.id2 = m2.chara_id AND m1.relation_type = m2.relation_type
-    JOIN succession_relation r ON m1.relation_type = r.relation_type
-    GROUP BY r.relation_type
-    """
-
     cursor.execute(sql)
-    rows = cursor.fetchall()
+    result = cursor.fetchone()[0]
     conn.close()
-
-    total = sum(row[1] for row in rows if row[1] is not None)
-    print(f"【DEBUG】calculate_total result rows: {rows}, total: {total}")
-
-    return total or 0
+    return result
 
 def get_character_name(chara_id):
     conn = sqlite3.connect(DB_PATH)
