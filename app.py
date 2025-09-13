@@ -10,6 +10,7 @@ from utils.scraper import fetch_images_and_title
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
+
 # -------------------------
 # 既存のページルート
 # -------------------------
@@ -148,22 +149,25 @@ def get_relation():
     return jsonify({"c1": c1, "c2": c2, "total": total or 0})
 
 # -------------------------
-# 新機能: フロントから選択キャラを受け取る
+# 新機能: 選択キャラ固定用API
 # -------------------------
+FIXED_NAMES = [
+    "エルコンドルパサー",
+    "シンボリルドルフ",
+    "ナリタブライアン",
+    "ナイスネイチャ",
+    "エルコンドルパサー",
+    "シンボリルドルフ"
+]
+
+@app.route("/api/fixed_names", methods=["GET"])
+def api_fixed_names():
+    """固定キャラ名を返す"""
+    return jsonify(FIXED_NAMES)
+
 @app.route("/api/fixed", methods=["POST"])
 def api_fixed():
-    """
-    フロントから選択されたキャラを受け取り、確認用に返す。
-    例:
-    {
-      "left": "エルコンドルパサー",
-      "right": "シンボリルドルフ",
-      "leftGrandfather": "ナリタブライアン",
-      "leftGrandmother": "ナイスネイチャ",
-      "rightGrandfather": "エルコンドルパサー",
-      "rightGrandmother": "シンボリルドルフ"
-    }
-    """
+    """フロントから選択キャラを受け取る確認用"""
     data = request.json
     if not data:
         return jsonify({"error": "JSON body required"}), 400
