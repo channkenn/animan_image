@@ -3,6 +3,7 @@ import time
 import re
 import requests
 import sqlite3
+import csv
 import urllib.parse
 from flask import Flask, request, render_template, jsonify, send_from_directory
 from flask_cors import CORS
@@ -151,30 +152,137 @@ def get_relation():
 # -------------------------
 # 新機能: 選択キャラ固定用API
 # -------------------------
-FIXED_NAMES = [
-    "エルコンドルパサー",
-    "シンボリルドルフ",
-    "ナリタブライアン",
-    "ナイスネイチャ",
-    "エルコンドルパサー",
-    "シンボリルドルフ"
+DB_PATH = "db/umamusume_relation.db"
+CSV_PATH = "csv/characters.csv"
+roles = ["父", "父父", "父母", "母", "母父", "母母"]
+
+# -------------------------
+# CSV からキャラ辞書作成
+# -------------------------
+def load_char_dict():
+    char_dict = {}
+    with open(CSV_PATH, newline='', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            char_dict[row["name"]] = int(row["id"])
+    return char_dict
+
+CHAR_DICT = load_char_dict()
+
+# マイナスリスト（候補除外）
+EXCLUDE_NAMES = [
+    "テイエムオペラオー",
+    "クロノジェネシス",
+    "アグネスデジタル",
+    "ダイワスカーレット",
+    "ジェンティルドンナ",
+    "メジロラモーヌ",
+    "ユキノビジン",
+    "シリウスシンボリ",
+    "メジロドーベル",
+    "ウオッカ",
 ]
+EXCLUDE_IDS = [CHAR_DICT[name] for name in EXCLUDE_NAMES if name in CHAR_DICT]
 
-@app.route("/api/fixed_names", methods=["GET"])
-def api_fixed_names():
-    """固定キャラ名を返す"""
-    return jsonify(FIXED_NAMES)
+# -------------------------
+# CSV名 -> (id, name) 変換
+# -------------------------
+def names_to_fixed_chars(names):
+    fixed_chars = []
+    for n in names:
+        if n not in CHAR_DICT:
+            raise ValueError(f"名前が不正: {n}")
+        fixed_chars.append((CHAR_DICT[n], n))
+    return fixed_chars
 
-@app.route("/api/fixed", methods=["POST"])
-def api_fixed():
-    """フロントから選択キャラを受け取る確認用"""
+# -------------------------
+# 候補キャラ取得
+# -------------------------
+def get_candidate_chars0(current_fixed):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT DISTINCT chara_id FROM succession_relation_member")
+    candidates = [row[0] for row in cursor.fetchall()]
+    conn.close()
+    exclude_ids = [cid for cid, _ in current_fixed] + EXCLUDE_IDS
+    return [c for c in candidates if c not in exclude_ids]
+
+# -------------------------
+# 合計相性計算
+# -------------------------
+def calculate_total(chars0, current_fixed):
+    chars = [chars0] + [cid for cid, _ in current_fixed]
+    sql = f"""
+    WITH chars AS (
+        SELECT {chars[0]} AS id, 0 AS idx UNION ALL
+        SELECT {chars[1]}, 1 UNION ALL
+        SELECT {chars[2]}, 2 UNION ALL
+        SELECT {chars[3]}, 3 UNION ALL
+        SELECT {chars[4]}, 4 UNION ALL
+        SELECT {chars[5]}, 5 UNION ALL
+        SELECT {chars[6]}, 6
+    ),
+    combination_points AS (
+        -- 既存の組み合わせ計算SQLをそのまま利用してください
+    )
+    SELECT SUM(total) FROM combination_points;
+    """
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchone()[0]
+    conn.close()
+    return result
+
+# -------------------------
+# id -> 名前取得
+# -------------------------
+def get_character_name(chara_id):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT `index`, text FROM text_data WHERE category=6 AND `index`=?",
+        (chara_id,)
+    )
+    row = cursor.fetchone()
+    conn.close()
+    if row:
+        return row
+    return (None, None)
+
+# -------------------------
+# 新API: フロントから6名受け取り最適キャラを返す
+# -------------------------
+@app.route("/api/fixed_names_search", methods=["POST"])
+def api_fixed_names_search():
     data = request.json
-    if not data:
-        return jsonify({"error": "JSON body required"}), 400
+    if not data or "names" not in data:
+        return jsonify({"error": "JSON body with 'names' required"}), 400
 
+    names = data["names"]
+    if len(names) != 6:
+        return jsonify({"error": "6名分の名前を送信してください"}), 400
+
+    try:
+        current_fixed = names_to_fixed_chars(names)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+
+    candidates = get_candidate_chars0(current_fixed)
+    best_char = None
+    best_total = -1
+
+    for c in candidates:
+        total = calculate_total(c, current_fixed)
+        idx, name = get_character_name(c)
+        if total > best_total:
+            best_total = total
+            best_char = c
+
+    idx, name = get_character_name(best_char)
     return jsonify({
-        "fixed": data,
-        "count": len([v for v in data.values() if v])  # 選択された数
+        "best_character": name,
+        "score": best_total
     })
 
 # -------------------------
