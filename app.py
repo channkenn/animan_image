@@ -4,6 +4,7 @@ import requests
 import sqlite3
 import csv
 import urllib.parse
+import pandas as pd
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from flask import Flask, request, render_template, jsonify, send_from_directory
