@@ -158,9 +158,7 @@ def load_char_dict():
     return char_dict
 
 CHAR_DICT = load_char_dict()
-EXCLUDE_NAMES = ["テイエムオペラオー","クロノジェネシス","アグネスデジタル",
-                 "ダイワスカーレット","ジェンティルドンナ","メジロラモーヌ",
-                 "ユキノビジン","シリウスシンボリ","メジロドーベル","ウオッカ"]
+EXCLUDE_NAMES = ["モンジュー"]
 EXCLUDE_IDS = [CHAR_DICT[name] for name in EXCLUDE_NAMES if name in CHAR_DICT]
 
 def names_to_fixed_chars(names):
