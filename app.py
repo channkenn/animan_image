@@ -4,6 +4,8 @@ import requests
 import sqlite3
 import csv
 import urllib.parse
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
 from flask import Flask, request, render_template, jsonify, send_from_directory
 from flask_cors import CORS
 from utils.scraper import fetch_images_and_title
@@ -13,7 +15,8 @@ app = Flask(__name__)
 # -------------------------
 # 全 /api/* に対して CORS 許可
 # -------------------------
-CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
+#CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # -------------------------
 # OPTIONS リクエスト対応（preflight）
@@ -290,7 +293,31 @@ def calculate_total(chars0, current_fixed):
     result = cursor.fetchone()[0]
     conn.close()
     return result
+# -------------------------
+# 並列計算ヘルパー
+# -------------------------
+def find_best_candidate_parallel(current_fixed, candidates, max_workers=8):
+    best_char = None
+    best_total = -1
 
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_to_c = {executor.submit(calculate_total, c, current_fixed): c for c in candidates}
+
+        for future in as_completed(future_to_c):
+            c = future_to_c[future]
+            try:
+                total = future.result()
+                _, name = get_character_name(c)
+                print(f"【DEBUG】候補ID={c}, 名前={name}, total={total}")
+                if total > best_total:
+                    best_total = total
+                    best_char = c
+            except Exception as e:
+                print(f"【ERROR】候補ID={c} 計算失敗: {e}")
+
+    return best_char, best_total
+
+# -------------------------
 def get_character_name(chara_id):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -310,51 +337,37 @@ def get_character_name(chara_id):
 @app.route("/api/fixed_names", methods=["GET", "POST", "OPTIONS"])
 def api_fixed_names():
     if request.method == "OPTIONS":
-        # preflight は空応答
         return jsonify({}), 200
-
     if request.method == "GET":
         return jsonify(list(CHAR_DICT.keys()))
 
-    if request.method == "POST":
-        data = request.json
-        if not data or "names" not in data:
-            return jsonify({"error": "JSON body with 'names' required"}), 400
+    data = request.json
+    if not data or "names" not in data:
+        return jsonify({"error": "JSON body with 'names' required"}), 400
 
-        names = data["names"]
-        if len(names) != 6:
-            return jsonify({"error": "6名分の名前を送信してください"}), 400
+    names = data["names"]
+    if len(names) != 6:
+        return jsonify({"error": "6名分の名前を送信してください"}), 400
 
-        try:
-            current_fixed = names_to_fixed_chars(names)
-        except ValueError as e:
-            return jsonify({"error": str(e)}), 400
+    try:
+        current_fixed = names_to_fixed_chars(names)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
 
-        print("【DEBUG】current_fixed:", current_fixed)
+    print("【DEBUG】current_fixed:", current_fixed)
 
-        candidates = get_candidate_chars0(current_fixed)
-        print("【DEBUG】候補キャラIDs:", candidates)
+    candidates = get_candidate_chars0(current_fixed)
+    print("【DEBUG】候補キャラIDs:", candidates)
 
-        best_char = None
-        best_total = -1
+    best_char, best_total = find_best_candidate_parallel(current_fixed, candidates)
 
-        for c in candidates:
-            total = calculate_total(c, current_fixed)
-            _, name = get_character_name(c)
-            print(f"【DEBUG】候補ID={c}, 名前={name}, total={total}")
-            if total > best_total:
-                best_total = total
-                best_char = c
+    if best_char is None:
+        return jsonify({"best_character": None, "score": best_total})
 
-        if best_char is None:
-            print("【DEBUG】最適キャラが見つかりませんでした")
-            return jsonify({"best_character": None, "score": best_total})
+    _, name = get_character_name(best_char)
+    print(f"【DEBUG】最終 best_char={best_char}, 名前={name}, スコア={best_total}")
 
-        _, name = get_character_name(best_char)
-        print(f"【DEBUG】最終 best_char={best_char}, 名前={name}, スコア={best_total}")
-
-        return jsonify({"best_character": name, "score": best_total})
-
+    return jsonify({"best_character": name, "score": best_total})
 
 # -------------------------
 if __name__ == "__main__":
