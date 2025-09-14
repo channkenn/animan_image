@@ -5,6 +5,7 @@ import sqlite3
 import csv
 import urllib.parse
 import pandas as pd
+from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from flask import Flask, request, render_template, jsonify, send_from_directory
@@ -439,7 +440,70 @@ def find_best_candidate_pandas(current_fixed, candidates):
             best_char = candidate
 
     return best_char, int(best_score)
+def find_best_candidate_pandas_vectorized(current_fixed, candidates):
+    """
+    current_fixed: [(chara_id, name), ...]
+    candidates: [id1, id2, id3, ...]
+    """
+    conn = sqlite3.connect(DB_PATH)
+    df_srm = pd.read_sql("SELECT * FROM succession_relation_member", conn)
+    df_sr = pd.read_sql("SELECT * FROM succession_relation", conn)
+    conn.close()
 
+    # relation_point を dict にしておく（lookup 高速化）
+    relation_point_map = df_sr.set_index("relation_type")["relation_point"].to_dict()
+
+    # 各キャラごとに relation_type のセットを作る
+    char_to_types = (
+        df_srm.groupby("chara_id")["relation_type"]
+        .apply(set)
+        .to_dict()
+    )
+
+    fixed_ids = [cid for cid, _ in current_fixed]
+
+    best_char = None
+    best_score = -1
+
+    # 固定キャラの relation_type をまとめて取得
+    fixed_types = {cid: char_to_types.get(cid, set()) for cid in fixed_ids}
+
+    # ペア・トリオのパターン（インデックス指定）
+    pairs = [(0, 1), (0, 4), (1, 4)]
+    trios = [(0, 1, 2), (0, 1, 3), (0, 4, 5), (0, 4, 6)]
+
+    # DataFrame を使わずセット演算＋dict lookup で計算
+    for candidate in candidates:
+        chars = [candidate] + fixed_ids
+        total = 0
+
+        # candidate の relation_type セット
+        cand_types = char_to_types.get(candidate, set())
+
+        # --- ペア計算 ---
+        for i, j in pairs:
+            if chars[i] == chars[j]:
+                continue
+            types_i = cand_types if i == 0 else fixed_types[chars[i]]
+            types_j = cand_types if j == 0 else fixed_types[chars[j]]
+            common_types = types_i & types_j
+            total += sum(relation_point_map[t] for t in common_types)
+
+        # --- トリオ計算 ---
+        for i, j, k in trios:
+            if len({chars[i], chars[j], chars[k]}) < 3:
+                continue
+            types_i = cand_types if i == 0 else fixed_types[chars[i]]
+            types_j = cand_types if j == 0 else fixed_types[chars[j]]
+            types_k = cand_types if k == 0 else fixed_types[chars[k]]
+            common_types = types_i & types_j & types_k
+            total += sum(relation_point_map[t] for t in common_types)
+
+        if total > best_score:
+            best_score = total
+            best_char = candidate
+
+    return best_char, int(best_score)
 def get_character_name(chara_id):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -481,7 +545,8 @@ def api_fixed_names():
     candidates = get_candidate_chars0(current_fixed)
     print("【DEBUG】候補キャラIDs:", candidates)
 
-    best_char, best_total = find_best_candidate_pandas(current_fixed, candidates)
+    best_char, best_total = find_best_candidate_pandas_vectorized(current_fixed, candidates)
+    #best_char, best_total = find_best_candidate_pandas(current_fixed, candidates)
     #best_char, best_total = find_best_candidate_parallel(current_fixed, candidates)
     #best_char, best_total = find_best_candidate(current_fixed, candidates)
 
