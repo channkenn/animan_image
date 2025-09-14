@@ -177,7 +177,7 @@ def get_candidate_chars0(current_fixed):
     exclude_ids = [cid for cid,_ in current_fixed] + EXCLUDE_IDS
     return [c for c in candidates if c not in exclude_ids]
 
-def calculate_total(chars0, current_fixed):
+def calculate_total(chars0, current_fixed, cursor):
     chars = [chars0] + [cid for cid,_ in current_fixed]
 
     sql = f"""
@@ -285,12 +285,57 @@ def calculate_total(chars0, current_fixed):
     SELECT SUM(total) FROM combination_points;
     """
 
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
+    #conn = sqlite3.connect(DB_PATH)
+    #cursor = conn.cursor()
     cursor.execute(sql)
     result = cursor.fetchone()[0]
-    conn.close()
+    #conn.close()
     return result
+import pandas as pd
+import sqlite3
+
+def calculate_total_pandas(candidate_id, current_fixed):
+    """
+    candidate_id: int, 候補キャラクターID
+    current_fixed: [(id, name), ...]  # current_fixed[0]は父など
+    """
+    # chars0 を先頭にしたIDリスト
+    chars = [candidate_id] + [cid for cid, _ in current_fixed]  # 0〜6まで
+
+    # SQLiteから必要なテーブルを読み込む
+    conn = sqlite3.connect(DB_PATH)
+    srm_df = pd.read_sql("SELECT chara_id, relation_type FROM succession_relation_member", conn)
+    sr_df = pd.read_sql("SELECT relation_type, relation_point FROM succession_relation", conn)
+    conn.close()
+
+    total_score = 0
+
+    # ペアの組み合わせ
+    pair_indices = [(0,1), (0,4), (1,4)]
+    for i,j in pair_indices:
+        if chars[i] == chars[j]:
+            continue  # 同じキャラなら0
+        df1 = srm_df[srm_df['chara_id']==chars[i]]
+        df2 = srm_df[srm_df['chara_id']==chars[j]]
+        merged = pd.merge(df1, df2, on='relation_type')
+        merged = pd.merge(merged, sr_df, left_on='relation_type', right_on='relation_type')
+        total_score += merged['relation_point'].sum()
+
+    # トリオの組み合わせ
+    trio_indices = [(0,1,2), (0,1,3), (0,4,5), (0,4,6)]
+    for i,j,k in trio_indices:
+        if len({chars[i], chars[j], chars[k]}) < 3:
+            continue
+        df1 = srm_df[srm_df['chara_id']==chars[i]]
+        df2 = srm_df[srm_df['chara_id']==chars[j]]
+        df3 = srm_df[srm_df['chara_id']==chars[k]]
+        merged = pd.merge(df1, df2, on='relation_type')
+        merged = pd.merge(merged, df3, on='relation_type')
+        merged = pd.merge(merged, sr_df, left_on='relation_type', right_on='relation_type')
+        total_score += merged['relation_point'].sum()
+
+    return total_score
+
 # -------------------------
 # 並列計算ヘルパー
 # -------------------------
@@ -299,7 +344,7 @@ def find_best_candidate_parallel(current_fixed, candidates, max_workers=8):
     best_total = -1
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        future_to_c = {executor.submit(calculate_total, c, current_fixed): c for c in candidates}
+        future_to_c = {executor.submit(calculate_total_pandas, c, current_fixed): c for c in candidates}
 
         for future in as_completed(future_to_c):
             c = future_to_c[future]
@@ -316,6 +361,84 @@ def find_best_candidate_parallel(current_fixed, candidates, max_workers=8):
     return best_char, best_total
 
 # -------------------------
+def find_best_candidate(current_fixed, candidates):
+    best_char = None
+    best_total = -1
+
+    # DB接続とカーソル作成をループ外に
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    for c in candidates:
+        try:
+            #total = calculate_total(c, current_fixed, cursor)  # cursorを渡すように修正
+            total = calculate_total_pandas(c, current_fixed)
+            _, name = get_character_name(c)
+            print(f"【DEBUG】候補ID={c}, 名前={name}, total={total}")
+            
+            if total > best_total:
+                best_total = total
+                best_char = c
+        except Exception as e:
+            print(f"【ERROR】候補ID={c} 計算失敗: {e}")
+
+    conn.close()
+    return best_char, best_total
+
+def find_best_candidate_pandas(current_fixed, candidates):
+    """
+    current_fixed: [(chara_id, name), ...] 例: [(1024,'マヤノトップガン'), ...]
+    candidates: [id1, id2, id3, ...]  # 候補キャラIDのリスト
+    """
+    conn = sqlite3.connect(DB_PATH)
+
+    # 必要なテーブルを pandas に読み込む
+    df_srm = pd.read_sql("SELECT * FROM succession_relation_member", conn)
+    df_sr = pd.read_sql("SELECT * FROM succession_relation", conn)
+
+    conn.close()
+
+    fixed_ids = [cid for cid, _ in current_fixed]
+
+    best_char = None
+    best_score = -1
+
+    for candidate in candidates:
+        # chars0 = candidate, chars1..6 = current_fixed IDs
+        chars = [candidate] + fixed_ids
+
+        total = 0
+
+        # ペア計算
+        pairs = [(0, 1), (0, 4), (1, 4)]
+        for i, j in pairs:
+            if chars[i] == chars[j]:
+                continue
+            # 該当 relation_type を抽出
+            types_i = df_srm[df_srm['chara_id'] == chars[i]]['relation_type']
+            types_j = df_srm[df_srm['chara_id'] == chars[j]]['relation_type']
+            common_types = pd.Series(list(set(types_i) & set(types_j)))
+            # スコア合計
+            total += df_sr[df_sr['relation_type'].isin(common_types)]['relation_point'].sum()
+
+        # トリオ計算
+        trios = [(0, 1, 2), (0, 1, 3), (0, 4, 5), (0, 4, 6)]
+        for i, j, k in trios:
+            if len({chars[i], chars[j], chars[k]}) < 3:
+                continue
+            # relation_type に含まれるキャラが3人ともいるもの
+            types_i = df_srm[df_srm['chara_id'] == chars[i]]['relation_type']
+            types_j = df_srm[df_srm['chara_id'] == chars[j]]['relation_type']
+            types_k = df_srm[df_srm['chara_id'] == chars[k]]['relation_type']
+            common_types = set(types_i) & set(types_j) & set(types_k)
+            total += df_sr[df_sr['relation_type'].isin(common_types)]['relation_point'].sum()
+
+        if total > best_score:
+            best_score = total
+            best_char = candidate
+
+    return best_char, int(best_score)
+
 def get_character_name(chara_id):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -357,7 +480,9 @@ def api_fixed_names():
     candidates = get_candidate_chars0(current_fixed)
     print("【DEBUG】候補キャラIDs:", candidates)
 
-    best_char, best_total = find_best_candidate_parallel(current_fixed, candidates)
+    best_char, best_total = find_best_candidate_pandas(current_fixed, candidates)
+    #best_char, best_total = find_best_candidate_parallel(current_fixed, candidates)
+    #best_char, best_total = find_best_candidate(current_fixed, candidates)
 
     if best_char is None:
         return jsonify({"best_character": None, "score": best_total})
@@ -365,7 +490,9 @@ def api_fixed_names():
     _, name = get_character_name(best_char)
     print(f"【DEBUG】最終 best_char={best_char}, 名前={name}, スコア={best_total}")
 
-    return jsonify({"best_character": name, "score": best_total})
+    #return jsonify({"best_character": name, "score": best_total})
+    return jsonify({"best_character": name, "score": int(best_total)})
+
 
 # -------------------------
 if __name__ == "__main__":
