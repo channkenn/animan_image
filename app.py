@@ -18,11 +18,8 @@ from utils.scraper import fetch_images_and_title
 #本番にアップする時はFalseにする
 # DEBUG = True
 DEBUG = False
-def dprint(*args, **kwargs):
-    if DEBUG:
-        frame = inspect.currentframe().f_back
-        info = f"[{frame.f_code.co_filename}:{frame.f_lineno}]"
-        print(info, *args, **kwargs)
+
+
 app = Flask(__name__)
 
 # -------------------------
@@ -112,7 +109,30 @@ def fetch_thread_info():
 DB_PATH = "db/umamusume_relation.db"
 CSV_PATH = "csv/characters.csv"
 roles = ["父", "父父", "父母", "母", "母父", "母母"]
+# --- 起動時にロードしてキャッシュ ---
+def load_all_masters():
+    conn = sqlite3.connect(DB_PATH)
 
+    # キャラ名
+    df_char = pd.read_sql("SELECT `index`, text FROM text_data WHERE category=6", conn)
+    char_name_dict = dict(zip(df_char["index"], df_char["text"]))
+
+    # 継承関係
+    df_srm = pd.read_sql("SELECT * FROM succession_relation_member", conn)
+    df_sr = pd.read_sql("SELECT * FROM succession_relation", conn)
+
+    conn.close()
+
+    # relation_type -> point
+    relation_point_map = df_sr.set_index("relation_type")["relation_point"].to_dict()
+
+    # chara_id -> {relation_type, ...}
+    char_to_types = df_srm.groupby("chara_id")["relation_type"].apply(set).to_dict()
+
+    return char_name_dict, relation_point_map, char_to_types
+
+
+CHAR_NAME_DICT, RELATION_POINT_MAP, CHAR_TO_TYPES = load_all_masters()
 @app.route("/images/<path:filename>")
 def serve_image(filename):
     filename = urllib.parse.unquote(filename)
@@ -582,22 +602,8 @@ def find_best_candidate_pandas_vectorized(current_fixed, candidates):
 
     return best_char, int(best_score)
 def score_candidates_vectorized(current_fixed, candidates):
-    """
-    current_fixed: [(chara_id, name), ...]
-    candidates: [id1, id2, id3, ...]
-    
-    return:
-        [(name1, score1), (name2, score2), ...]  # スコア降順
-    """
-    conn = sqlite3.connect(DB_PATH)
-    df_srm = pd.read_sql("SELECT * FROM succession_relation_member", conn)
-    df_sr = pd.read_sql("SELECT * FROM succession_relation", conn)
-    conn.close()
-
-    relation_point_map = df_sr.set_index("relation_type")["relation_point"].to_dict()
-    char_to_types = df_srm.groupby("chara_id")["relation_type"].apply(set).to_dict()
     fixed_ids = [cid for cid, _ in current_fixed]
-    fixed_types = {cid: char_to_types.get(cid, set()) for cid in fixed_ids}
+    fixed_types = {cid: CHAR_TO_TYPES.get(cid, set()) for cid in fixed_ids}
 
     pairs = [(0, 1), (0, 4), (1, 4)]
     trios = [(0, 1, 2), (0, 1, 3), (0, 4, 5), (0, 4, 6)]
@@ -607,7 +613,7 @@ def score_candidates_vectorized(current_fixed, candidates):
     for candidate in candidates:
         chars = [candidate] + fixed_ids
         total = 0
-        cand_types = char_to_types.get(candidate, set())
+        cand_types = CHAR_TO_TYPES.get(candidate, set())
 
         # ペア計算
         for i, j in pairs:
@@ -615,7 +621,7 @@ def score_candidates_vectorized(current_fixed, candidates):
                 continue
             types_i = cand_types if i == 0 else fixed_types[chars[i]]
             types_j = cand_types if j == 0 else fixed_types[chars[j]]
-            total += sum(relation_point_map[t] for t in types_i & types_j)
+            total += sum(RELATION_POINT_MAP[t] for t in types_i & types_j)
 
         # トリオ計算
         for i, j, k in trios:
@@ -624,16 +630,14 @@ def score_candidates_vectorized(current_fixed, candidates):
             types_i = cand_types if i == 0 else fixed_types[chars[i]]
             types_j = cand_types if j == 0 else fixed_types[chars[j]]
             types_k = cand_types if k == 0 else fixed_types[chars[k]]
-            total += sum(relation_point_map[t] for t in types_i & types_j & types_k)
+            total += sum(RELATION_POINT_MAP[t] for t in types_i & types_j & types_k)
 
         _, name = get_character_name(candidate)
         results.append((name, int(total)))
-        if DEBUG:
-            print(f"【DEBUG】候補キャラ: {name}, スコア: {total}")
 
-    # スコア降順にソート
     results.sort(key=lambda x: x[1], reverse=True)
     return results
+
 def load_character_names():
     """DBからキャラ名を一括ロードして辞書化"""
     conn = sqlite3.connect(DB_PATH)
