@@ -634,18 +634,22 @@ def score_candidates_vectorized(current_fixed, candidates):
     # スコア降順にソート
     results.sort(key=lambda x: x[1], reverse=True)
     return results
-def get_character_name(chara_id):
+def load_character_names():
+    """DBからキャラ名を一括ロードして辞書化"""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute(
-        "SELECT `index`, text FROM text_data WHERE category=6 AND `index`=?",
-        (chara_id,)
-    )
-    row = cursor.fetchone()
+    cursor.execute("SELECT `index`, text FROM text_data WHERE category=6")
+    rows = cursor.fetchall()
     conn.close()
-    if row:
-        return (chara_id, row[1])  # row[1] が text（名前）
-    return (chara_id, f"ID_{chara_id}")  # 名前がなければID文字列で返す
+    # {キャラID: 名前} の辞書を作る
+    return {row[0]: row[1] for row in rows}
+
+# アプリ起動時に1回だけロード
+CHAR_NAME_DICT = load_character_names()
+
+def get_character_name(chara_id):
+    """辞書からキャラ名を取得"""
+    return (chara_id, CHAR_NAME_DICT.get(chara_id, f"ID_{chara_id}"))
 
 # -------------------------
 # 固定キャラAPI（CORS対応済み・デバッグ用ログ追加）
