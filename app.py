@@ -5,13 +5,24 @@ import sqlite3
 import csv
 import urllib.parse
 import pandas as pd
+import inspect
+
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from flask import Flask, request, render_template, jsonify, send_from_directory
 from flask_cors import CORS
 from utils.scraper import fetch_images_and_title
+#from relation import process_fixed_names
 
+#本番にアップする時はFalseにする
+# DEBUG = True
+DEBUG = False
+def dprint(*args, **kwargs):
+    if DEBUG:
+        frame = inspect.currentframe().f_back
+        info = f"[{frame.f_code.co_filename}:{frame.f_lineno}]"
+        print(info, *args, **kwargs)
 app = Flask(__name__)
 
 # -------------------------
@@ -148,6 +159,8 @@ def get_relation():
     conn.close()
     return jsonify({"c1": c1, "c2": c2, "total": total or 0})
 
+import csv
+
 # -------------------------
 # CSV読み込み
 # -------------------------
@@ -156,12 +169,60 @@ def load_char_dict():
     with open(CSV_PATH, newline='', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         for row in reader:
+            # name をキー、id を値にする辞書を作成
             char_dict[row["name"]] = int(row["id"])
     return char_dict
 
+
 CHAR_DICT = load_char_dict()
-EXCLUDE_NAMES = ["モンジュー"]
+
+# -------------------------
+# 除外キャラ設定
+# -------------------------
+EXCLUDE_NAMES = ["モンジュー",
+                 "グラスワンダー",
+                 "シンボリルドルフ",
+                 "ナリタブライアン",
+                 "エルコンドルパサー",
+                 "テイエムオペラオー"]
 EXCLUDE_IDS = [CHAR_DICT[name] for name in EXCLUDE_NAMES if name in CHAR_DICT]
+
+# -------------------------
+# 対象キャラ設定
+# -------------------------
+# INCLUDE_NAMES = ["ゴールドシップ",
+#                  "ウオッカ",
+#                  "ダイワスカーレット",
+#                  "メジロマックイーン",
+#                  "マヤノトップガン",
+#                  "メジロライアン",
+#                  "マチカネフクキタル",
+#                  "ツインターボ",
+#                  "ハルウララ",
+#                  "エスポワールシチー",
+#                  "アグネスタキオン",
+#                  "ウイニングチケット",
+#                  "サクラバクシンオー",
+#                  ]
+INCLUDE_NAMES = []
+INCLUDE_IDS = [CHAR_DICT[name] for name in INCLUDE_NAMES if name in CHAR_DICT]
+
+# -------------------------
+# 判定関数
+# -------------------------
+def is_target(char_id: int) -> bool:
+    """
+    char_id が処理対象かどうか判定する
+    - INCLUDE_IDS が空なら「全員対象」
+    - INCLUDE_IDS が指定されている場合、その中に含まれるかを確認
+    - EXCLUDE_IDS に入っている場合は対象外
+    優先度: EXCLUDE > INCLUDE
+    """
+    if char_id in EXCLUDE_IDS:
+        return False
+    if INCLUDE_IDS and char_id not in INCLUDE_IDS:
+        return False
+    return True
 
 def names_to_fixed_chars(names):
     fixed_chars = []
@@ -176,8 +237,23 @@ def get_candidate_chars0(current_fixed):
     cursor.execute("SELECT DISTINCT chara_id FROM succession_relation_member")
     candidates = [row[0] for row in cursor.fetchall()]
     conn.close()
-    exclude_ids = [cid for cid,_ in current_fixed] + EXCLUDE_IDS
-    return [c for c in candidates if c not in exclude_ids]
+
+    # すでに選ばれているIDと除外IDを外す
+    exclude_ids = [cid for cid, _ in current_fixed] + EXCLUDE_IDS
+
+    result = []
+    for c in candidates:
+        # 除外IDに含まれる場合はスキップ
+        if c in exclude_ids:
+            continue
+        # INCLUDE_IDS が指定されている場合は、その中にないキャラをスキップ
+        if INCLUDE_IDS and c not in INCLUDE_IDS:
+            continue
+        # ここまで残ったら候補に追加
+        result.append(c)
+
+    return result
+
 
 def calculate_total(chars0, current_fixed, cursor):
     chars = [chars0] + [cid for cid,_ in current_fixed]
@@ -353,12 +429,14 @@ def find_best_candidate_parallel(current_fixed, candidates, max_workers=8):
             try:
                 total = future.result()
                 _, name = get_character_name(c)
-                print(f"【DEBUG】候補ID={c}, 名前={name}, total={total}")
+                if DEBUG:
+                    print(f"【DEBUG】候補ID={c}, 名前={name}, total={total}")
                 if total > best_total:
                     best_total = total
                     best_char = c
             except Exception as e:
-                print(f"【ERROR】候補ID={c} 計算失敗: {e}")
+                if DEBUG:
+                    print(f"【ERROR】候補ID={c} 計算失敗: {e}")
 
     return best_char, best_total
 
@@ -376,13 +454,15 @@ def find_best_candidate(current_fixed, candidates):
             #total = calculate_total(c, current_fixed, cursor)  # cursorを渡すように修正
             total = calculate_total_pandas(c, current_fixed)
             _, name = get_character_name(c)
-            print(f"【DEBUG】候補ID={c}, 名前={name}, total={total}")
+            if DEBUG:
+                print(f"【DEBUG】候補ID={c}, 名前={name}, total={total}")
             
             if total > best_total:
                 best_total = total
                 best_char = c
         except Exception as e:
-            print(f"【ERROR】候補ID={c} 計算失敗: {e}")
+            if DEBUG:
+                print(f"【ERROR】候補ID={c} 計算失敗: {e}")
 
     conn.close()
     return best_char, best_total
@@ -498,12 +578,66 @@ def find_best_candidate_pandas_vectorized(current_fixed, candidates):
             types_k = cand_types if k == 0 else fixed_types[chars[k]]
             common_types = types_i & types_j & types_k
             total += sum(relation_point_map[t] for t in common_types)
-
+        if DEBUG:
+            print("【DEBUG】候補キャラIDs:", get_character_name(candidate),"相性値",total)
         if total > best_score:
             best_score = total
             best_char = candidate
 
     return best_char, int(best_score)
+def score_candidates_vectorized(current_fixed, candidates):
+    """
+    current_fixed: [(chara_id, name), ...]
+    candidates: [id1, id2, id3, ...]
+    
+    return:
+        [(name1, score1), (name2, score2), ...]  # スコア降順
+    """
+    conn = sqlite3.connect(DB_PATH)
+    df_srm = pd.read_sql("SELECT * FROM succession_relation_member", conn)
+    df_sr = pd.read_sql("SELECT * FROM succession_relation", conn)
+    conn.close()
+
+    relation_point_map = df_sr.set_index("relation_type")["relation_point"].to_dict()
+    char_to_types = df_srm.groupby("chara_id")["relation_type"].apply(set).to_dict()
+    fixed_ids = [cid for cid, _ in current_fixed]
+    fixed_types = {cid: char_to_types.get(cid, set()) for cid in fixed_ids}
+
+    pairs = [(0, 1), (0, 4), (1, 4)]
+    trios = [(0, 1, 2), (0, 1, 3), (0, 4, 5), (0, 4, 6)]
+
+    results = []
+
+    for candidate in candidates:
+        chars = [candidate] + fixed_ids
+        total = 0
+        cand_types = char_to_types.get(candidate, set())
+
+        # ペア計算
+        for i, j in pairs:
+            if chars[i] == chars[j]:
+                continue
+            types_i = cand_types if i == 0 else fixed_types[chars[i]]
+            types_j = cand_types if j == 0 else fixed_types[chars[j]]
+            total += sum(relation_point_map[t] for t in types_i & types_j)
+
+        # トリオ計算
+        for i, j, k in trios:
+            if len({chars[i], chars[j], chars[k]}) < 3:
+                continue
+            types_i = cand_types if i == 0 else fixed_types[chars[i]]
+            types_j = cand_types if j == 0 else fixed_types[chars[j]]
+            types_k = cand_types if k == 0 else fixed_types[chars[k]]
+            total += sum(relation_point_map[t] for t in types_i & types_j & types_k)
+
+        _, name = get_character_name(candidate)
+        results.append((name, int(total)))
+        if DEBUG:
+            print(f"【DEBUG】候補キャラ: {name}, スコア: {total}")
+
+    # スコア降順にソート
+    results.sort(key=lambda x: x[1], reverse=True)
+    return results
 def get_character_name(chara_id):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -539,26 +673,36 @@ def api_fixed_names():
         current_fixed = names_to_fixed_chars(names)
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
-
-    print("【DEBUG】current_fixed:", current_fixed)
+    if DEBUG:
+        print("【DEBUG】current_fixed:", current_fixed)
 
     candidates = get_candidate_chars0(current_fixed)
-    print("【DEBUG】候補キャラIDs:", candidates)
-
-    best_char, best_total = find_best_candidate_pandas_vectorized(current_fixed, candidates)
+    if DEBUG:
+        print("【DEBUG】候補キャラIDs:", candidates)
+    # 複数キャラクターのスコアをまとめる
+    best_chars = []
+    best_totals = []
+    results = score_candidates_vectorized(current_fixed, candidates)
+    #best_char, best_total = find_best_candidate_pandas_vectorized(current_fixed, candidates)
     #best_char, best_total = find_best_candidate_pandas(current_fixed, candidates)
     #best_char, best_total = find_best_candidate_parallel(current_fixed, candidates)
     #best_char, best_total = find_best_candidate(current_fixed, candidates)
 
-    if best_char is None:
-        return jsonify({"best_character": None, "score": best_total})
+    # if best_char is None:
+    #     return jsonify({"best_character": None, "score": best_total})
 
-    _, name = get_character_name(best_char)
-    print(f"【DEBUG】最終 best_char={best_char}, 名前={name}, スコア={best_total}")
+    # _, name = get_character_name(best_char)
+    # if DEBUG:
+    #     print(f"【DEBUG】最終 best_char={best_char}, 名前={name}, スコア={best_total}")
 
-    #return jsonify({"best_character": name, "score": best_total})
-    return jsonify({"best_character": name, "score": int(best_total)})
+    # #return jsonify({"best_character": name, "score": best_total})
+    # return jsonify({"best_character": name, "score": int(best_total)})
+    best_chars, best_totals = zip(*results) if results else ([], [])
 
+    return jsonify({
+    "characters": list(best_chars),
+    "scores": list(best_totals)
+})
 
 # -------------------------
 if __name__ == "__main__":
