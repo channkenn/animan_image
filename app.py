@@ -6,6 +6,7 @@ import csv
 import urllib.parse
 import pandas as pd
 import inspect
+import numpy as np
 
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -18,6 +19,58 @@ from utils.scraper import fetch_images_and_title
 #本番にアップする時はFalseにする
 # DEBUG = True
 DEBUG = False
+# -------------------------
+# DB関連API
+# -------------------------
+DB_PATH = "db/umamusume_relation.db"
+CSV_PATH = "csv/characters.csv"
+roles = ["父", "父父", "父母", "母", "母父", "母母"]
+# --- 起動時にロードしてキャッシュ ---
+def load_all_masters():
+    conn = sqlite3.connect(DB_PATH)
+
+    # キャラ名
+    df_char = pd.read_sql("SELECT `index`, text FROM text_data WHERE category=6", conn)
+    char_name_dict = dict(zip(df_char["index"], df_char["text"]))
+
+    # 継承関係
+    df_srm = pd.read_sql("SELECT * FROM succession_relation_member", conn)
+    df_sr = pd.read_sql("SELECT * FROM succession_relation", conn)
+
+    conn.close()
+
+    # relation_type -> point
+    relation_point_map = df_sr.set_index("relation_type")["relation_point"].to_dict()
+
+    # chara_id -> {relation_type, ...}
+    char_to_types = df_srm.groupby("chara_id")["relation_type"].apply(set).to_dict()
+
+    return char_name_dict, relation_point_map, char_to_types
+
+
+CHAR_NAME_DICT, RELATION_POINT_MAP, CHAR_TO_TYPES = load_all_masters()
+# --- 事前準備 ---
+ALL_REL_TYPES = list({t for types in CHAR_TO_TYPES.values() for t in types})
+REL_IDX = {t: i for i, t in enumerate(ALL_REL_TYPES)}
+
+# 全キャラID（固定キャラ + 候補キャラ）を使ってマッピング
+ALL_CHAR_IDS = list(CHAR_TO_TYPES.keys())  # ここに候補キャラIDも含めてもOK
+CHAR_ID_IDX = {cid: i for i, cid in enumerate(ALL_CHAR_IDS)}
+
+NUM_CHARS = len(ALL_CHAR_IDS)
+NUM_TYPES = len(ALL_REL_TYPES)
+
+# キャラクター × relation_type のバイナリ行列
+CHAR_TYPE_MATRIX = np.zeros((NUM_CHARS, NUM_TYPES), dtype=np.uint8)
+for cid, types in CHAR_TO_TYPES.items():
+    row = CHAR_ID_IDX[cid]
+    for t in types:
+        CHAR_TYPE_MATRIX[row, REL_IDX[t]] = 1
+
+REL_POINTS = np.array([RELATION_POINT_MAP[t] for t in ALL_REL_TYPES], dtype=np.int32)
+
+PAIRS = [(0, 1), (0, 4), (1, 4)]
+TRIOS = [(0, 1, 2), (0, 1, 3), (0, 4, 5), (0, 4, 6)]
 
 
 app = Flask(__name__)
@@ -103,36 +156,7 @@ def fetch_thread_info():
     if not thread_title: return {"error": "スレッドタイトルを取得できませんでした"}, 404
     return {"title": thread_title}
 
-# -------------------------
-# DB関連API
-# -------------------------
-DB_PATH = "db/umamusume_relation.db"
-CSV_PATH = "csv/characters.csv"
-roles = ["父", "父父", "父母", "母", "母父", "母母"]
-# --- 起動時にロードしてキャッシュ ---
-def load_all_masters():
-    conn = sqlite3.connect(DB_PATH)
 
-    # キャラ名
-    df_char = pd.read_sql("SELECT `index`, text FROM text_data WHERE category=6", conn)
-    char_name_dict = dict(zip(df_char["index"], df_char["text"]))
-
-    # 継承関係
-    df_srm = pd.read_sql("SELECT * FROM succession_relation_member", conn)
-    df_sr = pd.read_sql("SELECT * FROM succession_relation", conn)
-
-    conn.close()
-
-    # relation_type -> point
-    relation_point_map = df_sr.set_index("relation_type")["relation_point"].to_dict()
-
-    # chara_id -> {relation_type, ...}
-    char_to_types = df_srm.groupby("chara_id")["relation_type"].apply(set).to_dict()
-
-    return char_name_dict, relation_point_map, char_to_types
-
-
-CHAR_NAME_DICT, RELATION_POINT_MAP, CHAR_TO_TYPES = load_all_masters()
 @app.route("/images/<path:filename>")
 def serve_image(filename):
     filename = urllib.parse.unquote(filename)
@@ -637,19 +661,99 @@ def score_candidates_vectorized(current_fixed, candidates):
 
     results.sort(key=lambda x: x[1], reverse=True)
     return results
+def score_candidates_vectorized_numpy(current_fixed, candidates):
+    fixed_ids = [cid for cid, _ in current_fixed]
+    fixed_matrix = CHAR_TYPE_MATRIX[fixed_ids]  # 固定キャラの行列
+    results = []
 
-def load_character_names():
-    """DBからキャラ名を一括ロードして辞書化"""
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("SELECT `index`, text FROM text_data WHERE category=6")
-    rows = cursor.fetchall()
-    conn.close()
-    # {キャラID: 名前} の辞書を作る
-    return {row[0]: row[1] for row in rows}
+    for candidate in candidates:
+        total = 0
+        cand_matrix = CHAR_TYPE_MATRIX[candidate][None, :]  # 1×NUM_TYPES
 
-# アプリ起動時に1回だけロード
-CHAR_NAME_DICT = load_character_names()
+        chars = [candidate] + fixed_ids
+        matrices = [cand_matrix] + [CHAR_TYPE_MATRIX[cid][None, :] for cid in fixed_ids]
+
+        # ペア計算
+        for i, j in PAIRS:
+            if chars[i] == chars[j]:
+                continue
+            types_i = matrices[i]
+            types_j = matrices[j]
+            inter = types_i & types_j  # AND演算で共通relation
+            total += (inter * REL_POINTS).sum()
+
+        # トリオ計算
+        for i, j, k in TRIOS:
+            if len({chars[i], chars[j], chars[k]}) < 3:
+                continue
+            types_i = matrices[i]
+            types_j = matrices[j]
+            types_k = matrices[k]
+            inter = types_i & types_j & types_k  # AND演算
+            total += (inter * REL_POINTS).sum()
+
+        _, name = get_character_name(candidate)
+        results.append((name, int(total)))
+
+    results.sort(key=lambda x: x[1], reverse=True)
+    return results
+# --- 安全版ベクトル化関数 ---
+def score_candidates_vectorized_safe(current_fixed, candidates):
+    # 存在するIDだけ取り出す
+    fixed_rows = []
+    valid_fixed_ids = []
+    for cid in [cid for cid, _ in current_fixed]:
+        if cid in CHAR_ID_IDX:
+            fixed_rows.append(CHAR_ID_IDX[cid])
+            valid_fixed_ids.append(cid)
+        else:
+            print(f"[WARNING] fixed_id {cid} が CHAR_ID_IDX に存在しません。スキップします。")
+
+    fixed_matrices = [CHAR_TYPE_MATRIX[r][None, :] for r in fixed_rows]
+
+    results = []
+
+    for candidate in candidates:
+        if candidate not in CHAR_ID_IDX:
+            # ID がマッピングにない場合はスコア0で名前はID文字列
+            results.append((f"ID_{candidate}", 0))
+            print(f"[WARNING] candidate {candidate} が CHAR_ID_IDX に存在しません。スコア0にします。")
+            continue
+
+        cand_row = CHAR_ID_IDX[candidate]
+        cand_matrix = CHAR_TYPE_MATRIX[cand_row][None, :]
+
+        chars = [candidate] + valid_fixed_ids
+        matrices = [cand_matrix] + fixed_matrices
+
+        total = 0
+
+        # ペア計算
+        for i, j in PAIRS:
+            if i >= len(chars) or j >= len(chars) or chars[i] == chars[j]:
+                continue
+            types_i = matrices[i]
+            types_j = matrices[j]
+            inter = types_i & types_j
+            total += (inter * REL_POINTS).sum()
+
+        # トリオ計算
+        for i, j, k in TRIOS:
+            if i >= len(chars) or j >= len(chars) or k >= len(chars):
+                continue
+            if len({chars[i], chars[j], chars[k]}) < 3:
+                continue
+            types_i = matrices[i]
+            types_j = matrices[j]
+            types_k = matrices[k]
+            inter = types_i & types_j & types_k
+            total += (inter * REL_POINTS).sum()
+
+        _, name = get_character_name(candidate)
+        results.append((name, int(total)))
+
+    results.sort(key=lambda x: x[1], reverse=True)
+    return results
 
 def get_character_name(chara_id):
     """辞書からキャラ名を取得"""
@@ -686,7 +790,9 @@ def api_fixed_names():
     # 複数キャラクターのスコアをまとめる
     best_chars = []
     best_totals = []
-    results = score_candidates_vectorized(current_fixed, candidates)
+    results = score_candidates_vectorized_safe(current_fixed, candidates)
+    # results = score_candidates_vectorized_numpy(current_fixed, candidates)
+    #results = score_candidates_vectorized(current_fixed, candidates)
     #best_char, best_total = find_best_candidate_pandas_vectorized(current_fixed, candidates)
     #best_char, best_total = find_best_candidate_pandas(current_fixed, candidates)
     #best_char, best_total = find_best_candidate_parallel(current_fixed, candidates)
