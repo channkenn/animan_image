@@ -180,11 +180,7 @@ CHAR_DICT = load_char_dict()
 # 除外キャラ設定
 # -------------------------
 EXCLUDE_NAMES = ["モンジュー",
-                 "グラスワンダー",
-                 "シンボリルドルフ",
-                 "ナリタブライアン",
-                 "エルコンドルパサー",
-                 "テイエムオペラオー"]
+                 ]
 EXCLUDE_IDS = [CHAR_DICT[name] for name in EXCLUDE_NAMES if name in CHAR_DICT]
 
 # -------------------------
