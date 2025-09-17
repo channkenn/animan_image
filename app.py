@@ -1,4 +1,5 @@
 import os
+import time
 import re
 import requests
 import sqlite3
@@ -17,8 +18,8 @@ from utils.scraper import fetch_images_and_title
 #from relation import process_fixed_names
 
 #本番にアップする時はFalseにする
-# DEBUG = True
-DEBUG = False
+DEBUG = True
+#DEBUG = False
 # -------------------------
 # DB関連API
 # -------------------------
@@ -754,7 +755,73 @@ def score_candidates_vectorized_safe(current_fixed, candidates):
 
     results.sort(key=lambda x: x[1], reverse=True)
     return results
+def score_candidates_vectorized_full(current_fixed, candidates):
+    # --- 固定キャラの有効IDだけ抽出 ---
+    fixed_rows = []
+    valid_fixed_ids = []
+    for cid, _ in current_fixed:
+        if cid in CHAR_ID_IDX:
+            fixed_rows.append(CHAR_ID_IDX[cid])
+            valid_fixed_ids.append(cid)
+        else:
+            print(f"[WARNING] fixed_id {cid} が CHAR_ID_IDX に存在しません。スキップします。")
 
+    if not valid_fixed_ids:
+        print("[WARNING] 有効な固定キャラが存在しません。")
+
+    fixed_matrix = CHAR_TYPE_MATRIX[fixed_rows]  # shape: F x T
+
+    # --- 候補キャラ行列 ---
+    valid_candidates = [cid for cid in candidates if cid in CHAR_ID_IDX]
+    invalid_candidates = [cid for cid in candidates if cid not in CHAR_ID_IDX]
+
+    cand_rows = [CHAR_ID_IDX[cid] for cid in valid_candidates]
+    cand_matrix = CHAR_TYPE_MATRIX[cand_rows]  # shape: C x T
+
+    C = cand_matrix.shape[0]
+    F = fixed_matrix.shape[0]
+
+    # --- ペア計算（C x F） ---
+    # broadcastして AND → REL_POINTS * sum
+    pair_scores = np.zeros(C, dtype=np.int32)
+    for i, j in PAIRS:
+        # i=0 は候補キャラ行列、j>0 は固定キャラ行列
+        # 固定キャラとの組み合わせのみ考慮（ここでは候補-固定のみ）
+        if j-1 >= F:
+            continue  # fixedが少なくて無効な場合スキップ
+
+        types_i = cand_matrix  # C x T
+        types_j = fixed_matrix[j-1][None, :]  # 1 x T
+        inter = types_i & types_j  # broadcast C x T
+        pair_scores += (inter * REL_POINTS).sum(axis=1)
+
+    # --- トリオ計算（C x F x F） ---
+    trio_scores = np.zeros(C, dtype=np.int32)
+    for i, j, k in TRIOS:
+        # j,kは固定キャラのインデックス
+        if j-1 >= F or k-1 >= F:
+            continue
+
+        types_i = cand_matrix  # C x T
+        types_j = fixed_matrix[j-1][None, :]  # 1 x T
+        types_k = fixed_matrix[k-1][None, :]  # 1 x T
+        inter = types_i & types_j & types_k
+        trio_scores += (inter * REL_POINTS).sum(axis=1)
+
+    total_scores = pair_scores + trio_scores
+
+    # --- 結果作成 ---
+    results = []
+    for idx, cid in enumerate(valid_candidates):
+        _, name = get_character_name(cid)
+        results.append((name, int(total_scores[idx])))
+
+    # 無効候補はスコア0
+    for cid in invalid_candidates:
+        results.append((f"ID_{cid}", 0))
+
+    results.sort(key=lambda x: x[1], reverse=True)
+    return results
 def get_character_name(chara_id):
     """辞書からキャラ名を取得"""
     return (chara_id, CHAR_NAME_DICT.get(chara_id, f"ID_{chara_id}"))
@@ -764,6 +831,8 @@ def get_character_name(chara_id):
 # -------------------------
 @app.route("/api/fixed_names", methods=["GET", "POST", "OPTIONS"])
 def api_fixed_names():
+    if DEBUG:
+        start = time.time()  # 開始時間
     if request.method == "OPTIONS":
         return jsonify({}), 200
     if request.method == "GET":
@@ -790,7 +859,8 @@ def api_fixed_names():
     # 複数キャラクターのスコアをまとめる
     best_chars = []
     best_totals = []
-    results = score_candidates_vectorized_safe(current_fixed, candidates)
+    results = score_candidates_vectorized_full(current_fixed, candidates)
+    # results = score_candidates_vectorized_safe(current_fixed, candidates)
     # results = score_candidates_vectorized_numpy(current_fixed, candidates)
     #results = score_candidates_vectorized(current_fixed, candidates)
     #best_char, best_total = find_best_candidate_pandas_vectorized(current_fixed, candidates)
@@ -808,7 +878,10 @@ def api_fixed_names():
     # #return jsonify({"best_character": name, "score": best_total})
     # return jsonify({"best_character": name, "score": int(best_total)})
     best_chars, best_totals = zip(*results) if results else ([], [])
-
+    if DEBUG:
+        end = time.time()  # 終了時間
+    if DEBUG:
+        print(f"[INFO] /api/fixed_names 処理時間: {end - start:.4f} 秒")
     return jsonify({
     "characters": list(best_chars),
     "scores": list(best_totals)
