@@ -18,21 +18,35 @@ from utils.scraper import fetch_images_and_title
 #from relation import process_fixed_names
 
 #本番にアップする時はFalseにする
-DEBUG = True
-#DEBUG = False
+#DEBUG = True
+DEBUG = False
 # -------------------------
 # DB関連API
 # -------------------------
 DB_PATH = "db/umamusume_relation.db"
 CSV_PATH = "csv/characters.csv"
 roles = ["父", "父父", "父母", "母", "母父", "母母"]
+import sqlite3
+import pandas as pd
+
+DB_PATH = "db/umamusume_relation.db"
+
 # --- 起動時にロードしてキャッシュ ---
 def load_all_masters():
     conn = sqlite3.connect(DB_PATH)
+    conn.text_factory = str
 
-    # キャラ名
-    df_char = pd.read_sql("SELECT `index`, text FROM text_data WHERE category=6", conn)
-    char_name_dict = dict(zip(df_char["index"], df_char["text"]))
+    # キャラ名（succession_relation_member に存在するキャラのみ）
+    sql_char = """
+        SELECT DISTINCT td."index" AS id, td.text
+        FROM text_data td
+        INNER JOIN succession_relation_member srm
+          ON td."index" = srm.chara_id
+        WHERE td.category = 6
+        ORDER BY td."index"
+    """
+    df_char = pd.read_sql(sql_char, conn)
+    char_name_dict = dict(zip(df_char["id"], df_char["text"]))
 
     # 継承関係
     df_srm = pd.read_sql("SELECT * FROM succession_relation_member", conn)
@@ -48,8 +62,9 @@ def load_all_masters():
 
     return char_name_dict, relation_point_map, char_to_types
 
-
+# 起動時に一度だけロードしてキャッシュ
 CHAR_NAME_DICT, RELATION_POINT_MAP, CHAR_TO_TYPES = load_all_masters()
+
 # --- 事前準備 ---
 ALL_REL_TYPES = list({t for types in CHAR_TO_TYPES.values() for t in types})
 REL_IDX = {t: i for i, t in enumerate(ALL_REL_TYPES)}
@@ -166,13 +181,31 @@ def serve_image(filename):
 
 @app.route("/api/characters")
 def get_characters():
-    conn = sqlite3.connect(DB_PATH)
-    conn.text_factory = str
-    cur = conn.cursor()
-    cur.execute("SELECT id, text FROM text_data WHERE category=6")
-    rows = cur.fetchall()
-    conn.close()
-    return jsonify([{"id": r[0], "name": r[1]} for r in rows])
+    # --- ここで直接 SQL を叩す部分を削除 ---
+    # conn = sqlite3.connect(DB_PATH)
+    # conn.text_factory = str
+    # cur = conn.cursor()
+    #
+    # sql = """
+    #     SELECT DISTINCT td."index" AS id, td.text
+    #     FROM text_data td
+    #     INNER JOIN succession_relation_member srm
+    #       ON td."index" = srm.chara_id
+    #     WHERE td.category = 6
+    #     ORDER BY td."index"
+    # """
+    # cur.execute(sql)
+    # rows = cur.fetchall()
+    # conn.close()
+
+    # --- キャッシュ済み辞書 CHAR_NAME_DICT を使う ---
+    rows = [{"id": cid, "name": name} for cid, name in CHAR_NAME_DICT.items()]
+    # 必要に応じて id 順にソート
+    rows.sort(key=lambda x: x["id"])
+
+    return jsonify(rows)
+
+
 
 @app.route("/api/character/<int:chara_id>")
 def get_character(chara_id):
