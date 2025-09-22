@@ -18,8 +18,8 @@ from utils.scraper import fetch_images_and_title
 #from relation import process_fixed_names
 
 #本番にアップする時はFalseにする
-#DEBUG = True
-DEBUG = False
+DEBUG = True
+# DEBUG = False
 # -------------------------
 # DB関連API
 # -------------------------
@@ -313,8 +313,9 @@ def get_candidate_chars0(current_fixed):
     conn.close()
 
     # すでに選ばれているIDと除外IDを外す
-    exclude_ids = [cid for cid, _ in current_fixed] + EXCLUDE_IDS
-
+    # exclude_ids = [cid for cid, _ in current_fixed] + EXCLUDE_IDS
+    indices = [0, 3]  # 抜きたい位置
+    exclude_ids = [current_fixed[i][0] for i in indices] + EXCLUDE_IDS
     result = []
     for c in candidates:
         # 除外IDに含まれる場合はスキップ
@@ -828,18 +829,47 @@ def score_candidates_vectorized_full(current_fixed, candidates):
         inter = types_i & types_j  # broadcast C x T
         pair_scores += (inter * REL_POINTS).sum(axis=1)
 
-    # --- トリオ計算（C x F x F） ---
+       # --- 固定キャラの有効IDだけ抽出 ---
+    fixed_rows = []
+    valid_fixed_ids = []
+    for cid, _ in current_fixed:
+        if cid in CHAR_ID_IDX:
+            fixed_rows.append(CHAR_ID_IDX[cid])
+            valid_fixed_ids.append(cid)
+    fixed_matrix = CHAR_TYPE_MATRIX[fixed_rows]  # F x T
+
+    # --- 候補キャラ行列 ---
+    valid_candidates = [cid for cid in candidates if cid in CHAR_ID_IDX]
+    invalid_candidates = [cid for cid in candidates if cid not in CHAR_ID_IDX]
+    cand_rows = [CHAR_ID_IDX[cid] for cid in valid_candidates]
+    cand_matrix = CHAR_TYPE_MATRIX[cand_rows]  # C x T
+    cand_ids = np.array(valid_candidates)
+
+    C = cand_matrix.shape[0]
+    F = fixed_matrix.shape[0]
+
+    # --- トリオ計算（ベクトル化） ---
     trio_scores = np.zeros(C, dtype=np.int32)
-    for i, j, k in TRIOS:
-        # j,kは固定キャラのインデックス
-        if j-1 >= F or k-1 >= F:
+
+    # TRIOS: 候補インデックス、固定1インデックス、固定2インデックス
+    for i_cand, j_fixed, k_fixed in TRIOS:
+        if j_fixed-1 >= F or k_fixed-1 >= F:
             continue
 
+        # 候補行列
         types_i = cand_matrix  # C x T
-        types_j = fixed_matrix[j-1][None, :]  # 1 x T
-        types_k = fixed_matrix[k-1][None, :]  # 1 x T
-        inter = types_i & types_j & types_k
-        trio_scores += (inter * REL_POINTS).sum(axis=1)
+        types_j = fixed_matrix[j_fixed-1][None, :]  # 1 x T
+        types_k = fixed_matrix[k_fixed-1][None, :]  # 1 x T
+        inter = types_i & types_j & types_k  # C x T
+
+        # 候補IDが固定IDと同じなら無効化
+        fixed_id_j = valid_fixed_ids[j_fixed-1]
+        fixed_id_k = valid_fixed_ids[k_fixed-1]
+        invalid_mask = (cand_ids == fixed_id_j) | (cand_ids == fixed_id_k)  # C
+        inter_masked = np.where(invalid_mask[:, None], 0, inter)  # C x T
+
+        # スコア加算
+        trio_scores += (inter_masked * REL_POINTS).sum(axis=1)
 
     total_scores = pair_scores + trio_scores
 
@@ -855,6 +885,7 @@ def score_candidates_vectorized_full(current_fixed, candidates):
 
     results.sort(key=lambda x: x[1], reverse=True)
     return results
+
 def get_character_name(chara_id):
     """辞書からキャラ名を取得"""
     return (chara_id, CHAR_NAME_DICT.get(chara_id, f"ID_{chara_id}"))
